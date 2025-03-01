@@ -58,7 +58,6 @@ commonmark-java = { module = "com.github.atlassian:commonmark-java", version.ref
 commons = { module = "com.afollestad.material-dialogs:commons", version.ref = "material-dialogs" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
 commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 crashreport = { module = "com.tencent.bugly:crashreport", version.ref = "crashreport" }
 expandablerecyclerview = { module = "com.bignerdranch.android:expandablerecyclerview", version.ref = "expandablerecyclerview" }
