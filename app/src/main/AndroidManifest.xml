@@ -53,10 +53,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.autojs.autojs.ui.main.MainActivity_"
+            android:name="org.autojs.autojs.ui.main.MainActivity"
             android:hardwareAccelerated="true"
             android:label="@string/app_name"
             android:launchMode="singleTask"
+            android:exported="true"
             android:theme="@style/AppTheme.FullScreen">
         </activity>
         <activity
