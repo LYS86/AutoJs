@@ -22,7 +22,7 @@ import org.autojs.autojs.network.entity.topic.Topic
 import org.autojs.autojs.ui.main.ViewPagerFragment
 import org.autojs.autojs.ui.widget.AvatarView
 import org.joda.time.format.DateTimeFormat
-
+@Deprecated("Deprecated in Java")
 class MarketFragment : ViewPagerFragment(0) {
 
     private val mTopics = ArrayList<Topic>()
