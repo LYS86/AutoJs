@@ -9,9 +9,7 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.FloatingManualDialogBinding;
-import org.autojs.autojs.ui.widget.EWebView;
 
 public class ManualDialog {
 
@@ -65,8 +63,8 @@ public class ManualDialog {
 
     private void viewInNewActivity() {
         mDialog.dismiss();
-        DocumentationActivity_.intent(mContext)
-                .extra(DocumentationActivity.EXTRA_URL, binding.ewebView.getWebView().getUrl())
-                .start();
+        android.content.Intent intent = new android.content.Intent(mContext, DocumentationActivity.class);
+        intent.putExtra(DocumentationActivity.EXTRA_URL, binding.ewebView.getWebView().getUrl());
+        mContext.startActivity(intent);
     }
 }
