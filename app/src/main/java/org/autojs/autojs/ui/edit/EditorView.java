@@ -64,7 +64,6 @@ import org.autojs.autojs.ui.edit.theme.Themes;
 import org.autojs.autojs.ui.edit.toolbar.DebugToolbarFragment;
 import org.autojs.autojs.ui.edit.toolbar.NormalToolbarFragment;
 import org.autojs.autojs.ui.edit.toolbar.SearchToolbarFragment;
-import org.autojs.autojs.ui.edit.toolbar.SearchToolbarFragment_;
 import org.autojs.autojs.ui.edit.toolbar.ToolbarFragment;
 import org.autojs.autojs.ui.log.LogActivity;
 import org.autojs.autojs.ui.widget.EWebView;
@@ -554,9 +553,10 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     }
 
     private void showSearchToolbar(boolean showReplaceItem) {
-        SearchToolbarFragment searchToolbarFragment = SearchToolbarFragment_.builder()
-                .arg(SearchToolbarFragment.ARGUMENT_SHOW_REPLACE_ITEM, showReplaceItem)
-                .build();
+        Bundle args = new Bundle();
+        args.putBoolean(SearchToolbarFragment.ARGUMENT_SHOW_REPLACE_ITEM, showReplaceItem);
+        SearchToolbarFragment searchToolbarFragment = new SearchToolbarFragment();
+        searchToolbarFragment.setArguments(args);
         searchToolbarFragment.setOnMenuItemClickListener(this);
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.toolbar_menu, searchToolbarFragment)
