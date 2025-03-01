@@ -65,8 +65,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         checkPermissions();
-        showAccessibilitySettingPromptIfDisabled();
-        showAnnunciationIfNeeded();
         EventBus.getDefault().register(this);
         applyDayNightMode();
         setUpViews();
@@ -91,18 +89,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         });
     }
 
-    private void showAnnunciationIfNeeded() {
-        if (!Pref.shouldShowAnnunciation()) {
-            return;
-        }
-        new CommonMarkdownView.DialogBuilder(this)
-                .padding(36, 0, 36, 0)
-                .markdown(PFiles.read(getResources().openRawResource(R.raw.annunciation)))
-                .title(R.string.text_annunciation)
-                .positiveText(R.string.ok)
-                .canceledOnTouchOutside(false)
-                .show();
-    }
 
     private void registerBackPressHandlers() {
         mBackPressObserver.registerHandler(new DrawerAutoClose(binding.drawerLayout, Gravity.START));
@@ -113,19 +99,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
-    private void showAccessibilitySettingPromptIfDisabled() {
-        if (AccessibilityServiceTool.isAccessibilityServiceEnabled(this)) {
-            return;
-        }
-        new NotAskAgainDialog.Builder(this, "MainActivity.accessibility")
-                .title(R.string.text_need_to_enable_accessibility_service)
-                .content(R.string.explain_accessibility_permission)
-                .positiveText(R.string.text_go_to_setting)
-                .negativeText(R.string.text_cancel)
-                .onPositive((dialog, which) ->
-                        AccessibilityServiceTool.enableAccessibilityService()
-                ).show();
-    }
 
     private void setUpToolbar() {
         Toolbar toolbar = $(R.id.toolbar);
