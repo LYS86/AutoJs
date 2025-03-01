@@ -2,6 +2,7 @@ package org.autojs.autojs.ui.explorer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -44,7 +45,6 @@ import org.autojs.autojs.tool.Observers;
 import org.autojs.autojs.ui.common.ScriptLoopDialog;
 import org.autojs.autojs.ui.common.ScriptOperations;
 import org.autojs.autojs.ui.project.BuildActivity;
-import org.autojs.autojs.ui.project.BuildActivity_;
 import org.autojs.autojs.ui.viewmodel.ExplorerItemList;
 import org.autojs.autojs.ui.widget.BindableViewHolder;
 import org.autojs.autojs.workground.WrapContentGridLayoutManger;
@@ -322,7 +322,9 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
                 notifyOperated();
                 break;
             case R.id.action_build_apk:
-                BuildActivity_.intent(getContext()).extra(BuildActivity.EXTRA_SOURCE, mSelectedItem.getPath()).start();
+                Intent intent = new Intent(getContext(), BuildActivity.class);
+                intent.putExtra(BuildActivity.EXTRA_SOURCE, mSelectedItem.getPath());
+                getContext().startActivity(intent);
                 notifyOperated();
                 break;
             case R.id.action_sort_by_date:

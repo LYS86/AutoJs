@@ -100,7 +100,7 @@
             />
         <activity android:name="org.autojs.autojs.ui.edit.ViewSampleActivity"/>
         <activity
-            android:name="org.autojs.autojs.ui.project.BuildActivity_"
+            android:name="org.autojs.autojs.ui.project.BuildActivity"
             android:configChanges="orientation|screenSize"/>
         <activity android:name="org.autojs.autojs.ui.project.ProjectConfigActivity"/>
         <activity android:name="org.autojs.autojs.ui.log.LogActivity"/>

@@ -23,7 +23,6 @@ import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.edit.editor.CodeEditor;
 import org.autojs.autojs.ui.log.LogActivity;
 import org.autojs.autojs.ui.project.BuildActivity;
-import org.autojs.autojs.ui.project.BuildActivity_;
 
 import java.util.Locale;
 
@@ -189,9 +188,9 @@ public class EditorMenu {
     }
 
     private void startBuildApkActivity() {
-        BuildActivity_.intent(mContext)
-                .extra(BuildActivity.EXTRA_SOURCE, mEditorView.getUri().getPath())
-                .start();
+        Intent intent = new Intent(mContext, BuildActivity.class);
+        intent.putExtra(BuildActivity.EXTRA_SOURCE, mEditorView.getUri().getPath());
+        mContext.startActivity(intent);
     }
 
 
