@@ -71,3 +71,8 @@ dependencies /* LiteRT */ {
     implementation(libs.litert.metadata)
     implementation(libs.litert.support)
 }
+
+dependencies/** ML Kit **/ {
+    implementation (libs.text.recognition)
+    implementation (libs.text.recognition.chinese)
+}

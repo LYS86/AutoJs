@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Looper;
 import android.util.Log;
 
+import com.google.ocr.MLKit;
 import com.stardust.app.GlobalAppContext;
 import com.stardust.autojs.R;
 import com.stardust.autojs.ScriptEngineService;
@@ -194,8 +195,8 @@ public class ScriptRuntime {
     @ScriptVariable
     public final Plugins plugins;
 
-    private final Detection detection=new Detection();
-
+    private final Detection detection = new Detection();
+    private final MLKit mlKit = new MLKit();
     private Images images;
 
     private static WeakReference<Context> applicationContext;
@@ -252,6 +253,7 @@ public class ScriptRuntime {
         mTopLevelScope = topLevelScope;
 
         mTopLevelScope.put("yolo", mTopLevelScope, detection);
+        mTopLevelScope.put("mlkit", mTopLevelScope, mlKit);
     }
 
     public static void setApplicationContext(Context context) {
@@ -426,6 +428,7 @@ public class ScriptRuntime {
         ignoresException(timers::recycle);
         ignoresException(ui::recycle);
         ignoresException(detection::close);
+        ignoresException(mlKit::recycle);
     }
 
     private void ignoresException(Runnable r) {

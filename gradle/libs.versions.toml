@@ -1,10 +1,14 @@
 [versions]
 litert = "1.2.0"
+textRecognition = "16.0.1"
+textRecognitionChinese = "16.0.1"
 
 [libraries]
 litert = { module = "com.google.ai.edge.litert:litert", version.ref = "litert" }
 litert-gpu = { module = "com.google.ai.edge.litert:litert-gpu", version.ref = "litert" }
 litert-support = { module = "com.google.ai.edge.litert:litert-support", version.ref = "litert" }
 litert-metadata = { module = "com.google.ai.edge.litert:litert-metadata", version.ref = "litert" }
+text-recognition-chinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "textRecognitionChinese" }
+text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "textRecognition" }
 
 [plugins]
