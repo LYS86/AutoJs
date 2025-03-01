@@ -4,58 +4,50 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.FloatingManualDialogBinding;
 import org.autojs.autojs.ui.widget.EWebView;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-/**
- * Created by Stardust on 2017/10/24.
- */
 
 public class ManualDialog {
 
-    @BindView(R.id.title)
-    TextView mTitle;
-
-    @BindView(R.id.eweb_view)
-    EWebView mEWebView;
-
-    @BindView(R.id.pin_to_left)
-    View mPinToLeft;
-
-    Dialog mDialog;
-    private Context mContext;
+    private final FloatingManualDialogBinding binding;
+    private final Dialog mDialog;
+    private final Context mContext;
 
     public ManualDialog(Context context) {
         mContext = context;
-        View view = View.inflate(context, R.layout.floating_manual_dialog, null);
-        ButterKnife.bind(this, view);
+        binding = FloatingManualDialogBinding.inflate(LayoutInflater.from(context));
+
         mDialog = new MaterialDialog.Builder(context)
-                .customView(view, false)
+                .customView(binding.getRoot(), false)
                 .build();
         mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        setupClickListeners();
     }
 
+    private void setupClickListeners() {
+        binding.close.setOnClickListener(v -> close());
+        binding.fullscreen.setOnClickListener(v -> viewInNewActivity());
+    }
 
     public ManualDialog title(String title) {
-        mTitle.setText(title);
+        binding.title.setText(title);
         return this;
     }
 
     public ManualDialog url(String url) {
-        mEWebView.getWebView().loadUrl(url);
+        binding.ewebView.getWebView().loadUrl(url);
         return this;
     }
 
     public ManualDialog pinToLeft(View.OnClickListener listener) {
-        mPinToLeft.setOnClickListener(v -> {
+        binding.pinToLeft.setOnClickListener(v -> {
             mDialog.dismiss();
             listener.onClick(v);
         });
@@ -67,17 +59,14 @@ public class ManualDialog {
         return this;
     }
 
-    @OnClick(R.id.close)
-    void close() {
+    private void close() {
         mDialog.dismiss();
     }
 
-    @OnClick(R.id.fullscreen)
-    void viewInNewActivity() {
+    private void viewInNewActivity() {
         mDialog.dismiss();
         DocumentationActivity_.intent(mContext)
-                .extra(DocumentationActivity.EXTRA_URL, mEWebView.getWebView().getUrl())
+                .extra(DocumentationActivity.EXTRA_URL, binding.ewebView.getWebView().getUrl())
                 .start();
     }
-
 }
