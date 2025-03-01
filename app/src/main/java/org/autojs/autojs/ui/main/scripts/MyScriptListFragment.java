@@ -1,6 +1,7 @@
 package org.autojs.autojs.ui.main.scripts;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -27,7 +28,6 @@ import org.autojs.autojs.ui.main.FloatingActionMenu;
 import org.autojs.autojs.ui.main.QueryEvent;
 import org.autojs.autojs.ui.main.ViewPagerFragment;
 import org.autojs.autojs.ui.project.ProjectConfigActivity;
-import org.autojs.autojs.ui.project.ProjectConfigActivity_;
 import org.autojs.autojs.ui.viewmodel.ExplorerItemList;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -166,10 +166,10 @@ public class MyScriptListFragment extends ViewPagerFragment implements FloatingA
                 new ScriptOperations(getContext(), binding.scriptFileList, binding.scriptFileList.getCurrentPage()).importFile();
                 break;
             case 3:
-                ProjectConfigActivity_.intent(getContext())
-                        .extra(ProjectConfigActivity.EXTRA_PARENT_DIRECTORY, binding.scriptFileList.getCurrentPage().getPath())
-                        .extra(ProjectConfigActivity.EXTRA_NEW_PROJECT, true)
-                        .start();
+                Intent intent = new Intent(getContext(), ProjectConfigActivity.class);
+                intent.putExtra(ProjectConfigActivity.EXTRA_PARENT_DIRECTORY, binding.scriptFileList.getCurrentPage().getPath());
+                intent.putExtra(ProjectConfigActivity.EXTRA_NEW_PROJECT, true);
+                startActivity(intent);
                 break;
         }
     }
