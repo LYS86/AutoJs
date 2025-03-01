@@ -1,15 +1,12 @@
 package com.stardust.view.accessibility
 
 import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
-
+import androidx.annotation.RequiresApi
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.stardust.automator.BuildConfig
-
 import java.util.Arrays
-import java.util.HashMap
 
 /**
  * Created by Stardust on 2017/3/22.
@@ -83,8 +80,6 @@ open class AccessibilityNodeInfoAllocator {
             try {
                 key.recycle()
                 notRecycledCount++
-                if (DEBUG)
-                    Log.w(TAG, value)
             } catch (ignored: IllegalStateException) {
             }
 
@@ -145,14 +140,6 @@ open class AccessibilityNodeInfoAllocator {
 
         override fun findAccessibilityNodeInfosByText(root: AccessibilityNodeInfoCompat, text: String): List<AccessibilityNodeInfoCompat> {
             return root.findAccessibilityNodeInfosByText(text)
-        }
-
-        override fun recycle(nodeInfo: AccessibilityNodeInfo) {
-            super.recycle(nodeInfo)
-        }
-
-        override fun recycle(nodeInfo: AccessibilityNodeInfoCompat) {
-            super.recycle(nodeInfo)
         }
 
         override fun recycleAll(): Int {

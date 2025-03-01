@@ -6,9 +6,8 @@ import android.graphics.Path
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.RequiresApi
 import android.view.ViewConfiguration
-
+import androidx.annotation.RequiresApi
 import com.stardust.concurrent.VolatileBox
 import com.stardust.concurrent.VolatileDispose
 import com.stardust.util.ScreenMetrics
@@ -117,7 +116,7 @@ class GlobalActionAutomator(private val mHandler: Handler?, private val serviceP
     private fun gesturesWithoutHandler(description: GestureDescription): Boolean {
         prepareLooperIfNeeded()
         val result = VolatileBox(false)
-        val handler = Handler(Looper.myLooper())
+        val handler = Handler(Looper.myLooper()!!)
         service.dispatchGesture(description, object : AccessibilityService.GestureResultCallback() {
             override fun onCompleted(gestureDescription: GestureDescription) {
                 result.set(true)
