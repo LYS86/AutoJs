@@ -64,6 +64,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     private Disposable mConnectionStateDisposable;
     private FragmentDrawerBinding binding;
     private MaterialDialog remoteHostDialog;
+    private DrawerMenuAdapter mDrawerMenuAdapter;
 
     private void inputRemoteHost() {
         String host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(getActivity()));
@@ -75,8 +76,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
             setChecked(mConnectionItem, false);
             IntentUtil.browse(getActivity(), URL_DEV_PLUGIN);
         }).cancelListener(dialog -> setChecked(mConnectionItem, false)).show();
-    }    private final DrawerMenuItem mCheckForUpdatesItem = new DrawerMenuItem(R.drawable.ic_check_for_updates, R.string.text_check_for_updates, this::checkForUpdates);
-    private DrawerMenuAdapter mDrawerMenuAdapter;
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -100,12 +100,14 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 System.exit(0);
             }
         });
+        if (Pref.isConnected() && !DevPluginService.getInstance().isConnected()) {
+            String host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(getActivity()));
+            Disposable disposable = DevPluginService.getInstance()
+                    .connectToServer(host)
+                    .subscribe(Observers.emptyConsumer(), this::onConnectException);
+            compositeDisposable.add(disposable);
+        }
     }
-
-    private final DrawerMenuItem mConnectionItem = new DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote);
-    private final DrawerMenuItem mFloatingWindowItem = new DrawerMenuItem(R.drawable.ic_robot_64, R.string.text_floating_window, 0, this::showOrDismissFloatingWindow);
-    private final DrawerMenuItem mAccessibilityServiceItem = new DrawerMenuItem(R.drawable.ic_service_green, R.string.text_accessibility_service, 0, this::enableOrDisableAccessibilityService);
-
 
     @SuppressLint("CheckResult")
     private void enableAccessibilityServiceByRootIfNeeded() {
@@ -116,7 +118,11 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         });
         compositeDisposable.add(disposable);
     }
-
+@Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentDrawerBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }private final DrawerMenuItem mCheckForUpdatesItem = new DrawerMenuItem(R.drawable.ic_check_for_updates, R.string.text_check_for_updates, this::checkForUpdates);
 
     private void enableAccessibilityServiceByRoot() {
         setProgress(mAccessibilityServiceItem, true);
@@ -129,7 +135,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         });
         compositeDisposable.add(disposable);
     }
-
 
     void goToUsageStatsSettings(DrawerMenuItemViewHolder holder) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -163,6 +168,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 setProgress(mConnectionItem, state.getState() == DevPluginService.State.CONNECTING);
             }
             if (state.getException() != null) {
+                Pref.setConnected(false);
                 showMessage(state.getException().getMessage());
             }
         });
@@ -170,20 +176,28 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
 
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentDrawerBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-    }
-
-
-
-    private void initMenuItems() {
+        private void initMenuItems() {
         mDrawerMenuAdapter = new DrawerMenuAdapter(new ArrayList<>(Arrays.asList(new DrawerMenuGroup(R.string.text_service), mAccessibilityServiceItem, mStableModeItem, mNotificationPermissionItem, mForegroundServiceItem, mUsageStatsPermissionItem,
+                new DrawerMenuGroup(R.string.text_script_record),
+                mFloatingWindowItem,
+                new DrawerMenuItem(R.drawable.ic_volume, R.string.text_volume_down_control, R.string.key_use_volume_control_record, null),
+                new DrawerMenuGroup(R.string.text_others), mConnectionItem,
+                new DrawerMenuItem(R.drawable.ic_personalize, R.string.text_theme_color, this::openThemeColorSettings),
+                new DrawerMenuItem(R.drawable.ic_night_mode, R.string.text_night_mode, R.string.key_night_mode, this::toggleNightMode), mCheckForUpdatesItem)));
+    }
+@Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (remoteHostDialog != null && remoteHostDialog.isShowing()) {
+            remoteHostDialog.dismiss();
+        }
+        binding = null;
+    }private final DrawerMenuItem mConnectionItem = new DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote);
 
-                new DrawerMenuGroup(R.string.text_script_record), mFloatingWindowItem, new DrawerMenuItem(R.drawable.ic_volume, R.string.text_volume_down_control, R.string.key_use_volume_control_record, null),
-
-                new DrawerMenuGroup(R.string.text_others), mConnectionItem, new DrawerMenuItem(R.drawable.ic_personalize, R.string.text_theme_color, this::openThemeColorSettings), new DrawerMenuItem(R.drawable.ic_night_mode, R.string.text_night_mode, R.string.key_night_mode, this::toggleNightMode), mCheckForUpdatesItem)));
+    private void onConnectException(Throwable e) {
+        setChecked(mConnectionItem, false);
+        Pref.setConnected(false);
+        Toast.makeText(GlobalAppContext.get(), getString(R.string.error_connect_to_remote, e.getMessage()), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -194,19 +208,18 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (remoteHostDialog != null && remoteHostDialog.isShowing()) {
-            remoteHostDialog.dismiss();
+    void goToNotificationServiceSettings(DrawerMenuItemViewHolder holder) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
+            return;
         }
-        binding = null;
-    }
+        boolean enabled = NotificationListenerService.Companion.getInstance() != null;
+        boolean checked = holder.getSwitchCompat().isChecked();
+        if ((checked && !enabled) || (!checked && enabled)) {
+            startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS));
+        }
+    }    private final DrawerMenuItem mFloatingWindowItem = new DrawerMenuItem(R.drawable.ic_robot_64, R.string.text_floating_window, 0, this::showOrDismissFloatingWindow);
 
-    private void onConnectException(Throwable e) {
-        setChecked(mConnectionItem, false);
-        Toast.makeText(GlobalAppContext.get(), getString(R.string.error_connect_to_remote, e.getMessage()), Toast.LENGTH_LONG).show();
-    }
+
 
     void enableOrDisableAccessibilityService(DrawerMenuItemViewHolder holder) {
         boolean isAccessibilityServiceEnabled = isAccessibilityServiceEnabled();
@@ -220,16 +233,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
-    void goToNotificationServiceSettings(DrawerMenuItemViewHolder holder) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-            return;
-        }
-        boolean enabled = NotificationListenerService.Companion.getInstance() != null;
-        boolean checked = holder.getSwitchCompat().isChecked();
-        if ((checked && !enabled) || (!checked && enabled)) {
-            startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS));
-        }
-    }
+        private final DrawerMenuItem mAccessibilityServiceItem = new DrawerMenuItem(R.drawable.ic_service_green, R.string.text_accessibility_service, 0, this::enableOrDisableAccessibilityService);
 
     void showOrDismissFloatingWindow(DrawerMenuItemViewHolder holder) {
         boolean isFloatingWindowShowing = FloatyWindowManger.isCircularMenuShowing();
@@ -252,7 +256,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     void toggleNightMode(DrawerMenuItemViewHolder holder) {
         ((BaseActivity) getActivity()).setNightModeEnabled(holder.getSwitchCompat().isChecked());
     }
-
 
     void connectOrDisconnectToRemote(DrawerMenuItemViewHolder holder) {
         boolean checked = holder.getSwitchCompat().isChecked();
@@ -301,7 +304,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         enableAccessibilityServiceByRoot();
     }
 
-
     @Subscribe
     public void onCircularMenuStateChange(CircularMenu.StateChangeEvent event) {
         setChecked(mFloatingWindowItem, event.getCurrentState() != CircularMenu.STATE_CLOSED);
@@ -325,4 +327,14 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     private boolean isAccessibilityServiceEnabled() {
         return AccessibilityServiceTool.isAccessibilityServiceEnabled(getActivity());
     }
+
+
+
+
+
+
+
+
+
+
 }

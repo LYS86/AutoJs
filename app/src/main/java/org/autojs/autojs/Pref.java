@@ -7,10 +7,8 @@ import android.preference.PreferenceManager;
 
 import com.stardust.app.GlobalAppContext;
 import com.stardust.autojs.runtime.accessibility.AccessibilityConfig;
-import com.stardust.theme.ThemeColorManager;
 
 import org.autojs.autojs.autojs.key.GlobalKeyObserver;
-import org.autojs.autojs.theme.ThemeColorManagerCompat;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -27,13 +25,14 @@ public class Pref {
     private static final String KEY_EDITOR_THEME = "editor.theme";
     private static final String KEY_EDITOR_TEXT_SIZE = "editor.textSize";
 
-    private static SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+    private static final String KEY_IS_CONNECTED = "KEY_IS_CONNECTED";
+
+    private static final SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences p, String key) {
             if (key.equals(getString(R.string.key_guard_mode))) {
                 AccessibilityConfig.setIsUnintendedGuardEnabled(p.getBoolean(getString(R.string.key_guard_mode), false));
-            } else if ((key.equals(getString(R.string.key_use_volume_control_record)) || key.equals(getString(R.string.key_use_volume_control_running)))
-                    && p.getBoolean(key, false)) {
+            } else if ((key.equals(getString(R.string.key_use_volume_control_record)) || key.equals(getString(R.string.key_use_volume_control_running))) && p.getBoolean(key, false)) {
                 GlobalKeyObserver.init();
             }
         }
@@ -41,6 +40,10 @@ public class Pref {
 
     static {
         AccessibilityConfig.setIsUnintendedGuardEnabled(def().getBoolean(getString(R.string.key_guard_mode), false));
+    }
+
+    static {
+        def().registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
     }
 
     private static SharedPreferences def() {
@@ -83,10 +86,6 @@ public class Pref {
         return getDisposableBoolean("isFirstUsing", true);
     }
 
-    static {
-        def().registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
-    }
-
     public static boolean isEditActivityFirstUsing() {
         return getDisposableBoolean("Love Honmua 18.7.9", true);
     }
@@ -117,8 +116,7 @@ public class Pref {
     }
 
     public static boolean rootRecordGeneratesBinary() {
-        return def().getString(getString(R.string.key_root_record_out_file_type), "binary")
-                .equals("binary");
+        return def().getString(getString(R.string.key_root_record_out_file_type), "binary").equals("binary");
     }
 
     public static boolean isObservingKeyEnabled() {
@@ -163,12 +161,19 @@ public class Pref {
     }
 
     public static String getScriptDirPath() {
-        String dir = def().getString(getString(R.string.key_script_dir_path),
-                getString(R.string.default_value_script_dir_path));
+        String dir = def().getString(getString(R.string.key_script_dir_path), getString(R.string.default_value_script_dir_path));
         return new File(Environment.getExternalStorageDirectory(), dir).getPath();
     }
 
     public static boolean isForegroundServiceEnabled() {
         return def().getBoolean(getString(R.string.key_foreground_servie), false);
+    }
+
+    public static boolean isConnected() {
+        return def().getBoolean(KEY_IS_CONNECTED, false);
+    }
+
+    public static void setConnected(boolean connected) {
+        def().edit().putBoolean(KEY_IS_CONNECTED, connected).apply();
     }
 }
