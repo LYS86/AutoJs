@@ -36,6 +36,6 @@ dependencies {
     
     api files('libs/emulatorview-release.aar')
     api files('libs/libtermexec-release.aar')
-    api files('libs/opencv-3.4.3.aar')
+    api("org.opencv:opencv:4.9.0")
     api files('libs/term-debug.aar')
 }
