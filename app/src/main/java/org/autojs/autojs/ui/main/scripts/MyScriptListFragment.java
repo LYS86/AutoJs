@@ -19,6 +19,7 @@ import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.FragmentMyScriptListBinding;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
+import org.autojs.autojs.model.explorer.ExplorerChangeEvent;
 import org.autojs.autojs.model.explorer.ExplorerDirPage;
 import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.model.script.Scripts;
@@ -131,6 +132,13 @@ public class MyScriptListFragment extends ViewPagerFragment implements FloatingA
         }
         String query = event.getQuery();
         binding.scriptFileList.setFilter(item -> item.getName().contains(query));
+    }
+
+    @Subscribe
+    public void onGlobalExplorerChange(ExplorerChangeEvent event) {
+        if (event.getAction() == ExplorerChangeEvent.ALL) {
+            binding.scriptFileList.setExplorer(Explorers.workspace(), ExplorerDirPage.createRoot(Pref.getScriptDirPath()));
+        }
     }
 
     @Override
