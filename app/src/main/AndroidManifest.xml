@@ -91,7 +91,7 @@
         </activity>
         <activity android:name="org.autojs.autojs.ui.settings.AboutActivity_"/>
         <activity
-            android:name="org.autojs.autojs.ui.settings.SettingsActivity_"
+            android:name="org.autojs.autojs.ui.settings.SettingsActivity"
             android:theme="@style/AppTheme.Settings"/>
         <activity android:name="org.autojs.autojs.ui.error.ErrorReportActivity"/>
         <activity
