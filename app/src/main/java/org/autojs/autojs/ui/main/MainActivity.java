@@ -40,7 +40,6 @@ import org.autojs.autojs.ui.doc.DocsFragment;
 import org.autojs.autojs.ui.log.LogActivity;
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment;
-import org.autojs.autojs.ui.update.VersionGuard;
 import org.autojs.autojs.ui.widget.CommonMarkdownView;
 import org.autojs.autojs.ui.widget.SearchViewItem;
 import org.greenrobot.eventbus.EventBus;
@@ -56,7 +55,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     private final BackPressedHandler.Observer mBackPressObserver = new BackPressedHandler.Observer();
     private ActivityMainBinding binding;
     private FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter mPagerAdapter;
-    private VersionGuard mVersionGuard;
     private SearchViewItem mSearchViewItem;
     private MenuItem mLogMenuItem;
     private boolean mDocsSearchItemExpanded;
@@ -68,7 +66,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         setContentView(binding.getRoot());
         checkPermissions();
         showAccessibilitySettingPromptIfDisabled();
-        mVersionGuard = new VersionGuard(this);
         showAnnunciationIfNeeded();
         EventBus.getDefault().register(this);
         applyDayNightMode();
@@ -184,7 +181,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     @Override
     protected void onResume() {
         super.onResume();
-        mVersionGuard.checkForDeprecatesAndUpdates();
     }
 
     @Override
