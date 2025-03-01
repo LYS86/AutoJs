@@ -2,84 +2,100 @@ package org.autojs.autojs.ui.doc;
 
 import android.app.Activity;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 
-import org.autojs.autojs.Pref;
-import org.autojs.autojs.R;
-import org.autojs.autojs.ui.main.QueryEvent;
-import org.autojs.autojs.ui.main.ViewPagerFragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stardust.util.BackPressedHandler;
 
-import org.autojs.autojs.ui.widget.EWebView;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
+import org.autojs.autojs.Pref;
+import org.autojs.autojs.databinding.FragmentOnlineDocsBinding;
+import org.autojs.autojs.ui.main.QueryEvent;
+import org.autojs.autojs.ui.main.ViewPagerFragment;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-/**
- * Created by Stardust on 2017/8/22.
- */
-@EFragment(R.layout.fragment_online_docs)
 public class DocsFragment extends ViewPagerFragment implements BackPressedHandler {
 
     public static final String ARGUMENT_URL = "url";
 
-    @ViewById(R.id.eweb_view)
-    EWebView mEWebView;
-    WebView mWebView;
-
+    private FragmentOnlineDocsBinding binding;
+    private WebView mWebView;
     private String mIndexUrl;
     private String mPreviousQuery;
 
-
     public DocsFragment() {
         super(ROTATION_GONE);
-        setArguments(new Bundle());
+    }
+
+    public static DocsFragment newInstance(String url) {
+        Bundle args = new Bundle();
+        args.putString(ARGUMENT_URL, url);
+        DocsFragment fragment = new DocsFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
+        setArguments(getArguments() != null ? getArguments() : new Bundle());
     }
 
-    @AfterViews
-    void setUpViews() {
-        mWebView = mEWebView.getWebView();
-        mEWebView.getSwipeRefreshLayout().setOnRefreshListener(() -> {
-            if (TextUtils.equals(mWebView.getUrl(), mIndexUrl)) {
-                loadUrl();
-            } else {
-                mEWebView.onRefresh();
-            }
-        });
-        Bundle savedWebViewState = getArguments().getBundle("savedWebViewState");
-        if (savedWebViewState != null) {
-            mWebView.restoreState(savedWebViewState);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentOnlineDocsBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mWebView = binding.ewebView.getWebView();
+        SwipeRefreshLayout swipeRefresh = binding.ewebView.getSwipeRefreshLayout();
+        swipeRefresh.setOnRefreshListener(this::handleRefresh);
+        restoreWebViewState(savedInstanceState);
+    }
+
+    private void handleRefresh() {
+        if (TextUtils.equals(mWebView.getUrl(), mIndexUrl)) {
+            loadUrl();
+        } else {
+            binding.ewebView.onRefresh();
+        }
+    }
+
+    private void restoreWebViewState(Bundle state) {
+        Bundle savedState = getArguments().getBundle("savedWebViewState");
+        if (savedState != null) {
+            mWebView.restoreState(savedState);
         } else {
             loadUrl();
         }
     }
 
     private void loadUrl() {
-        mIndexUrl = getArguments().getString(ARGUMENT_URL, Pref.getDocumentationUrl() + "index.html");
+        Bundle args = getArguments();
+        String defaultUrl = Pref.getDocumentationUrl() + "index.html";
+        mIndexUrl = args.getString(ARGUMENT_URL, defaultUrl);
         mWebView.loadUrl(mIndexUrl);
     }
 
-
     @Override
-    public void onPause() {
-        super.onPause();
-        Bundle savedWebViewState = new Bundle();
-        mWebView.saveState(savedWebViewState);
-        getArguments().putBundle("savedWebViewState", savedWebViewState);
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundle webViewState = new Bundle();
+        mWebView.saveState(webViewState);
+        getArguments().putBundle("savedWebViewState", webViewState);
     }
 
     @Override
@@ -93,19 +109,21 @@ public class DocsFragment extends ViewPagerFragment implements BackPressedHandle
 
     @Override
     protected void onFabClick(FloatingActionButton fab) {
-
     }
 
     @Subscribe
     public void onQuerySummit(QueryEvent event) {
-        if (!isShown()) {
-            return;
-        }
+        if (!isAdded() || !isVisible()) return;
+
         if (event == QueryEvent.CLEAR) {
             mWebView.clearMatches();
             mPreviousQuery = null;
             return;
         }
+        handleSearchQuery(event);
+    }
+
+    private void handleSearchQuery(QueryEvent event) {
         if (event.isFindForward()) {
             mWebView.findNext(false);
             return;
@@ -116,6 +134,12 @@ public class DocsFragment extends ViewPagerFragment implements BackPressedHandle
         }
         mWebView.findAllAsync(event.getQuery());
         mPreviousQuery = event.getQuery();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     @Override
