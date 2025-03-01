@@ -20,7 +20,6 @@ import com.stardust.app.GlobalAppContext
 import com.stardust.autojs.core.ui.inflater.ImageLoader
 import com.stardust.autojs.core.ui.inflater.util.Drawables
 import com.stardust.theme.ThemeColor
-import com.tencent.bugly.Bugly
 import com.tencent.bugly.crashreport.CrashReport
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.autojs.key.GlobalKeyObserver
@@ -55,11 +54,10 @@ class App : MultiDexApplication() {
             return
         FlurryAgent.Builder()
                 .withLogEnabled(BuildConfig.DEBUG)
-                .build(this, "D42MH48ZN4PJC5TKNYZD")
+                .build(this, "1")
     }
 
     private fun setUpDebugEnvironment() {
-        Bugly.isDev = false
         val crashHandler = CrashHandler(ErrorReportActivity::class.java)
 
         val strategy = CrashReport.UserStrategy(applicationContext)
@@ -166,7 +164,7 @@ class App : MultiDexApplication() {
     companion object {
 
         private val TAG = "App"
-        private val BUGLY_APP_ID = "19b3607b53"
+        private val BUGLY_APP_ID = "bc035dd237"
 
         private lateinit var instance: WeakReference<App>
 

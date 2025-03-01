@@ -165,7 +165,7 @@ dependencies {
     // Flurry
     implementation 'com.flurry.android:analytics:14.4.0@aar'
     // Bugly
-    implementation 'com.tencent.bugly:crashreport:2.6.6'
+    implementation 'com.tencent.bugly:crashreport:4.1.9.3'
     // MaterialDialogCommon
     implementation('com.afollestad.material-dialogs:commons:0.9.2.3', {
         exclude group: 'com.android.support'
