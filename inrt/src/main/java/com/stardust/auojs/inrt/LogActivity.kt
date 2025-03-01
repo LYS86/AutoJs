@@ -2,16 +2,15 @@ package com.stardust.auojs.inrt
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.stardust.auojs.inrt.autojs.AutoJs
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher
-import com.stardust.autojs.core.console.ConsoleView
 import com.stardust.autojs.core.console.ConsoleImpl
+import com.stardust.autojs.core.console.ConsoleView
 
 class LogActivity : AppCompatActivity() {
 
@@ -43,8 +42,6 @@ class LogActivity : AppCompatActivity() {
     }
 
     companion object {
-
-
         val EXTRA_LAUNCH_SCRIPT = "launch_script"
     }
 }
