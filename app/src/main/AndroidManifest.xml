@@ -106,7 +106,7 @@
         <activity android:name="org.autojs.autojs.ui.log.LogActivity"/>
         <activity android:name="org.autojs.autojs.ui.doc.DocumentationActivity"/>
         <activity android:name="org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity"/>
-        <activity android:name="org.autojs.autojs.ui.timing.TimedTaskSettingActivity_"/>
+        <activity android:name="org.autojs.autojs.ui.timing.TimedTaskSettingActivity"/>
         <activity
             android:name="org.autojs.autojs.ui.shortcut.ShortcutCreateActivity"
             android:theme="@style/AppTheme.Transparent"/>

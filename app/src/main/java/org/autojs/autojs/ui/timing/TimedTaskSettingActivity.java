@@ -11,39 +11,25 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.FileProvider;
-
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 import com.stardust.autojs.execution.ExecutionConfig;
 import com.stardust.util.BiMap;
 import com.stardust.util.BiMaps;
-import com.stardust.util.MapBuilder;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.CheckedChange;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ActivityTimedTaskSettingBinding;
 import org.autojs.autojs.external.ScriptIntents;
 import org.autojs.autojs.external.receiver.DynamicBroadcastReceivers;
 import org.autojs.autojs.model.script.ScriptFile;
@@ -62,23 +48,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Stardust on 2017/11/28.
- */
-@EActivity(R.layout.activity_timed_task_setting)
 public class TimedTaskSettingActivity extends BaseActivity {
 
     public static final String EXTRA_INTENT_TASK_ID = "intent_task_id";
     public static final String EXTRA_TASK_ID = TaskReceiver.EXTRA_TASK_ID;
-
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm");
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yy-MM-dd");
-    private static final int REQUEST_CODE_IGNORE_BATTERY = 27101;
-
-    private static final String LOG_TAG = "TimedTaskSettings";
-
-
-    public static final Map<String, Integer> ACTION_DESC_MAP = new MapBuilder<String, Integer>()
+    public static final Map<String, Integer> ACTION_DESC_MAP = BiMaps.<String, Integer>newBuilder()
             .put(DynamicBroadcastReceivers.ACTION_STARTUP, R.string.text_run_on_startup)
             .put(Intent.ACTION_BOOT_COMPLETED, R.string.text_run_on_boot)
             .put(Intent.ACTION_SCREEN_OFF, R.string.text_run_on_screen_off)
@@ -95,7 +69,10 @@ public class TimedTaskSettingActivity extends BaseActivity {
             .put(Intent.ACTION_CONFIGURATION_CHANGED, R.string.text_run_on_config_change)
             .put(Intent.ACTION_TIME_TICK, R.string.text_run_on_time_tick)
             .build();
-
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yy-MM-dd");
+    private static final int REQUEST_CODE_IGNORE_BATTERY = 27101;
+    private static final String LOG_TAG = "TimedTaskSettings";
     private static final BiMap<Integer, String> ACTIONS = BiMaps.<Integer, String>newBuilder()
             .put(R.id.run_on_startup, DynamicBroadcastReceivers.ACTION_STARTUP)
             .put(R.id.run_on_boot, Intent.ACTION_BOOT_COMPLETED)
@@ -114,50 +91,8 @@ public class TimedTaskSettingActivity extends BaseActivity {
             .put(R.id.run_on_time_tick, Intent.ACTION_TIME_TICK)
             .build();
 
-    @ViewById(R.id.toolbar)
-    Toolbar mToolbar;
-
-    @ViewById(R.id.timing_group)
-    RadioGroup mTimingGroup;
-
-    @ViewById(R.id.disposable_task_radio)
-    RadioButton mDisposableTaskRadio;
-
-    @ViewById(R.id.daily_task_radio)
-    RadioButton mDailyTaskRadio;
-
-    @ViewById(R.id.weekly_task_radio)
-    RadioButton mWeeklyTaskRadio;
-
-    @ViewById(R.id.run_on_broadcast)
-    RadioButton mRunOnBroadcastRadio;
-
-    @ViewById(R.id.run_on_other_broadcast)
-    RadioButton mRunOnOtherBroadcast;
-
-    @ViewById(R.id.action)
-    EditText mOtherBroadcastAction;
-
-    @ViewById(R.id.broadcast_group)
-    RadioGroup mBroadcastGroup;
-
-    @ViewById(R.id.disposable_task_time)
-    TextView mDisposableTaskTime;
-
-    @ViewById(R.id.disposable_task_date)
-    TextView mDisposableTaskDate;
-
-    @ViewById(R.id.daily_task_time_picker)
-    TimePicker mDailyTaskTimePicker;
-
-    @ViewById(R.id.weekly_task_time_picker)
-    TimePicker mWeeklyTaskTimePicker;
-
-    @ViewById(R.id.weekly_task_container)
-    LinearLayout mWeeklyTaskContainer;
-
-    private List<CheckBox> mDayOfWeekCheckBoxes = new ArrayList<>();
-
+    private ActivityTimedTaskSettingBinding binding;
+    private final List<CheckBox> mDayOfWeekCheckBoxes = new ArrayList<>();
     private ScriptFile mScriptFile;
     private TimedTask mTimedTask;
     private IntentTask mIntentTask;
@@ -165,6 +100,9 @@ public class TimedTaskSettingActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityTimedTaskSettingBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
         long taskId = getIntent().getLongExtra(EXTRA_TASK_ID, -1);
         if (taskId != -1) {
             mTimedTask = TimedTaskManager.getInstance().getTimedTask(taskId);
@@ -187,18 +125,38 @@ public class TimedTaskSettingActivity extends BaseActivity {
             }
         }
 
+        setupViews();
+        setupListeners();
     }
 
-    @AfterViews
-    void setupViews() {
+    private void setupViews() {
         setToolbarAsBack(getString(R.string.text_timed_task));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mToolbar.setSubtitle(mScriptFile.getName());
+            binding.toolbar.setSubtitle(mScriptFile.getName());
         }
-        mDailyTaskTimePicker.setIs24HourView(true);
-        mWeeklyTaskTimePicker.setIs24HourView(true);
-        findDayOfWeekCheckBoxes(mWeeklyTaskContainer);
+        binding.dailyTaskTimePicker.setIs24HourView(true);
+        binding.weeklyTaskTimePicker.setIs24HourView(true);
+        findDayOfWeekCheckBoxes(binding.weeklyTaskContainer);
         setUpTaskSettings();
+    }
+
+    private void setupListeners() {
+        binding.disposableTaskTimeContainer.setOnClickListener(v -> showDisposableTaskTimePicker());
+        binding.disposableTaskDateContainer.setOnClickListener(v -> showDisposableTaskDatePicker());
+
+        CompoundButton.OnCheckedChangeListener radioListener = (buttonView, isChecked) -> {
+            ExpandableRelativeLayout layout = findExpandableLayoutOf(buttonView);
+            if (isChecked) {
+                layout.post(layout::expand);
+            } else {
+                layout.collapse();
+            }
+        };
+
+        binding.dailyTaskRadio.setOnCheckedChangeListener(radioListener);
+        binding.weeklyTaskRadio.setOnCheckedChangeListener(radioListener);
+        binding.disposableTaskRadio.setOnCheckedChangeListener(radioListener);
+        binding.runOnBroadcast.setOnCheckedChangeListener(radioListener);
     }
 
     private void findDayOfWeekCheckBoxes(ViewGroup parent) {
@@ -212,12 +170,11 @@ public class TimedTaskSettingActivity extends BaseActivity {
             if (mDayOfWeekCheckBoxes.size() >= 7)
                 break;
         }
-
     }
 
     private void setUpTaskSettings() {
-        mDisposableTaskDate.setText(DATE_FORMATTER.print(LocalDate.now()));
-        mDisposableTaskTime.setText(TIME_FORMATTER.print(LocalTime.now()));
+        binding.disposableTaskDate.setText(DATE_FORMATTER.print(LocalDate.now()));
+        binding.disposableTaskTime.setText(TIME_FORMATTER.print(LocalTime.now()));
         if (mTimedTask != null) {
             setupTime();
             return;
@@ -226,15 +183,15 @@ public class TimedTaskSettingActivity extends BaseActivity {
             setupAction();
             return;
         }
-        mDailyTaskRadio.setChecked(true);
+        binding.dailyTaskRadio.setChecked(true);
     }
 
     private void setupAction() {
-        mRunOnBroadcastRadio.setChecked(true);
+        binding.runOnBroadcast.setChecked(true);
         Integer buttonId = ACTIONS.getKey(mIntentTask.getAction());
         if (buttonId == null) {
-            mRunOnOtherBroadcast.setChecked(true);
-            mOtherBroadcastAction.setText(mIntentTask.getAction());
+            binding.runOnOtherBroadcast.setChecked(true);
+            binding.action.setText(mIntentTask.getAction());
         } else {
             ((RadioButton) findViewById(buttonId)).setChecked(true);
         }
@@ -242,36 +199,24 @@ public class TimedTaskSettingActivity extends BaseActivity {
 
     private void setupTime() {
         if (mTimedTask.isDisposable()) {
-            mDisposableTaskRadio.setChecked(true);
-            mDisposableTaskTime.setText(TIME_FORMATTER.print(mTimedTask.getMillis()));
-            mDisposableTaskDate.setText(DATE_FORMATTER.print(mTimedTask.getMillis()));
+            binding.disposableTaskRadio.setChecked(true);
+            binding.disposableTaskTime.setText(TIME_FORMATTER.print(mTimedTask.getMillis()));
+            binding.disposableTaskDate.setText(DATE_FORMATTER.print(mTimedTask.getMillis()));
             return;
         }
         LocalTime time = LocalTime.fromMillisOfDay(mTimedTask.getMillis());
-        mDailyTaskTimePicker.setCurrentHour(time.getHourOfDay());
-        mDailyTaskTimePicker.setCurrentMinute(time.getMinuteOfHour());
-        mWeeklyTaskTimePicker.setCurrentHour(time.getHourOfDay());
-        mWeeklyTaskTimePicker.setCurrentMinute(time.getMinuteOfHour());
+        binding.dailyTaskTimePicker.setCurrentHour(time.getHourOfDay());
+        binding.dailyTaskTimePicker.setCurrentMinute(time.getMinuteOfHour());
+        binding.weeklyTaskTimePicker.setCurrentHour(time.getHourOfDay());
+        binding.weeklyTaskTimePicker.setCurrentMinute(time.getMinuteOfHour());
         if (mTimedTask.isDaily()) {
-            mDailyTaskRadio.setChecked(true);
+            binding.dailyTaskRadio.setChecked(true);
         } else {
-            mWeeklyTaskRadio.setChecked(true);
+            binding.weeklyTaskRadio.setChecked(true);
             for (int i = 0; i < mDayOfWeekCheckBoxes.size(); i++) {
                 mDayOfWeekCheckBoxes.get(i).setChecked(mTimedTask.hasDayOfWeek(i + 1));
             }
         }
-    }
-
-
-    @CheckedChange({R.id.daily_task_radio, R.id.weekly_task_radio, R.id.disposable_task_radio, R.id.run_on_broadcast})
-    void onCheckedChanged(CompoundButton button) {
-        ExpandableRelativeLayout relativeLayout = findExpandableLayoutOf(button);
-        if (button.isChecked()) {
-            relativeLayout.post(relativeLayout::expand);
-        } else {
-            relativeLayout.collapse();
-        }
-
     }
 
     private ExpandableRelativeLayout findExpandableLayoutOf(CompoundButton button) {
@@ -281,31 +226,33 @@ public class TimedTaskSettingActivity extends BaseActivity {
                 return ((ExpandableRelativeLayout) parent.getChildAt(i + 1));
             }
         }
-        throw new IllegalStateException("findExpandableLayout: button = " + button + ", parent = " + parent + ", childCount = " + parent.getChildCount());
+        throw new IllegalStateException("findExpandableLayout: button = " + button + ", parent = " + parent);
     }
 
-    @Click(R.id.disposable_task_time_container)
-    void showDisposableTaskTimePicker() {
-        LocalTime time = TIME_FORMATTER.parseLocalTime(mDisposableTaskTime.getText().toString());
-        new TimePickerDialog(this, (view, hourOfDay, minute) -> mDisposableTaskTime.setText(TIME_FORMATTER.print(new LocalTime(hourOfDay, minute))), time.getHourOfDay(), time.getMinuteOfHour(), true)
-                .show();
-
+    private void showDisposableTaskTimePicker() {
+        LocalTime time = TIME_FORMATTER.parseLocalTime(binding.disposableTaskTime.getText().toString());
+        new TimePickerDialog(this, (view, hourOfDay, minute) ->
+                binding.disposableTaskTime.setText(TIME_FORMATTER.print(new LocalTime(hourOfDay, minute))),
+                time.getHourOfDay(), time.getMinuteOfHour(), true).show();
     }
 
-
-    @Click(R.id.disposable_task_date_container)
-    void showDisposableTaskDatePicker() {
-        LocalDate date = DATE_FORMATTER.parseLocalDate(mDisposableTaskDate.getText().toString());
+    private void showDisposableTaskDatePicker() {
+        LocalDate date = DATE_FORMATTER.parseLocalDate(binding.disposableTaskDate.getText().toString());
         new DatePickerDialog(this, (view, year, month, dayOfMonth) ->
-                mDisposableTaskDate.setText(DATE_FORMATTER.print(new LocalDate(year, month, dayOfMonth)))
-                , date.getYear(), date.getMonthOfYear() - 1, date.getDayOfMonth())
-                .show();
+                binding.disposableTaskDate.setText(DATE_FORMATTER.print(new LocalDate(year, month, dayOfMonth))),
+                date.getYear(), date.getMonthOfYear() - 1, date.getDayOfMonth()).show();
     }
 
-    TimedTask createTimedTask() {
-        if (mDisposableTaskRadio.isChecked()) {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
+    }
+
+    private TimedTask createTimedTask() {
+        if (binding.disposableTaskRadio.isChecked()) {
             return createDisposableTask();
-        } else if (mDailyTaskRadio.isChecked()) {
+        } else if (binding.dailyTaskRadio.isChecked()) {
             return createDailyTask();
         } else {
             return createWeeklyTask();
@@ -323,18 +270,18 @@ public class TimedTaskSettingActivity extends BaseActivity {
             Toast.makeText(this, R.string.text_weekly_task_should_check_day_of_week, Toast.LENGTH_SHORT).show();
             return null;
         }
-        LocalTime time = new LocalTime(mWeeklyTaskTimePicker.getCurrentHour(), mWeeklyTaskTimePicker.getCurrentMinute());
+        LocalTime time = new LocalTime(binding.weeklyTaskTimePicker.getCurrentHour(), binding.weeklyTaskTimePicker.getCurrentMinute());
         return TimedTask.weeklyTask(time, timeFlag, mScriptFile.getPath(), ExecutionConfig.getDefault());
     }
 
     private TimedTask createDailyTask() {
-        LocalTime time = new LocalTime(mDailyTaskTimePicker.getCurrentHour(), mDailyTaskTimePicker.getCurrentMinute());
+        LocalTime time = new LocalTime(binding.dailyTaskTimePicker.getCurrentHour(), binding.dailyTaskTimePicker.getCurrentMinute());
         return TimedTask.dailyTask(time, mScriptFile.getPath(), new ExecutionConfig());
     }
 
     private TimedTask createDisposableTask() {
-        LocalTime time = TIME_FORMATTER.parseLocalTime(mDisposableTaskTime.getText().toString());
-        LocalDate date = DATE_FORMATTER.parseLocalDate(mDisposableTaskDate.getText().toString());
+        LocalTime time = TIME_FORMATTER.parseLocalTime(binding.disposableTaskTime.getText().toString());
+        LocalDate date = DATE_FORMATTER.parseLocalDate(binding.disposableTaskDate.getText().toString());
         LocalDateTime dateTime = new LocalDateTime(date.getYear(), date.getMonthOfYear(), date.getDayOfMonth(),
                 time.getHourOfDay(), time.getMinuteOfHour());
         if (dateTime.isBefore(LocalDateTime.now())) {
@@ -354,39 +301,40 @@ public class TimedTaskSettingActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_done) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !((PowerManager) getSystemService(POWER_SERVICE)).isIgnoringBatteryOptimizations(getPackageName())) {
-                try {
-                    startActivityForResult(new Intent().setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-                            .setData(Uri.parse("package:" + getPackageName())), REQUEST_CODE_IGNORE_BATTERY);
-                } catch (ActivityNotFoundException e) {
-                    e.printStackTrace();
-                    createOrUpdateTask();
-                }
-            } else {
-                createOrUpdateTask();
-            }
+            handleBatteryOptimization();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void handleBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !((PowerManager) getSystemService(POWER_SERVICE)).isIgnoringBatteryOptimizations(getPackageName())) {
+            try {
+                startActivityForResult(new Intent().setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                        .setData(Uri.parse("package:" + getPackageName())), REQUEST_CODE_IGNORE_BATTERY);
+            } catch (ActivityNotFoundException e) {
+                createOrUpdateTask();
+            }
+        } else {
+            createOrUpdateTask();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_IGNORE_BATTERY) {
-            Log.d(LOG_TAG, "result code = " + requestCode);
             createOrUpdateTask();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void createOrUpdateTask() {
-        if (mRunOnBroadcastRadio.isChecked()) {
+        if (binding.runOnBroadcast.isChecked()) {
             createOrUpdateIntentTask();
             return;
         }
         TimedTask task = createTimedTask();
-        if (task == null)
-            return;
+        if (task == null) return;
         if (mTimedTask == null) {
             TimedTaskManager.getInstance().addTask(task);
             if (mIntentTask != null) {
@@ -400,18 +348,17 @@ public class TimedTaskSettingActivity extends BaseActivity {
         finish();
     }
 
-
     private void createOrUpdateIntentTask() {
-        int buttonId = mBroadcastGroup.getCheckedRadioButtonId();
+        int buttonId = binding.broadcastGroup.getCheckedRadioButtonId();
         if (buttonId == -1) {
             Toast.makeText(this, R.string.error_empty_selection, Toast.LENGTH_SHORT).show();
             return;
         }
         String action;
         if (buttonId == R.id.run_on_other_broadcast) {
-            action = mOtherBroadcastAction.getText().toString();
+            action = binding.action.getText().toString();
             if (action.isEmpty()) {
-                mOtherBroadcastAction.setError(getString(R.string.text_should_not_be_empty));
+                binding.action.setError(getString(R.string.text_should_not_be_empty));
                 return;
             }
         } else {
@@ -424,14 +371,12 @@ public class TimedTaskSettingActivity extends BaseActivity {
         if (mIntentTask != null) {
             task.setId(mIntentTask.getId());
             TimedTaskManager.getInstance().updateTask(task);
-            Toast.makeText(this, R.string.text_already_create, Toast.LENGTH_SHORT).show();
         } else {
             TimedTaskManager.getInstance().addTask(task);
             if (mTimedTask != null) {
                 TimedTaskManager.getInstance().removeTask(mTimedTask);
             }
         }
-
         finish();
     }
 }
