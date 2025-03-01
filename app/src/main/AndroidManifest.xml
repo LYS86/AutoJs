@@ -81,7 +81,7 @@
         </provider>
 
         <activity
-            android:name="org.autojs.autojs.ui.edit.EditActivity_"
+            android:name="org.autojs.autojs.ui.edit.EditActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="standard"
             android:multiprocess="true"
