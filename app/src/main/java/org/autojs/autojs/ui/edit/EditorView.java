@@ -420,7 +420,7 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     public Observable<String> save() {
         return Observable.just(mEditor.getText())
                 .observeOn(Schedulers.io())
-                .doOnNext(s -> PFiles.write(getContext().getContentResolver().openOutputStream(mUri), s))
+                .doOnNext(s -> PFiles.write(getContext().getContentResolver().openOutputStream(mUri,"wt"), s))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(s -> {
                     mEditor.markTextAsSaved();
