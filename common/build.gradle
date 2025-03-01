@@ -35,7 +35,8 @@ dependencies {
     api libs.settingscompat
     api libs.opencv
 
-    api files('libs/emulatorview-release.aar')
-    api files('libs/libtermexec-release.aar')
-    api files('libs/term-debug.aar')
+    // 使用项目模块依赖替代本地aar文件依赖
+    api project(':emulatorview')
+    api project(':libtermexec')
+    api project(':term')
 }
