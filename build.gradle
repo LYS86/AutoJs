@@ -24,9 +24,7 @@ allprojects {
         maven { url 'https://repo.huaweicloud.com/repository/maven' }
         google()
         mavenCentral()
-        maven {
-            url "https://jitpack.io"
-        }
+        maven { url "https://jitpack.io" }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 }
