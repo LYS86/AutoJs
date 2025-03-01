@@ -1,17 +1,18 @@
 package com.tflite.yolo
 
 import android.graphics.Bitmap
+import android.graphics.Rect
+import android.graphics.RectF
 import com.stardust.autojs.core.image.ImageWrapper
 import org.autojs.autojs.core.yolo.BaseModel
 
 class Detection : BaseModel() {
-    private lateinit var preprocessor: ImageProcessor
-    fun drawBoxes(bitmap: Any, results: Array<Result>): Any {
-        return when (bitmap) {
-            is Bitmap -> FileUtil.drawBoxes(bitmap, results)
-            is ImageWrapper -> ImageWrapper.ofBitmap(FileUtil.drawBoxes(bitmap.bitmap, results))
-            else -> throw IllegalArgumentException("不支持的图像类型: ${bitmap.javaClass}")
-        }
+    fun drawBoxes(imageWrapper: ImageWrapper, results: Array<Result>): ImageWrapper {
+        return ImageWrapper.ofBitmap(FileUtil.drawBoxes(imageWrapper.bitmap, results))
+    }
+
+    fun drawBoxes(bitmap: Bitmap, results: Array<Result>): Bitmap {
+        return FileUtil.drawBoxes(bitmap, results)
     }
 
     /**
@@ -38,30 +39,67 @@ class Detection : BaseModel() {
         Output.iou = 0.7F
     }
 
-    fun detect(input: Any?): Array<Result> {
+    fun detect(imageWrapper: ImageWrapper, rect: Rect): Array<Result> {
+        val croppedBitmap = cropBitmap(imageWrapper.bitmap, rect)
+        val results = detect(croppedBitmap)
+        croppedBitmap.recycle()
+        return results.map { result ->
+            Result(
+                RectF(
+                    result.rect.left + rect.left,
+                    result.rect.top + rect.top,
+                    result.rect.right + rect.left,
+                    result.rect.bottom + rect.top
+                ),
+                result.cnf,
+                result.id,
+                result.name
+            )
+        }.toTypedArray()
+    }
+
+
+    fun detect(
+        imageWrapper: ImageWrapper, x: Int, y: Int, width: Int, height: Int
+    ): Array<Result> {
+        return detect(imageWrapper, Rect(x, y, x + width, y + height))
+    }
+
+    fun detect(imageWrapper: ImageWrapper): Array<Result> {
+        return detect(imageWrapper.bitmap)
+
+    }
+
+    fun detect(bitmap: Bitmap): Array<Result> {
         threadLock.lock()
         try {
-            val bitmap = when (input) {
-                is Bitmap -> input
-                is ImageWrapper -> input.bitmap
-                else -> throw IllegalArgumentException("不支持的图像类型: ${input?.javaClass}")
-            }
-            val image = preprocessor.process(bitmap)
+            val image = preprocessImage(bitmap)
             val output = runInference(image)
             val results = Output.parseOutput(output.floatArray, labels)
             results.forEach { result ->
-                result.rect = preprocessor.normToOrig(result.rect)
+                result.rect = imageProcessor.normToOrig(result.rect)
             }
-
             return results
         } finally {
             threadLock.unlock()
         }
     }
 
+    private fun cropBitmap(source: Bitmap, rect: Rect): Bitmap {
+        val safeRect = Rect(
+            rect.left.coerceAtLeast(0),
+            rect.top.coerceAtLeast(0),
+            rect.right.coerceAtMost(source.width),
+            rect.bottom.coerceAtMost(source.height)
+        )
+
+        return Bitmap.createBitmap(
+            source, safeRect.left, safeRect.top, safeRect.width(), safeRect.height()
+        )
+    }
+
     override fun initProcessors() {
         super.initProcessors()
-        preprocessor = ImageProcessor(inputWidth, inputHeight)
         val outputShape = interpreter.getOutputTensor(0).shape()
         Output.setShape(outputShape)
     }
