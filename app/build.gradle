@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'kotlin-kapt'
 
 def AAVersion = '4.8.0'
@@ -113,11 +111,6 @@ dependencies {
     // Android Annotations
     kapt "org.androidannotations:androidannotations:$AAVersion"
     implementation "org.androidannotations:androidannotations-api:$AAVersion"
-    // ButterKnife
-    implementation('com.jakewharton:butterknife:10.2.3', {
-        exclude group: 'com.android.support'
-    })
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
     // Android supports
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.cardview:cardview:1.0.0'
