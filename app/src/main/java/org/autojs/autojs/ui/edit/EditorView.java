@@ -10,6 +10,11 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -25,10 +30,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.stardust.autojs.engine.JavaScriptEngine;
@@ -40,8 +42,6 @@ import com.stardust.util.Callback;
 import com.stardust.util.ViewUtils;
 
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EViewGroup;
-import org.androidannotations.annotations.ViewById;
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
@@ -71,6 +71,7 @@ import org.autojs.autojs.ui.edit.toolbar.ToolbarFragment;
 import org.autojs.autojs.ui.log.LogActivity_;
 import org.autojs.autojs.ui.widget.EWebView;
 import org.autojs.autojs.ui.widget.SimpleTextWatcher;
+import org.autojs.autojs.databinding.EditorViewBinding;
 
 import java.io.File;
 import java.util.List;
@@ -87,7 +88,6 @@ import static org.autojs.autojs.model.script.Scripts.EXTRA_EXCEPTION_MESSAGE;
 /**
  * Created by Stardust on 2017/9/28.
  */
-@EViewGroup(R.layout.editor_view)
 public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintClickListener, FunctionsKeyboardView.ClickCallback, ToolbarFragment.OnMenuItemClickListener {
 
     public static final String EXTRA_PATH = "path";
@@ -97,32 +97,17 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     public static final String EXTRA_SAVE_ENABLED = "saveEnabled";
     public static final String EXTRA_RUN_ENABLED = "runEnabled";
 
-    @ViewById(R.id.editor)
-    CodeEditor mEditor;
+    private CodeEditor mEditor;
+    private CodeCompletionBar mCodeCompletionBar;
+    private View mInputMethodEnhanceBar;
+    private CodeCompletionBar mSymbolBar;
+    private ImageView mShowFunctionsButton;
+    private FunctionsKeyboardView mFunctionsKeyboard;
+    private DebugBar mDebugBar;
+    private EWebView mDocsWebView;
+    private DrawerLayout mDrawerLayout;
 
-    @ViewById(R.id.code_completion_bar)
-    CodeCompletionBar mCodeCompletionBar;
-
-    @ViewById(R.id.input_method_enhance_bar)
-    View mInputMethodEnhanceBar;
-
-    @ViewById(R.id.symbol_bar)
-    CodeCompletionBar mSymbolBar;
-
-    @ViewById(R.id.functions)
-    ImageView mShowFunctionsButton;
-
-    @ViewById(R.id.functions_keyboard)
-    FunctionsKeyboardView mFunctionsKeyboard;
-
-    @ViewById(R.id.debug_bar)
-    DebugBar mDebugBar;
-
-    @ViewById(R.id.docs)
-    EWebView mDocsWebView;
-
-    @ViewById(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
+    private EditorViewBinding binding;
 
     private String mName;
     private Uri mUri;
@@ -160,14 +145,44 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
 
     public EditorView(Context context) {
         super(context);
+        init(context);
     }
 
     public EditorView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        init(context);
     }
 
     public EditorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(context);
+    }
+
+    private void init(Context context) {
+        binding = EditorViewBinding.inflate(LayoutInflater.from(context), this, true);
+        mEditor = binding.editor;
+        mCodeCompletionBar = binding.codeCompletionBar;
+        mInputMethodEnhanceBar = binding.inputMethodEnhanceBar;
+        mSymbolBar = binding.symbolBar;
+        mShowFunctionsButton = binding.functions;
+        mFunctionsKeyboard = binding.functionsKeyboard;
+        mDebugBar = binding.debugBar;
+        mDocsWebView = binding.docs;
+        mDrawerLayout = binding.drawerLayout;
+        initViews();
+    }
+
+    private void initViews() {
+        setUpEditor();
+        setUpInputMethodEnhancedBar();
+        setUpFunctionsKeyboard();
+        setMenuItemStatus(R.id.save, false);
+        mDocsWebView.getWebView().getSettings().setDisplayZoomControls(true);
+        mDocsWebView.getWebView().loadUrl(Pref.getDocumentationUrl() + "index.html");
+        Themes.getCurrent(getContext())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::setTheme);
+        initNormalToolbar();
     }
 
     @Override
@@ -275,21 +290,6 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
 
     public boolean getMenuItemStatus(int id, boolean defValue) {
         return mMenuItemStatus.get(id, defValue);
-    }
-
-    @AfterViews
-    void init() {
-        //setTheme(Theme.getDefault(getContext()));
-        setUpEditor();
-        setUpInputMethodEnhancedBar();
-        setUpFunctionsKeyboard();
-        setMenuItemStatus(R.id.save, false);
-        mDocsWebView.getWebView().getSettings().setDisplayZoomControls(true);
-        mDocsWebView.getWebView().loadUrl(Pref.getDocumentationUrl() + "index.html");
-        Themes.getCurrent(getContext())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::setTheme);
-        initNormalToolbar();
     }
 
     private void initNormalToolbar() {
