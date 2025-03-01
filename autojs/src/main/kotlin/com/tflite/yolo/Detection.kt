@@ -5,6 +5,7 @@ import com.stardust.autojs.core.image.ImageWrapper
 import org.autojs.autojs.core.yolo.BaseModel
 
 class Detection : BaseModel() {
+    private lateinit var preprocessor: ImageProcessor
     fun drawBoxes(bitmap: Any, results: Array<Result>): Any {
         return when (bitmap) {
             is Bitmap -> FileUtil.drawBoxes(bitmap, results)
@@ -33,11 +34,11 @@ class Detection : BaseModel() {
      * 重置检测阈值为默认值
      */
     fun resetThresholds() {
-        Output.conf = 0.3F
+        Output.conf = 0.25F
         Output.iou = 0.7F
     }
 
-    fun run(input: Any?): Array<Result> {
+    fun detect(input: Any?): Array<Result> {
         threadLock.lock()
         try {
             val bitmap = when (input) {
@@ -45,32 +46,11 @@ class Detection : BaseModel() {
                 is ImageWrapper -> input.bitmap
                 else -> throw IllegalArgumentException("不支持的图像类型: ${input?.javaClass}")
             }
-
-            val (tensorImage, resizeInfo) = time(TAG, "图片预处理") { preprocessImage(bitmap) }
-            val outputBuffer = time(TAG, "推理") { runInference(tensorImage) }
-            val results = Output.parseOutput(outputBuffer.floatArray, labels)
-
-            val scale = resizeInfo[0]
-            val offsetX = resizeInfo[1]
-            val offsetY = resizeInfo[2]
-
+            val image = preprocessor.process(bitmap)
+            val output = runInference(image)
+            val results = Output.parseOutput(output.floatArray, labels)
             results.forEach { result ->
-                result.rect.apply {
-                    left =
-                        ((left * inputWidth - offsetX) / scale).coerceIn(0f, bitmap.width.toFloat())
-                    top = ((top * inputHeight - offsetY) / scale).coerceIn(
-                        0f,
-                        bitmap.height.toFloat()
-                    )
-                    right = ((right * inputWidth - offsetX) / scale).coerceIn(
-                        0f,
-                        bitmap.width.toFloat()
-                    )
-                    bottom = ((bottom * inputHeight - offsetY) / scale).coerceIn(
-                        0f,
-                        bitmap.height.toFloat()
-                    )
-                }
+                result.rect = preprocessor.normToOrig(result.rect)
             }
 
             return results
@@ -81,6 +61,7 @@ class Detection : BaseModel() {
 
     override fun initProcessors() {
         super.initProcessors()
+        preprocessor = ImageProcessor(inputWidth, inputHeight)
         val outputShape = interpreter.getOutputTensor(0).shape()
         Output.setShape(outputShape)
     }

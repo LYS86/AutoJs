@@ -70,5 +70,4 @@ dependencies /* LiteRT */ {
     implementation(libs.litert.gpu)
     implementation(libs.litert.metadata)
     implementation(libs.litert.support)
-    implementation(libs.litert.gpu.api)
 }

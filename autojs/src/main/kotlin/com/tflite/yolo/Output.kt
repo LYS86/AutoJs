@@ -3,7 +3,7 @@ package com.tflite.yolo
 import android.graphics.RectF
 
 object Output {
-    var conf = 0.3F // 默认置信度阈值
+    var conf = 0.25F // 默认置信度阈值
     var iou = 0.7F // 默认IOU阈值
     var numDetections = 0 // 预测框数量（如 8400）
     var numClasses = 0 // 类别数量（如 84 - 4 = 80）
@@ -15,7 +15,10 @@ object Output {
      * @return 经过NMS处理后的检测结果数组
      */
     fun parseOutput(outputArray: FloatArray, labels: List<String>): Array<Result> {
-        return (if (numDetections == 300) yolo10(outputArray, labels) else yolo(outputArray, labels)).toTypedArray()
+        return (if (numDetections == 300) yolo10(outputArray, labels) else yolo(
+            outputArray,
+            labels
+        )).toTypedArray()
     }
 
     fun setShape(shape: IntArray) {
@@ -23,10 +26,12 @@ object Output {
             shape[1] == 300 && shape[2] == 6 -> { // YOLOv10
                 numDetections = shape[1]
             }
+
             shape[2] in arrayOf(2100, 8400) -> { // YOLOv8, YOLOv9, YOLOv11
                 numClasses = shape[1] - 4
                 numDetections = shape[2]
             }
+
             else -> throw IllegalArgumentException("未适配输出形状: ${shape.contentToString()}")
         }
     }
@@ -47,14 +52,14 @@ object Output {
             if (score >= conf) {
                 results.add(
                     Result.fromLTRB(
-                    outputArray[i * 6],     // left
-                    outputArray[i * 6 + 1], // top
-                    outputArray[i * 6 + 2], // right
-                    outputArray[i * 6 + 3], // bottom
-                    score,
-                    outputArray[i * 6 + 5].toInt(),
-                    labels.getOrElse(outputArray[i * 6 + 5].toInt()) { "unknown" }
-                ))
+                        outputArray[i * 6],     // left
+                        outputArray[i * 6 + 1], // top
+                        outputArray[i * 6 + 2], // right
+                        outputArray[i * 6 + 3], // bottom
+                        score,
+                        outputArray[i * 6 + 5].toInt(),
+                        labels.getOrElse(outputArray[i * 6 + 5].toInt()) { "unknown" }
+                    ))
             }
             i++
         }
@@ -99,14 +104,14 @@ object Output {
             if (maxScore >= conf) {
                 results.add(
                     Result.fromXYWH(
-                    outputArray[i + offsets[0]],
-                    outputArray[i + offsets[1]],
-                    outputArray[i + offsets[2]],
-                    outputArray[i + offsets[3]],
-                    maxScore,
-                    cls,
-                    labels.getOrElse(cls) { "unknown" }
-                ))
+                        outputArray[i + offsets[0]],
+                        outputArray[i + offsets[1]],
+                        outputArray[i + offsets[2]],
+                        outputArray[i + offsets[3]],
+                        maxScore,
+                        cls,
+                        labels.getOrElse(cls) { "unknown" }
+                    ))
             }
             i++
         }
