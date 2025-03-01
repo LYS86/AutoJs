@@ -1,10 +1,7 @@
 package org.autojs.autojs.ui.main.drawer;
 
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
-import android.widget.TextView;
-
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.DrawerMenuGroupBinding;
 import org.autojs.autojs.ui.widget.BindableViewHolder;
 
 /**
@@ -13,16 +10,16 @@ import org.autojs.autojs.ui.widget.BindableViewHolder;
 
 public class DrawerMenuGroupViewHolder extends BindableViewHolder<DrawerMenuItem> {
 
-    private TextView mTextView;
+    private final DrawerMenuGroupBinding binding;
 
-    public DrawerMenuGroupViewHolder(View itemView) {
-        super(itemView);
-        mTextView = (TextView) itemView.findViewById(R.id.title);
+    public DrawerMenuGroupViewHolder(DrawerMenuGroupBinding binding) {
+        super(binding.getRoot());
+        this.binding = binding;
     }
 
     @Override
     public void bind(DrawerMenuItem data, int position) {
-        mTextView.setText(data.getTitle());
+        binding.title.setText(data.getTitle());
         int padding = itemView.getResources().getDimensionPixelOffset(R.dimen.divider_drawer_menu_group);
         itemView.setPadding(0, position == 0 ? 0 : padding, 0, 0);
     }

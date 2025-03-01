@@ -1,10 +1,12 @@
 package org.autojs.autojs.ui.main.drawer;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.autojs.autojs.R;
+import androidx.recyclerview.widget.RecyclerView;
+
+import org.autojs.autojs.databinding.DrawerMenuGroupBinding;
+import org.autojs.autojs.databinding.DrawerMenuItemBinding;
 import org.autojs.autojs.ui.widget.BindableViewHolder;
 
 import java.util.List;
@@ -20,7 +22,7 @@ public class DrawerMenuAdapter extends RecyclerView.Adapter<BindableViewHolder<D
     private static final int VIEW_TYPE_GROUP = 1;
 
 
-    private List<DrawerMenuItem> mDrawerMenuItems;
+    private final List<DrawerMenuItem> mDrawerMenuItems;
 
     public DrawerMenuAdapter(List<DrawerMenuItem> drawerMenuItems) {
         mDrawerMenuItems = drawerMenuItems;
@@ -32,13 +34,13 @@ public class DrawerMenuAdapter extends RecyclerView.Adapter<BindableViewHolder<D
 
     @Override
     public BindableViewHolder<DrawerMenuItem> onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == VIEW_TYPE_GROUP) {
-            return new DrawerMenuGroupViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.drawer_menu_group, parent, false));
+            DrawerMenuGroupBinding binding = DrawerMenuGroupBinding.inflate(inflater, parent, false);
+            return new DrawerMenuGroupViewHolder(binding);
         } else {
-            return new DrawerMenuItemViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.drawer_menu_item, parent, false));
-
+            DrawerMenuItemBinding binding = DrawerMenuItemBinding.inflate(inflater, parent, false);
+            return new DrawerMenuItemViewHolder(binding);
         }
     }
 
