@@ -1,38 +1,29 @@
 package org.autojs.autojs.ui.edit;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.afollestad.materialdialogs.MaterialDialog;
+
 import org.autojs.autojs.R;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by Stardust on 2018/2/24.
  */
-
 public class TextSizeSettingDialogBuilder extends ThemeColorMaterialDialogBuilder implements SeekBar.OnSeekBarChangeListener {
 
-
     public interface PositiveCallback {
-
         void onPositive(int value);
     }
 
     private static final int MIN = 8;
-
-    @BindView(R.id.seekbar)
-    SeekBar mSeekBar;
-
-    @BindView(R.id.preview_text)
-    TextView mPreviewText;
-
+    private final SeekBar mSeekBar;
+    private final TextView mPreviewText;
     private int mTextSize;
     private MaterialDialog mMaterialDialog;
 
@@ -43,7 +34,10 @@ public class TextSizeSettingDialogBuilder extends ThemeColorMaterialDialogBuilde
         title(R.string.text_text_size);
         positiveText(R.string.ok);
         negativeText(R.string.cancel);
-        ButterKnife.bind(this, view);
+
+        mSeekBar = view.findViewById(R.id.seekbar);
+        mPreviewText = view.findViewById(R.id.preview_text);
+
         mSeekBar.setOnSeekBarChangeListener(this);
     }
 
@@ -74,7 +68,6 @@ public class TextSizeSettingDialogBuilder extends ThemeColorMaterialDialogBuilde
         return mMaterialDialog;
     }
 
-
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         setTextSize(progress + MIN);
@@ -82,11 +75,9 @@ public class TextSizeSettingDialogBuilder extends ThemeColorMaterialDialogBuilde
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
     }
 }
