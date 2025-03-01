@@ -2,66 +2,73 @@ package org.autojs.autojs.ui.main.task;
 
 import android.app.Activity;
 import android.os.Bundle;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
-import org.autojs.autojs.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import org.autojs.autojs.autojs.AutoJs;
+import org.autojs.autojs.databinding.FragmentTaskManagerBinding;
 import org.autojs.autojs.ui.main.ViewPagerFragment;
 import org.autojs.autojs.ui.widget.SimpleAdapterDataObserver;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-/**
- * Created by Stardust on 2017/3/24.
- */
-@EFragment(R.layout.fragment_task_manager)
 public class TaskManagerFragment extends ViewPagerFragment {
 
-    @ViewById(R.id.task_list)
-    TaskListRecyclerView mTaskListRecyclerView;
-
-    @ViewById(R.id.notice_no_running_script)
-    View mNoRunningScriptNotice;
-
-    @ViewById(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
-
+    private FragmentTaskManagerBinding binding;
+    private TaskListRecyclerView mTaskListRecyclerView;
+    private View mNoRunningScriptNotice;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     public TaskManagerFragment() {
         super(45);
         setArguments(new Bundle());
     }
 
-    @AfterViews
-    void setUpViews() {
-        init();
-        final boolean noRunningScript = mTaskListRecyclerView.getAdapter().getItemCount() == 0;
-        mNoRunningScriptNotice.setVisibility(noRunningScript ? View.VISIBLE : View.GONE);
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentTaskManagerBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
-    private void init() {
-        mTaskListRecyclerView.getAdapter().registerAdapterDataObserver(new SimpleAdapterDataObserver() {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initViews();
+        setUpViews();
+    }
 
+    private void initViews() {
+        mTaskListRecyclerView = binding.taskList;
+        mNoRunningScriptNotice = binding.noticeNoRunningScript;
+        mSwipeRefreshLayout = binding.swipeRefreshLayout;
+    }
+
+    private void setUpViews() {
+        final boolean noRunningScript = mTaskListRecyclerView.getAdapter().getItemCount() == 0;
+        mNoRunningScriptNotice.setVisibility(noRunningScript ? View.VISIBLE : View.GONE);
+
+        mTaskListRecyclerView.getAdapter().registerAdapterDataObserver(new SimpleAdapterDataObserver() {
             @Override
             public void onSomethingChanged() {
                 final boolean noRunningScript = mTaskListRecyclerView.getAdapter().getItemCount() == 0;
                 mTaskListRecyclerView.postDelayed(() -> {
-                    if (mNoRunningScriptNotice == null)
-                        return;
+                    if (binding == null) return;
                     mNoRunningScriptNotice.setVisibility(noRunningScript ? View.VISIBLE : View.GONE);
                 }, 150);
             }
-
         });
+
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             mTaskListRecyclerView.refresh();
             mTaskListRecyclerView.postDelayed(() -> {
-                if (mSwipeRefreshLayout != null)
+                if (binding != null) {
                     mSwipeRefreshLayout.setRefreshing(false);
+                }
             }, 800);
         });
     }
@@ -74,5 +81,11 @@ public class TaskManagerFragment extends ViewPagerFragment {
     @Override
     public boolean onBackPressed(Activity activity) {
         return false;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
