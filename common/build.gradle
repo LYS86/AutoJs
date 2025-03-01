@@ -9,8 +9,6 @@ android {
     defaultConfig {
         minSdkVersion versions.mini
         targetSdkVersion versions.target
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -22,7 +20,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    lintOptions {
+    namespace 'com.stardust'
+    lint {
         abortOnError false
     }
 }
@@ -33,6 +32,6 @@ dependencies {
     })
     testImplementation 'junit:junit:4.12'
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    api 'androidx.annotation:annotation:1.0.0'
+    api 'androidx.annotation:annotation:1.0.1'
     api 'com.github.hyb1996:settingscompat:1.1.5'
 }
