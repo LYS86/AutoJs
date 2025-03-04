@@ -9,8 +9,6 @@ android {
     defaultConfig {
         minSdkVersion versions.mini
         targetSdkVersion versions.target
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -19,14 +17,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    lintOptions {
-        abortOnError false
-    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    namespace 'com.stardust.automator'
+    lint {
+        abortOnError false
     }
 }
 
