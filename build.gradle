@@ -5,8 +5,10 @@ import groovy.json.JsonSlurper
 buildscript {
     ext.kotlin_version = '1.3.10'
     repositories {
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://repo.huaweicloud.com/repository/maven' }
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
@@ -18,16 +20,18 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://repo.huaweicloud.com/repository/maven' }
+        google()
+        mavenCentral()
         maven {
             url "https://jitpack.io"
         }
-        google()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
 
