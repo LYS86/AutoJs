@@ -49,8 +49,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by Stardust on 2017/10/22.
+ * @deprecated APK构建功能暂时不可用
  */
+@Deprecated
 @EActivity(R.layout.activity_build)
 public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCallback {
 
@@ -201,16 +202,11 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                 .startForResult(REQUEST_CODE);
     }
 
+    @Deprecated
     @Click(R.id.fab)
     void buildApk() {
-        if (!ApkBuilderPluginHelper.isPluginAvailable(this)) {
-            Toast.makeText(this, R.string.text_apk_builder_plugin_unavailable, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!checkInputs()) {
-            return;
-        }
-        doBuildingApk();
+        Toast.makeText(this, "APK构建功能暂时不可用", Toast.LENGTH_SHORT).show();
+        // 原有实现已禁用
     }
 
     private boolean checkInputs() {

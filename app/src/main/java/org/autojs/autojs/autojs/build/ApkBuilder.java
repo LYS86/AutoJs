@@ -4,9 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.stardust.app.GlobalAppContext;
-import com.stardust.autojs.apkbuilder.ApkPackager;
-import com.stardust.autojs.apkbuilder.ManifestEditor;
-import com.stardust.autojs.apkbuilder.util.StreamUtils;
+//import com.stardust.autojs.apkbuilder.ApkPackager;
+//import com.stardust.autojs.apkbuilder.ManifestEditor;
+//import com.stardust.autojs.apkbuilder.util.StreamUtils;
 import com.stardust.autojs.project.BuildInfo;
 import com.stardust.autojs.project.ProjectConfig;
 import com.stardust.autojs.script.EncryptedScriptFileHeader;
@@ -17,27 +17,27 @@ import com.stardust.util.MD5;
 
 import org.autojs.autojs.build.TinySign;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
-import java.util.regex.Pattern;
 
-import pxb.android.StringItem;
-import pxb.android.axml.AxmlWriter;
-import zhao.arsceditor.ResDecoder.ARSCDecoder;
-import zhao.arsceditor.ResDecoder.data.ResTable;
+//由于依赖库不可用暂时标记为弃用,等待修复
+//import pxb.android.StringItem;
+//import pxb.android.axml.AxmlWriter;
+//import zhao.arsceditor.ResDecoder.ARSCDecoder;
+//import zhao.arsceditor.ResDecoder.data.ResTable;
 
 
 /**
- * Created by Stardust on 2017/10/24.
+ * APK构建器
+ *
+ * @deprecated 由于依赖库不可用暂时标记为弃用, 等待修复
  */
-
+@Deprecated
 public class ApkBuilder {
 
 
@@ -140,9 +140,11 @@ public class ApkBuilder {
     }
 
     private ProgressCallback mProgressCallback;
-    private ApkPackager mApkPackager;
+    @Deprecated
+    private Object mApkPackager; // 原为 ApkPackager
     private String mArscPackageName;
-    private ManifestEditor mManifestEditor;
+    @Deprecated
+    private Object mManifestEditor; // 原为 ManifestEditor
     private String mWorkspacePath;
     private AppConfig mAppConfig;
     private final File mOutApkFile;
@@ -150,10 +152,11 @@ public class ApkBuilder {
     private String mKey;
 
 
+    @Deprecated
     public ApkBuilder(InputStream apkInputStream, File outApkFile, String workspacePath) {
         mWorkspacePath = workspacePath;
         mOutApkFile = outApkFile;
-        mApkPackager = new ApkPackager(apkInputStream, mWorkspacePath);
+        // mApkPackager = new ApkPackager(apkInputStream, mWorkspacePath); // 已弃用
         PFiles.ensureDir(outApkFile.getPath());
     }
 
@@ -167,7 +170,7 @@ public class ApkBuilder {
             GlobalAppContext.post(() -> mProgressCallback.onPrepare(ApkBuilder.this));
         }
         (new File(mWorkspacePath)).mkdirs();
-        mApkPackager.unzip();
+        // mApkPackager.unzip(); // 已弃用
         return this;
     }
 
@@ -180,6 +183,7 @@ public class ApkBuilder {
         return this;
     }
 
+    @Deprecated
     public void copyDir(String relativePath, String path) throws IOException {
         File fromDir = new File(path);
         File toDir = new File(mWorkspacePath, relativePath);
@@ -189,8 +193,15 @@ public class ApkBuilder {
                 if (child.getName().endsWith(".js")) {
                     encrypt(toDir, child);
                 } else {
-                    StreamUtils.write(new FileInputStream(child),
-                            new FileOutputStream(new File(toDir, child.getName())));
+                    // 使用基础IO替代StreamUtils
+                    try (FileInputStream fis = new FileInputStream(child);
+                         FileOutputStream fos = new FileOutputStream(new File(toDir, child.getName()))) {
+                        byte[] buffer = new byte[1024];
+                        int length;
+                        while ((length = fis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, length);
+                        }
+                    }
                 }
             } else {
                 if (!mAppConfig.ignoredDirs.contains(child)) {
@@ -221,28 +232,37 @@ public class ApkBuilder {
         if (newFilePath.endsWith(".js")) {
             encrypt(new FileOutputStream(new File(mWorkspacePath, relativePath)), new File(newFilePath));
         } else {
-            StreamUtils.write(new FileInputStream(newFilePath), new FileOutputStream(new File(mWorkspacePath, relativePath)));
+            // StreamUtils.write(new FileInputStream(newFilePath), new FileOutputStream(new File(mWorkspacePath, relativePath))); // 已弃用
+            try (FileInputStream fis = new FileInputStream(newFilePath);
+                 FileOutputStream fos = new FileOutputStream(new File(mWorkspacePath, relativePath))) {
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = fis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, length);
+                }
+            }
         }
         return this;
     }
 
+    @Deprecated
     public ApkBuilder withConfig(AppConfig config) throws IOException {
         mAppConfig = config;
-        mManifestEditor = editManifest()
-                .setAppName(config.appName)
-                .setVersionName(config.versionName)
-                .setVersionCode(config.versionCode)
-                .setPackageName(config.packageName);
+        // mManifestEditor = editManifest() // 已弃用
+        //         .setAppName(config.appName)
+        //         .setVersionName(config.versionName)
+        //         .setVersionCode(config.versionCode)
+        //         .setPackageName(config.packageName);
         setArscPackageName(config.packageName);
         updateProjectConfig(config);
         setScriptFile(config.sourcePath);
         return this;
     }
 
-    public ManifestEditor editManifest() throws FileNotFoundException {
-        mManifestEditor = new ManifestEditorWithAuthorities(new FileInputStream(getManifestFile()));
-        return mManifestEditor;
-    }
+    // public ManifestEditor editManifest() throws FileNotFoundException { // 已弃用
+    //     mManifestEditor = new ManifestEditorWithAuthorities(new FileInputStream(getManifestFile()));
+    //     return mManifestEditor;
+    // }
 
     protected File getManifestFile() {
         return new File(mWorkspacePath, "AndroidManifest.xml");
@@ -273,7 +293,7 @@ public class ApkBuilder {
         if (mProgressCallback != null) {
             GlobalAppContext.post(() -> mProgressCallback.onBuild(ApkBuilder.this));
         }
-        mManifestEditor.commit();
+        // mManifestEditor.commit(); // 已弃用
         if (mAppConfig.icon != null) {
             try {
                 Bitmap bitmap = mAppConfig.icon.call();
@@ -285,9 +305,9 @@ public class ApkBuilder {
                 throw new RuntimeException(e);
             }
         }
-        if (mManifestEditor != null) {
-            mManifestEditor.writeTo(new FileOutputStream(getManifestFile()));
-        }
+        // if (mManifestEditor != null) { // 已弃用
+        //     mManifestEditor.writeTo(new FileOutputStream(getManifestFile()));
+        // }
         if (mArscPackageName != null) {
             buildArsc();
         }
@@ -318,13 +338,13 @@ public class ApkBuilder {
     }
 
     private void buildArsc() throws IOException {
-        File oldArsc = new File(mWorkspacePath, "resources.arsc");
-        File newArsc = new File(mWorkspacePath, "resources.arsc.new");
-        ARSCDecoder decoder = new ARSCDecoder(new BufferedInputStream(new FileInputStream(oldArsc)), (ResTable) null, false);
-        FileOutputStream fos = new FileOutputStream(newArsc);
-        decoder.CloneArsc(fos, mArscPackageName, true);
-        oldArsc.delete();
-        newArsc.renameTo(oldArsc);
+//        File oldArsc = new File(mWorkspacePath, "resources.arsc");
+//        File newArsc = new File(mWorkspacePath, "resources.arsc.new");
+//        ARSCDecoder decoder = new ARSCDecoder(new BufferedInputStream(new FileInputStream(oldArsc)), (ResTable) null, false);
+//        FileOutputStream fos = new FileOutputStream(newArsc);
+//        decoder.CloneArsc(fos, mArscPackageName, true);
+//        oldArsc.delete();
+//        newArsc.renameTo(oldArsc);
     }
 
     private void delete(File file) {
@@ -340,20 +360,11 @@ public class ApkBuilder {
         }
     }
 
-    private class ManifestEditorWithAuthorities extends ManifestEditor {
-
-        ManifestEditorWithAuthorities(InputStream manifestInputStream) {
-            super(manifestInputStream);
-        }
-
-        @Override
-        public void onAttr(AxmlWriter.Attr attr) {
-            if ("authorities".equals(attr.name.data) && attr.value instanceof StringItem) {
-                ((StringItem) attr.value).data = mAppConfig.packageName + ".fileprovider";
-            } else {
-                super.onAttr(attr);
-            }
-
-        }
+    /**
+     * @deprecated 由于依赖库缺失暂时禁用
+     */
+    @Deprecated
+    private class ManifestEditorWithAuthorities {
+        // 原有实现已注释
     }
 }
