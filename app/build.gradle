@@ -107,10 +107,10 @@ dependencies {
     annotationProcessor "org.androidannotations:androidannotations:$AAVersion"
     implementation "org.androidannotations:androidannotations-api:$AAVersion"
     // ButterKnife
-    implementation('com.jakewharton:butterknife:9.0.0-rc2', {
+    implementation('com.jakewharton:butterknife:10.2.3', {
         exclude group: 'com.android.support'
     })
-    annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-rc2'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
     // Android supports
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.cardview:cardview:1.0.0'
