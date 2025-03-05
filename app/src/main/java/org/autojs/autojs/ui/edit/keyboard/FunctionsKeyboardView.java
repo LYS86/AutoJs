@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.FunctionsKeyboardViewBinding;
 import org.autojs.autojs.model.indices.Module;
 import org.autojs.autojs.model.indices.Modules;
 import org.autojs.autojs.model.indices.Property;
@@ -33,8 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
@@ -52,11 +51,9 @@ public class FunctionsKeyboardView extends FrameLayout {
     }
 
     private static final int SPAN_COUNT = 4;
-    @BindView(R.id.module_list)
-    RecyclerView mModulesView;
-
-    @BindView(R.id.properties)
-    RecyclerView mPropertiesView;
+    private RecyclerView mModulesView;
+    private RecyclerView mPropertiesView;
+    private FunctionsKeyboardViewBinding binding;
 
     private List<Module> mModules;
     private Map<Module, List<Integer>> mSpanSizes = new HashMap<>();
@@ -67,32 +64,35 @@ public class FunctionsKeyboardView extends FrameLayout {
 
     public FunctionsKeyboardView(@NonNull Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public FunctionsKeyboardView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public FunctionsKeyboardView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public FunctionsKeyboardView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+        init(context);
     }
 
     public void setClickCallback(ClickCallback clickCallback) {
         mClickCallback = clickCallback;
     }
 
-    private void init() {
-        inflate(getContext(), R.layout.functions_keyboard_view, this);
-        ButterKnife.bind(this);
+    private void init(Context context) {
+        binding = FunctionsKeyboardViewBinding.inflate(LayoutInflater.from(context), this, true);
+        
+        mModulesView = binding.moduleList;
+        mPropertiesView = binding.properties;
+
         initModulesView();
         initPropertiesView();
     }
@@ -165,7 +165,7 @@ public class FunctionsKeyboardView extends FrameLayout {
     }
 
     private void initModulesView() {
-        mModulesView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
+        mModulesView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         mModulesView.setAdapter(new ModulesAdapter());
     }
 
