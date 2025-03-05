@@ -25,6 +25,8 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
+import org.autojs.autojs.databinding.DialogCodeGenerateOptionGroupBinding;
+import org.autojs.autojs.databinding.TaskListRecyclerViewItemBinding;
 import org.autojs.autojs.storage.database.ModelChange;
 import org.autojs.autojs.timing.TimedTaskManager;
 import org.autojs.autojs.ui.timing.TimedTaskSettingActivity;
@@ -34,21 +36,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.ThemeColorRecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-/**
- * Created by Stardust on 2017/3/24.
- */
-
 public class TaskListRecyclerView extends ThemeColorRecyclerView {
 
-
     private static final String LOG_TAG = "TaskListRecyclerView";
-
     private final List<TaskGroup> mTaskGroups = new ArrayList<>();
     private TaskGroup.RunningTaskGroup mRunningTaskGroup;
     private TaskGroup.PendingTaskGroup mPendingTaskGroup;
@@ -120,7 +113,6 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
         }
         mAdapter = new Adapter(mTaskGroups);
         setAdapter(mAdapter);
-        //notifyDataSetChanged not working...
     }
 
     @Override
@@ -181,19 +173,28 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
         @NonNull
         @Override
         public TaskGroupViewHolder onCreateParentViewHolder(@NonNull ViewGroup parentViewGroup, int viewType) {
-            return new TaskGroupViewHolder(LayoutInflater.from(parentViewGroup.getContext())
-                    .inflate(R.layout.dialog_code_generate_option_group, parentViewGroup, false));
+            DialogCodeGenerateOptionGroupBinding binding = DialogCodeGenerateOptionGroupBinding.inflate(
+                    LayoutInflater.from(parentViewGroup.getContext()),
+                    parentViewGroup,
+                    false
+            );
+            return new TaskGroupViewHolder(binding);
         }
 
         @NonNull
         @Override
         public TaskViewHolder onCreateChildViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new TaskViewHolder(LayoutInflater.from(getContext()).inflate(R.layout.task_list_recycler_view_item, parent, false));
+            TaskListRecyclerViewItemBinding binding = TaskListRecyclerViewItemBinding.inflate(
+                    LayoutInflater.from(parent.getContext()),
+                    parent,
+                    false
+            );
+            return new TaskViewHolder(binding);
         }
 
         @Override
         public void onBindParentViewHolder(@NonNull TaskGroupViewHolder viewHolder, int parentPosition, @NonNull TaskGroup taskGroup) {
-            viewHolder.title.setText(taskGroup.getTitle());
+            viewHolder.bind(taskGroup);
         }
 
         @Override
@@ -202,45 +203,35 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
         }
     }
 
-
     class TaskViewHolder extends ChildViewHolder<Task> {
 
-        @BindView(R.id.first_char)
-        TextView mFirstChar;
-        @BindView(R.id.name)
-        TextView mName;
-        @BindView(R.id.desc)
-        TextView mDesc;
-
+        private final TaskListRecyclerViewItemBinding binding;
         private Task mTask;
-        private GradientDrawable mFirstCharBackground;
 
-        TaskViewHolder(View itemView) {
-            super(itemView);
-            itemView.setOnClickListener(this::onItemClick);
-            ButterKnife.bind(this, itemView);
-            mFirstCharBackground = (GradientDrawable) mFirstChar.getBackground();
+        TaskViewHolder(TaskListRecyclerViewItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            binding.getRoot().setOnClickListener(this::onItemClick);
         }
 
         public void bind(Task task) {
             mTask = task;
-            mName.setText(task.getName());
-            mDesc.setText(task.getDesc());
+            binding.name.setText(task.getName());
+            binding.desc.setText(task.getDesc());
+            GradientDrawable firstCharBackground = (GradientDrawable) binding.firstChar.getBackground();
             if (AutoFileSource.ENGINE.equals(mTask.getEngineName())) {
-                mFirstChar.setText("R");
-                mFirstCharBackground.setColor(getResources().getColor(R.color.color_r));
+                binding.firstChar.setText("R");
+                firstCharBackground.setColor(getResources().getColor(R.color.color_r));
             } else {
-                mFirstChar.setText("J");
-                mFirstCharBackground.setColor(getResources().getColor(R.color.color_j));
+                binding.firstChar.setText("J");
+                firstCharBackground.setColor(getResources().getColor(R.color.color_j));
             }
-        }
 
-
-        @OnClick(R.id.stop)
-        void stop() {
-            if (mTask != null) {
-                mTask.cancel();
-            }
+            binding.stop.setOnClickListener(v -> {
+                if (mTask != null) {
+                    mTask.cancel();
+                }
+            });
         }
 
         void onItemClick(View view) {
@@ -257,14 +248,12 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
 
     private class TaskGroupViewHolder extends ParentViewHolder<TaskGroup, Task> {
 
-        TextView title;
-        ImageView icon;
+        private final DialogCodeGenerateOptionGroupBinding binding;
 
-        TaskGroupViewHolder(@NonNull View itemView) {
-            super(itemView);
-            title = itemView.findViewById(R.id.title);
-            icon = itemView.findViewById(R.id.icon);
-            itemView.setOnClickListener(view -> {
+        TaskGroupViewHolder(DialogCodeGenerateOptionGroupBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            binding.getRoot().setOnClickListener(view -> {
                 if (isExpanded()) {
                     collapseView();
                 } else {
@@ -275,8 +264,11 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
 
         @Override
         public void onExpansionToggled(boolean expanded) {
-            icon.setRotation(expanded ? -90 : 0);
+            binding.icon.setRotation(expanded ? -90 : 0);
+        }
+
+        void bind(TaskGroup taskGroup) {
+            binding.title.setText(taskGroup.getTitle());
         }
     }
-
 }
