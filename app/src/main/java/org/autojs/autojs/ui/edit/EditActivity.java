@@ -24,6 +24,7 @@ import com.stardust.autojs.execution.ScriptExecution;
 import com.stardust.pio.PFiles;
 
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ActivityEditBinding;
 import org.autojs.autojs.storage.file.TmpScriptFiles;
 import org.autojs.autojs.tool.Observers;
 import org.autojs.autojs.ui.BaseActivity;
@@ -49,14 +50,13 @@ import static org.autojs.autojs.ui.edit.EditorView.EXTRA_READ_ONLY;
 /**
  * Created by Stardust on 2017/1/29.
  */
-@EActivity(R.layout.activity_edit)
 public class EditActivity extends BaseActivity implements OnActivityResultDelegate.DelegateHost, PermissionRequestProxyActivity {
 
     private OnActivityResultDelegate.Mediator mMediator = new OnActivityResultDelegate.Mediator();
     private static final String LOG_TAG = "EditActivity";
 
-    @ViewById(R.id.editor_view)
-    EditorView mEditorView;
+    private ActivityEditBinding binding;
+    private EditorView mEditorView;
 
     private EditorMenu mEditorMenu;
     private RequestPermissionCallbacks mRequestPermissionCallbacks = new RequestPermissionCallbacks();
@@ -67,8 +67,7 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
     }
 
     public static void editFile(Context context, Uri uri, boolean newTask) {
-        context.startActivity(newIntent(context, newTask)
-                .setData(uri));
+        context.startActivity(newIntent(context, newTask).setData(uri));
     }
 
     public static void editFile(Context context, String name, String path, boolean newTask) {
@@ -85,7 +84,7 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
     }
 
     private static Intent newIntent(Context context, boolean newTask) {
-        Intent intent = new Intent(context, EditActivity_.class);
+        Intent intent = new Intent(context, EditActivity.class);
         if (newTask || !(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
@@ -95,12 +94,17 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityEditBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        mEditorView = binding.editorView;
+
         mNewTask = (getIntent().getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0;
+
+        setUpViews();
     }
 
     @SuppressLint("CheckResult")
-    @AfterViews
-    void setUpViews() {
+    private void setUpViews() {
         mEditorView.handleIntent(getIntent())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(Observers.emptyConsumer(),
@@ -234,8 +238,9 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
 
     @Override
     protected void onDestroy() {
-        mEditorView.destroy();
         super.onDestroy();
+        mEditorView.destroy();
+        binding = null;
     }
 
     @NonNull
