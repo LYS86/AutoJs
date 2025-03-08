@@ -119,7 +119,7 @@ public class SettingsActivity extends BaseActivity {
                     .put(getString(R.string.text_check_for_updates), () -> new UpdateCheckDialog(getActivity())
                             .show())
                     .put(getString(R.string.text_issue_report), () -> startActivity(new Intent(getActivity(), IssueReporterActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
-                    .put(getString(R.string.text_about_me_and_repo), () -> startActivity(new Intent(getActivity(), AboutActivity_.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
+                    .put(getString(R.string.text_about_me_and_repo), () -> startActivity(new Intent(getActivity(), AboutActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
                     .put(getString(R.string.text_licenses), () -> showLicenseDialog())
                     .build();
         }
