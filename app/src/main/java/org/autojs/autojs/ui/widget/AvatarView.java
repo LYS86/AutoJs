@@ -3,41 +3,35 @@ package org.autojs.autojs.ui.widget;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import androidx.annotation.AttrRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.makeramen.roundedimageview.RoundedImageView;
 
-import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.AvatarViewBinding;
 import org.autojs.autojs.network.NodeBB;
 import org.autojs.autojs.network.entity.user.User;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by 婷 on 2017/9/29.
  */
-
 public class AvatarView extends FrameLayout {
 
-    @BindView(R.id.icon_text)
-    TextView mIconText;
-
-    @BindView(R.id.icon)
-    RoundedImageView mIcon;
-
+    private TextView mIconText;
+    private RoundedImageView mIcon;
     private GradientDrawable mIconTextBackground;
-
+    private AvatarViewBinding binding;
 
     public AvatarView(@NonNull Context context) {
         super(context);
@@ -55,8 +49,9 @@ public class AvatarView extends FrameLayout {
     }
 
     private void init() {
-        inflate(getContext(), R.layout.avatar_view, this);
-        ButterKnife.bind(this);
+        binding = AvatarViewBinding.inflate(LayoutInflater.from(getContext()), this, true);
+        mIcon = binding.icon;
+        mIconText = binding.iconText;
         mIconTextBackground = (GradientDrawable) mIconText.getBackground();
     }
 
@@ -87,4 +82,3 @@ public class AvatarView extends FrameLayout {
         }
     }
 }
-
