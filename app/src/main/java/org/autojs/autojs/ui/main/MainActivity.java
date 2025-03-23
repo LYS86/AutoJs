@@ -37,7 +37,7 @@ import org.autojs.autojs.tool.AccessibilityServiceTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.doc.DocsFragment;
-import org.autojs.autojs.ui.log.LogActivity_;
+import org.autojs.autojs.ui.log.LogActivity;
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment_;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment_;
 import org.autojs.autojs.ui.update.VersionGuard;
@@ -268,7 +268,7 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
             if (mDocsSearchItemExpanded) {
                 submitForwardQuery();
             } else {
-                LogActivity_.intent(this).start();
+                startActivity(new Intent(this, LogActivity.class));
             }
             return true;
         }

@@ -2,28 +2,28 @@ package org.autojs.autojs.ui.edit;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import com.google.android.material.snackbar.Snackbar;
+import android.content.Intent;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.snackbar.Snackbar;
 import com.stardust.autojs.script.JavaScriptSource;
 import com.stardust.pio.PFiles;
+import com.stardust.util.ClipboardUtil;
+import com.stardust.util.IntentUtil;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.model.indices.AndroidClass;
 import org.autojs.autojs.model.indices.ClassSearchingItem;
-import org.autojs.autojs.ui.project.BuildActivity;
-import org.autojs.autojs.ui.project.BuildActivity_;
+import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.edit.editor.CodeEditor;
-import org.autojs.autojs.ui.log.LogActivity_;
-import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
-
-import com.stardust.util.ClipboardUtil;
-import com.stardust.util.IntentUtil;
+import org.autojs.autojs.ui.log.LogActivity;
+import org.autojs.autojs.ui.project.BuildActivity;
+import org.autojs.autojs.ui.project.BuildActivity_;
 
 import java.util.Locale;
 
@@ -37,9 +37,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 @SuppressLint("CheckResult")
 public class EditorMenu {
 
-    private EditorView mEditorView;
-    private Context mContext;
-    private CodeEditor mEditor;
+    private final EditorView mEditorView;
+    private final Context mContext;
+    private final CodeEditor mEditor;
 
     public EditorMenu(EditorView editorView) {
         mEditorView = editorView;
@@ -292,7 +292,7 @@ public class EditorMenu {
 
 
     private void showLog() {
-        LogActivity_.intent(mContext).start();
+        mContext.startActivity(new Intent(mContext, LogActivity.class));
     }
 
     private void showConsole() {
