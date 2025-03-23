@@ -91,7 +91,9 @@ android {
         abortOnError false
         disable 'MissingTranslation', 'ExtraTranslation'
     }
-
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 repositories {
