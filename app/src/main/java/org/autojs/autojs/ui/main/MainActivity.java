@@ -38,7 +38,7 @@ import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.doc.DocsFragment;
 import org.autojs.autojs.ui.log.LogActivity;
-import org.autojs.autojs.ui.main.scripts.MyScriptListFragment_;
+import org.autojs.autojs.ui.main.scripts.MyScriptListFragment;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment_;
 import org.autojs.autojs.ui.update.VersionGuard;
 import org.autojs.autojs.ui.widget.CommonMarkdownView;
@@ -143,7 +143,7 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     private void setUpTabViewPager() {
         TabLayout tabLayout = $(R.id.tab);
         mPagerAdapter = new FragmentPagerAdapterBuilder(this)
-                .add(new MyScriptListFragment_(), R.string.text_file)
+                .add(new MyScriptListFragment(), R.string.text_file)
                 .add(new DocsFragment(), R.string.text_tutorial)
                 .add(new TaskManagerFragment_(), R.string.text_manage)
                 .build();
