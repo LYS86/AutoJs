@@ -37,7 +37,7 @@ import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.tool.AccessibilityServiceTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
-import org.autojs.autojs.ui.doc.DocsFragment_;
+import org.autojs.autojs.ui.doc.DocsFragment;
 import org.autojs.autojs.ui.log.LogActivity_;
 import org.autojs.autojs.ui.main.community.CommunityFragment;
 import org.autojs.autojs.ui.main.community.CommunityFragment_;
@@ -144,7 +144,7 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         TabLayout tabLayout = $(R.id.tab);
         mPagerAdapter = new FragmentPagerAdapterBuilder(this)
                 .add(new MyScriptListFragment_(), R.string.text_file)
-                .add(new DocsFragment_(), R.string.text_tutorial)
+                .add(new DocsFragment(), R.string.text_tutorial)
                 .add(new CommunityFragment_(), R.string.text_community)
                 .add(new MarketFragment(), R.string.text_market)
                 .add(new TaskManagerFragment_(), R.string.text_manage)
