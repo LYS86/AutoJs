@@ -39,7 +39,7 @@ import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.doc.DocsFragment;
 import org.autojs.autojs.ui.log.LogActivity;
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment;
-import org.autojs.autojs.ui.main.task.TaskManagerFragment_;
+import org.autojs.autojs.ui.main.task.TaskManagerFragment;
 import org.autojs.autojs.ui.update.VersionGuard;
 import org.autojs.autojs.ui.widget.CommonMarkdownView;
 import org.autojs.autojs.ui.widget.SearchViewItem;
@@ -145,7 +145,7 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         mPagerAdapter = new FragmentPagerAdapterBuilder(this)
                 .add(new MyScriptListFragment(), R.string.text_file)
                 .add(new DocsFragment(), R.string.text_tutorial)
-                .add(new TaskManagerFragment_(), R.string.text_manage)
+                .add(new TaskManagerFragment(), R.string.text_manage)
                 .build();
         binding.viewpager.setAdapter(mPagerAdapter);
         tabLayout.setupWithViewPager(binding.viewpager);
