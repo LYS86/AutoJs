@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
@@ -39,9 +38,6 @@ import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.doc.DocsFragment;
 import org.autojs.autojs.ui.log.LogActivity_;
-import org.autojs.autojs.ui.main.community.CommunityFragment;
-import org.autojs.autojs.ui.main.community.CommunityFragment_;
-import org.autojs.autojs.ui.main.market.MarketFragment;
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment_;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment_;
 import org.autojs.autojs.ui.update.VersionGuard;
@@ -55,12 +51,12 @@ import java.util.Arrays;
 public class MainActivity extends BaseActivity implements OnActivityResultDelegate.DelegateHost, BackPressedHandler.HostActivity, PermissionRequestProxyActivity {
 
     private static final String LOG_TAG = "MainActivity";
-    private ActivityMainBinding binding;
-    private FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter mPagerAdapter;
     private final OnActivityResultDelegate.Mediator mActivityResultMediator = new OnActivityResultDelegate.Mediator();
     private final RequestPermissionCallbacks mRequestPermissionCallbacks = new RequestPermissionCallbacks();
-    private VersionGuard mVersionGuard;
     private final BackPressedHandler.Observer mBackPressObserver = new BackPressedHandler.Observer();
+    private ActivityMainBinding binding;
+    private FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter mPagerAdapter;
+    private VersionGuard mVersionGuard;
     private SearchViewItem mSearchViewItem;
     private MenuItem mLogMenuItem;
     private boolean mDocsSearchItemExpanded;
@@ -77,6 +73,10 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         EventBus.getDefault().register(this);
         applyDayNightMode();
         setUpViews();
+    }
+
+    @Subscribe
+    public void onDrawerOpened(DrawerOpenEvent event) {
     }
 
     private void setUpViews() {
@@ -145,8 +145,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         mPagerAdapter = new FragmentPagerAdapterBuilder(this)
                 .add(new MyScriptListFragment_(), R.string.text_file)
                 .add(new DocsFragment(), R.string.text_tutorial)
-                .add(new CommunityFragment_(), R.string.text_community)
-                .add(new MarketFragment(), R.string.text_market)
                 .add(new TaskManagerFragment_(), R.string.text_manage)
                 .build();
         binding.viewpager.setAdapter(mPagerAdapter);
@@ -275,11 +273,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Subscribe
-    public void onLoadUrl(CommunityFragment.LoadUrl loadUrl) {
-        binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 
     private void setUpSearchMenuItem(MenuItem searchMenuItem) {
