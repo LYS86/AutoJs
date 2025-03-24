@@ -100,13 +100,6 @@
             />
         <activity android:name="org.autojs.autojs.ui.edit.ViewSampleActivity"/>
         <activity
-            android:name="org.autojs.autojs.ui.user.LoginActivity_"
-            android:windowSoftInputMode="adjustResize"/>
-        <activity
-            android:name="org.autojs.autojs.ui.user.RegisterActivity_"
-            android:windowSoftInputMode="adjustResize"/>
-        <activity android:name="org.autojs.autojs.ui.user.WebActivity_"/>
-        <activity
             android:name="org.autojs.autojs.ui.project.BuildActivity_"
             android:configChanges="orientation|screenSize"/>
         <activity android:name="org.autojs.autojs.ui.project.ProjectConfigActivity_"/>
