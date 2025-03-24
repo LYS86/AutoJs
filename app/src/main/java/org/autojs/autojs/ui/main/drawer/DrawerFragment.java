@@ -43,6 +43,7 @@ import java.util.Arrays;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -59,10 +60,51 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     private final DrawerMenuItem mNotificationPermissionItem = new DrawerMenuItem(R.drawable.ic_ali_notification, R.string.text_notification_permission, 0, this::goToNotificationServiceSettings);
     private final DrawerMenuItem mForegroundServiceItem = new DrawerMenuItem(R.drawable.ic_service_green, R.string.text_foreground_service, R.string.key_foreground_servie, this::toggleForegroundService);
     private final DrawerMenuItem mUsageStatsPermissionItem = new DrawerMenuItem(R.drawable.ic_ali_notification, R.string.text_usage_stats_permission, 0, this::goToUsageStatsSettings);
-    private Disposable mConnectionStateDisposable;    private final DrawerMenuItem mCheckForUpdatesItem = new DrawerMenuItem(R.drawable.ic_check_for_updates, R.string.text_check_for_updates, this::checkForUpdates);
-    private DrawerMenuAdapter mDrawerMenuAdapter;    private final DrawerMenuItem mConnectionItem = new DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote);
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private Disposable mConnectionStateDisposable;
+    private FragmentDrawerBinding binding;
+    private MaterialDialog remoteHostDialog;    private final DrawerMenuItem mCheckForUpdatesItem = new DrawerMenuItem(R.drawable.ic_check_for_updates, R.string.text_check_for_updates, this::checkForUpdates);
+    private DrawerMenuAdapter mDrawerMenuAdapter;
+
+    private void inputRemoteHost() {
+        String host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(getActivity()));
+        remoteHostDialog = new MaterialDialog.Builder(getActivity()).title(R.string.text_server_address).input("", host, (dialog, input) -> {
+            Pref.saveServerAddress(input.toString());
+            Disposable disposable = DevPluginService.getInstance().connectToServer(input.toString()).subscribe(Observers.emptyConsumer(), this::onConnectException);
+            compositeDisposable.add(disposable);
+        }).neutralText(R.string.text_help).onNeutral((dialog, which) -> {
+            setChecked(mConnectionItem, false);
+            IntentUtil.browse(getActivity(), URL_DEV_PLUGIN);
+        }).cancelListener(dialog -> setChecked(mConnectionItem, false)).show();
+    }    private final DrawerMenuItem mConnectionItem = new DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote);
     private final DrawerMenuItem mFloatingWindowItem = new DrawerMenuItem(R.drawable.ic_robot_64, R.string.text_floating_window, 0, this::showOrDismissFloatingWindow);
-    private FragmentDrawerBinding binding;    private final DrawerMenuItem mAccessibilityServiceItem = new DrawerMenuItem(R.drawable.ic_service_green, R.string.text_accessibility_service, 0, this::enableOrDisableAccessibilityService);
+    private final DrawerMenuItem mAccessibilityServiceItem = new DrawerMenuItem(R.drawable.ic_service_green, R.string.text_accessibility_service, 0, this::enableOrDisableAccessibilityService);
+
+
+    @SuppressLint("CheckResult")
+    private void enableAccessibilityServiceByRootIfNeeded() {
+        Disposable disposable = Observable.fromCallable(() -> Pref.shouldEnableAccessibilityServiceByRoot() && !isAccessibilityServiceEnabled()).observeOn(AndroidSchedulers.mainThread()).subscribe(needed -> {
+            if (needed) {
+                enableAccessibilityServiceByRoot();
+            }
+        });
+        compositeDisposable.add(disposable);
+    }
+
+
+
+    private void enableAccessibilityServiceByRoot() {
+        setProgress(mAccessibilityServiceItem, true);
+        Disposable disposable = Observable.fromCallable(() -> AccessibilityServiceTool.enableAccessibilityServiceByRootAndWaitFor(4000)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(succeed -> {
+            if (!succeed) {
+                Toast.makeText(getContext(), R.string.text_enable_accessibitliy_service_by_root_failed, Toast.LENGTH_SHORT).show();
+                AccessibilityServiceTool.goToAccessibilitySetting();
+            }
+            setProgress(mAccessibilityServiceItem, false);
+        });
+        compositeDisposable.add(disposable);
+    }
+
 
     void goToUsageStatsSettings(DrawerMenuItemViewHolder holder) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -134,24 +176,21 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 new DrawerMenuGroup(R.string.text_others), mConnectionItem, new DrawerMenuItem(R.drawable.ic_personalize, R.string.text_theme_color, this::openThemeColorSettings), new DrawerMenuItem(R.drawable.ic_night_mode, R.string.text_night_mode, R.string.key_night_mode, this::toggleNightMode), mCheckForUpdatesItem)));
     }
 
-    @SuppressLint("CheckResult")
-    private void enableAccessibilityServiceByRootIfNeeded() {
-        Observable.fromCallable(() -> Pref.shouldEnableAccessibilityServiceByRoot() && !isAccessibilityServiceEnabled()).observeOn(AndroidSchedulers.mainThread()).subscribe(needed -> {
-            if (needed) {
-                enableAccessibilityServiceByRoot();
-            }
-        });
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mConnectionStateDisposable.dispose();
+        compositeDisposable.clear();
+        EventBus.getDefault().unregister(this);
     }
 
-    private void inputRemoteHost() {
-        String host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(getActivity()));
-        new MaterialDialog.Builder(getActivity()).title(R.string.text_server_address).input("", host, (dialog, input) -> {
-            Pref.saveServerAddress(input.toString());
-            DevPluginService.getInstance().connectToServer(input.toString()).subscribe(Observers.emptyConsumer(), this::onConnectException);
-        }).neutralText(R.string.text_help).onNeutral((dialog, which) -> {
-            setChecked(mConnectionItem, false);
-            IntentUtil.browse(getActivity(), URL_DEV_PLUGIN);
-        }).cancelListener(dialog -> setChecked(mConnectionItem, false)).show();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (remoteHostDialog != null && remoteHostDialog.isShowing()) {
+            remoteHostDialog.dismiss();
+        }
+        binding = null;
     }
 
     private void onConnectException(Throwable e) {
@@ -204,16 +243,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         ((BaseActivity) getActivity()).setNightModeEnabled(holder.getSwitchCompat().isChecked());
     }
 
-    private void enableAccessibilityServiceByRoot() {
-        setProgress(mAccessibilityServiceItem, true);
-        Observable.fromCallable(() -> AccessibilityServiceTool.enableAccessibilityServiceByRootAndWaitFor(4000)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(succeed -> {
-            if (!succeed) {
-                Toast.makeText(getContext(), R.string.text_enable_accessibitliy_service_by_root_failed, Toast.LENGTH_SHORT).show();
-                AccessibilityServiceTool.goToAccessibilitySetting();
-            }
-            setProgress(mAccessibilityServiceItem, false);
-        });
-    }
 
     void connectOrDisconnectToRemote(DrawerMenuItemViewHolder holder) {
         boolean checked = holder.getSwitchCompat().isChecked();
@@ -236,13 +265,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
 
     private void showStableModePromptIfNeeded() {
         new NotAskAgainDialog.Builder(getContext(), "DrawerFragment.stable_mode").title(R.string.text_stable_mode).content(R.string.description_stable_mode).positiveText(R.string.ok).show();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mConnectionStateDisposable.dispose();
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -269,11 +291,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         enableAccessibilityServiceByRoot();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
 
     @Subscribe
     public void onCircularMenuStateChange(CircularMenu.StateChangeEvent event) {
@@ -284,12 +301,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         if (getContext() == null) return;
         Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
-
-
-
-
-
-
 
     private void setProgress(DrawerMenuItem item, boolean progress) {
         item.setProgress(progress);
