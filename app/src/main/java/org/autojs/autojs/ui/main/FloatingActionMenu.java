@@ -3,11 +3,6 @@ package org.autojs.autojs.ui.main;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import androidx.annotation.AttrRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +10,15 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ItemFloatingActionMenuBinding;
 
 import io.reactivex.subjects.PublishSubject;
 
@@ -33,14 +36,15 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
             R.drawable.ic_floating_action_menu_dir,
             R.drawable.ic_floating_action_menu_file,
             R.drawable.ic_floating_action_menu_open,
-            R.drawable.ic_project};
+            R.drawable.ic_project
+    };
     private static final int[] LABELS = {R.string.text_directory, R.string.text_file, R.string.text_import, R.string.text_project};
     private TextView[] mLabels;
     private FloatingActionButton[] mFabs;
     private View[] mFabContainers;
     private boolean mExpanded = false;
-    private int mInterval = 30;
-    private int mDuration = 250;
+    private final int mInterval = 30;
+    private final int mDuration = 250;
     private final Interpolator mInterpolator = new FastOutSlowInInterpolator();
     private final PublishSubject<Boolean> mState = PublishSubject.create();
     private OnFloatingActionButtonClickListener mOnFloatingActionButtonClickListener;
@@ -88,7 +92,6 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
                 .start();
     }
 
-
     private void animateY(View view, float y, Animator.AnimatorListener l) {
         view.animate()
                 .translationY(y)
@@ -115,18 +118,19 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
 
     private void buildFabs(int[] icons, int[] labels) {
         if (icons.length != labels.length)
-            throw new IllegalArgumentException("icons.length = " + icons.length + " is not equal to labels.length = " + labels.length);
+            throw new IllegalArgumentException("icons.length  = " + icons.length + " is not equal to labels.length  = " + labels.length);
         mFabs = new FloatingActionButton[icons.length];
         mLabels = new TextView[icons.length];
         mFabContainers = new View[icons.length];
         LayoutInflater inflater = LayoutInflater.from(getContext());
         for (int i = 0; i < icons.length; i++) {
-            mFabContainers[i] = inflater.inflate(R.layout.item_floating_action_menu, this, false);
-            mFabs[i] = (FloatingActionButton) mFabContainers[i].findViewById(R.id.floating_action_button);
+            ItemFloatingActionMenuBinding binding = ItemFloatingActionMenuBinding.inflate(inflater, this, false);
+            mFabContainers[i] = binding.getRoot();
+            mFabs[i] = binding.floatingActionButton;
             mFabs[i].setImageResource(icons[i]);
             mFabs[i].setOnClickListener(this);
             mFabs[i].setTag(i);
-            mLabels[i] = (TextView) mFabContainers[i].findViewById(R.id.label);
+            mLabels[i] = binding.label;
             mLabels[i].setText(labels[i]);
             addView(mFabContainers[i]);
         }
@@ -154,7 +158,6 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
         if (mOnFloatingActionButtonClickListener != null) {
             mOnFloatingActionButtonClickListener.onClick((FloatingActionButton) v, (int) v.getTag());
         }
-
     }
 
     public void setOnFloatingActionButtonClickListener(OnFloatingActionButtonClickListener onFloatingActionButtonClickListener) {
