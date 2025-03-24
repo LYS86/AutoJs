@@ -63,8 +63,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private Disposable mConnectionStateDisposable;
     private FragmentDrawerBinding binding;
-    private MaterialDialog remoteHostDialog;    private final DrawerMenuItem mCheckForUpdatesItem = new DrawerMenuItem(R.drawable.ic_check_for_updates, R.string.text_check_for_updates, this::checkForUpdates);
-    private DrawerMenuAdapter mDrawerMenuAdapter;
+    private MaterialDialog remoteHostDialog;
 
     private void inputRemoteHost() {
         String host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(getActivity()));
@@ -76,7 +75,34 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
             setChecked(mConnectionItem, false);
             IntentUtil.browse(getActivity(), URL_DEV_PLUGIN);
         }).cancelListener(dialog -> setChecked(mConnectionItem, false)).show();
-    }    private final DrawerMenuItem mConnectionItem = new DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote);
+    }    private final DrawerMenuItem mCheckForUpdatesItem = new DrawerMenuItem(R.drawable.ic_check_for_updates, R.string.text_check_for_updates, this::checkForUpdates);
+    private DrawerMenuAdapter mDrawerMenuAdapter;
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initMenuItems();
+        if (Pref.isFloatingMenuShown()) {
+            FloatyWindowManger.showCircularMenuIfNeeded();
+            setChecked(mFloatingWindowItem, true);
+        }
+        setChecked(mConnectionItem, DevPluginService.getInstance().isConnected());
+        if (Pref.isForegroundServiceEnabled()) {
+            ForegroundService.start(GlobalAppContext.get());
+            setChecked(mForegroundServiceItem, true);
+        }
+        binding.drawerMenu.setAdapter(mDrawerMenuAdapter);
+        binding.drawerMenu.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.setting.setOnClickListener(v -> startActivity(new Intent(getActivity(), SettingsActivity.class)));
+        binding.exit.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().finishAffinity();
+                System.exit(0);
+            }
+        });
+    }
+
+    private final DrawerMenuItem mConnectionItem = new DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote);
     private final DrawerMenuItem mFloatingWindowItem = new DrawerMenuItem(R.drawable.ic_robot_64, R.string.text_floating_window, 0, this::showOrDismissFloatingWindow);
     private final DrawerMenuItem mAccessibilityServiceItem = new DrawerMenuItem(R.drawable.ic_service_green, R.string.text_accessibility_service, 0, this::enableOrDisableAccessibilityService);
 
@@ -90,7 +116,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         });
         compositeDisposable.add(disposable);
     }
-
 
 
     private void enableAccessibilityServiceByRoot() {
@@ -151,22 +176,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         return binding.getRoot();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initMenuItems();
-        if (Pref.isFloatingMenuShown()) {
-            FloatyWindowManger.showCircularMenuIfNeeded();
-            setChecked(mFloatingWindowItem, true);
-        }
-        setChecked(mConnectionItem, DevPluginService.getInstance().isConnected());
-        if (Pref.isForegroundServiceEnabled()) {
-            ForegroundService.start(GlobalAppContext.get());
-            setChecked(mForegroundServiceItem, true);
-        }
-        binding.drawerMenu.setAdapter(mDrawerMenuAdapter);
-        binding.drawerMenu.setLayoutManager(new LinearLayoutManager(getContext()));
-    }
+
 
     private void initMenuItems() {
         mDrawerMenuAdapter = new DrawerMenuAdapter(new ArrayList<>(Arrays.asList(new DrawerMenuGroup(R.string.text_service), mAccessibilityServiceItem, mStableModeItem, mNotificationPermissionItem, mForegroundServiceItem, mUsageStatsPermissionItem,
