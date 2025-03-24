@@ -1,26 +1,28 @@
 package org.autojs.autojs.ui.user;
 
 import android.content.Intent;
+
 import androidx.annotation.NonNull;
 
 import com.stardust.app.OnActivityResultDelegate;
-import org.autojs.autojs.R;
-import org.autojs.autojs.ui.BaseActivity;
-import org.autojs.autojs.ui.widget.EWebView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.autojs.autojs.R;
+import org.autojs.autojs.ui.BaseActivity;
+import org.autojs.autojs.ui.widget.EWebView;
 
 /**
  * Created by Stardust on 2017/10/26.
  */
+@Deprecated
 @EActivity(R.layout.activity_web)
 public class WebActivity extends BaseActivity implements OnActivityResultDelegate.DelegateHost {
 
     public static final String EXTRA_URL = "url";
 
-    private OnActivityResultDelegate.Mediator mMediator = new OnActivityResultDelegate.Mediator();
+    private final OnActivityResultDelegate.Mediator mMediator = new OnActivityResultDelegate.Mediator();
 
     @ViewById(R.id.eweb_view)
     EWebView mEWebView;
