@@ -102,7 +102,7 @@
         <activity
             android:name="org.autojs.autojs.ui.project.BuildActivity_"
             android:configChanges="orientation|screenSize"/>
-        <activity android:name="org.autojs.autojs.ui.project.ProjectConfigActivity_"/>
+        <activity android:name="org.autojs.autojs.ui.project.ProjectConfigActivity"/>
         <activity android:name="org.autojs.autojs.ui.log.LogActivity"/>
         <activity android:name="org.autojs.autojs.ui.doc.DocumentationActivity_"/>
         <activity android:name="org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity_"/>
