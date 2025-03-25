@@ -4,11 +4,12 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+import android.util.Pair;
+
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 import androidx.annotation.WorkerThread;
-import android.util.Log;
-import android.util.Pair;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -17,6 +18,7 @@ import com.stardust.app.GlobalAppContext;
 import com.stardust.util.MapBuilder;
 
 import org.autojs.autojs.BuildConfig;
+import org.autojs.autojs.Pref;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
@@ -70,7 +72,7 @@ public class DevPluginService {
     }
 
     private static final int PORT = 9317;
-    private static DevPluginService sInstance = new DevPluginService();
+    private static final DevPluginService sInstance = new DevPluginService();
     private final PublishSubject<State> mConnectionState = PublishSubject.create();
     private final DevPluginResponseHandler mResponseHandler;
     private final HashMap<String, JsonWebSocket.Bytes> mBytes = new HashMap<>();
@@ -108,6 +110,7 @@ public class DevPluginService {
     public void disconnect() {
         mSocket.close();
         mSocket = null;
+        Pref.setConnected(false);
     }
 
     public Observable<State> connectionState() {
@@ -252,6 +255,7 @@ public class DevPluginService {
         Log.i(LOG_TAG, "onServerHello: " + message);
         mSocket = jsonWebSocket;
         mConnectionState.onNext(new State(State.CONNECTED));
+        Pref.setConnected(true);
     }
 
     @AnyThread
