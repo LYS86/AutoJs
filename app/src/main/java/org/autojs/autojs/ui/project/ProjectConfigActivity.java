@@ -234,4 +234,10 @@ public class ProjectConfigActivity extends BaseActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(iconPath -> mProjectConfig.setIcon(iconPath));
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
+    }
 }
