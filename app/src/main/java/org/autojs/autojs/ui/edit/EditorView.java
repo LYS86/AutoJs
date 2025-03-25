@@ -62,7 +62,6 @@ import org.autojs.autojs.ui.edit.keyboard.FunctionsKeyboardView;
 import org.autojs.autojs.ui.edit.theme.Theme;
 import org.autojs.autojs.ui.edit.theme.Themes;
 import org.autojs.autojs.ui.edit.toolbar.DebugToolbarFragment;
-import org.autojs.autojs.ui.edit.toolbar.DebugToolbarFragment_;
 import org.autojs.autojs.ui.edit.toolbar.NormalToolbarFragment;
 import org.autojs.autojs.ui.edit.toolbar.NormalToolbarFragment_;
 import org.autojs.autojs.ui.edit.toolbar.SearchToolbarFragment;
@@ -576,8 +575,7 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
 
 
     public void debug() {
-        DebugToolbarFragment debugToolbarFragment = DebugToolbarFragment_.builder()
-                .build();
+        DebugToolbarFragment debugToolbarFragment = new DebugToolbarFragment();
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.toolbar_menu, debugToolbarFragment)
                 .commit();
