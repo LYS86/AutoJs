@@ -19,7 +19,6 @@ import org.autojs.autojs.model.explorer.ExplorerChangeEvent;
 import org.autojs.autojs.model.explorer.ExplorerItem;
 import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.ui.project.BuildActivity;
-import org.autojs.autojs.ui.project.BuildActivity_;
 import org.autojs.autojs.ui.project.ProjectConfigActivity;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -83,9 +82,9 @@ public class ExplorerProjectToolbar extends CardView {
     }
 
     void build() {
-        BuildActivity_.intent(getContext())
-                .extra(BuildActivity.EXTRA_SOURCE, mDirectory.getPath())
-                .start();
+        Intent intent = new Intent(getContext(), BuildActivity.class);
+        intent.putExtra(BuildActivity.EXTRA_SOURCE, mDirectory.getPath());
+        getContext().startActivity(intent);
     }
 
     void sync() {

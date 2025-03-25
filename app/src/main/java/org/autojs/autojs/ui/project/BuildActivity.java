@@ -2,32 +2,27 @@ package org.autojs.autojs.ui.project;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stardust.autojs.project.ProjectConfig;
 import com.stardust.util.IntentUtil;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.build.ApkBuilder;
 import org.autojs.autojs.build.ApkBuilderPluginHelper;
+import org.autojs.autojs.databinding.ActivityBuildBinding;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
 import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
@@ -35,60 +30,25 @@ import org.autojs.autojs.tool.BitmapTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder;
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity;
-import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity_;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.Locale;
-import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
-import androidx.cardview.widget.CardView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-/**
- * @deprecated APK构建功能暂时不可用
- */
 @Deprecated
-@EActivity(R.layout.activity_build)
 public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCallback {
 
     private static final int REQUEST_CODE = 44401;
-
     public static final String EXTRA_SOURCE = BuildActivity.class.getName() + ".extra_source_file";
-
     private static final String LOG_TAG = "BuildActivity";
     private static final Pattern REGEX_PACKAGE_NAME = Pattern.compile("^([A-Za-z][A-Za-z\\d_]*\\.)+([A-Za-z][A-Za-z\\d_]*)$");
 
-    @ViewById(R.id.source_path)
-    EditText mSourcePath;
-
-    @ViewById(R.id.source_path_container)
-    View mSourcePathContainer;
-
-    @ViewById(R.id.output_path)
-    EditText mOutputPath;
-
-    @ViewById(R.id.app_name)
-    EditText mAppName;
-
-    @ViewById(R.id.package_name)
-    EditText mPackageName;
-
-    @ViewById(R.id.version_name)
-    EditText mVersionName;
-
-    @ViewById(R.id.version_code)
-    EditText mVersionCode;
-
-    @ViewById(R.id.icon)
-    ImageView mIcon;
-
-    @ViewById(R.id.app_config)
-    CardView mAppConfig;
-
+    private ActivityBuildBinding binding;
     private ProjectConfig mProjectConfig;
     private MaterialDialog mProgressDialog;
     private String mSource;
@@ -97,16 +57,20 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
+        binding = ActivityBuildBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-    @AfterViews
-    void setupViews() {
         setToolbarAsBack(getString(R.string.text_build_apk));
         mSource = getIntent().getStringExtra(EXTRA_SOURCE);
         if (mSource != null) {
             setupWithSourceFile(new ScriptFile(mSource));
         }
-        checkApkBuilderPlugin();
+//        checkApkBuilderPlugin();
+
+        binding.selectSource.setOnClickListener(v -> selectSourceFilePath());
+        binding.selectOutput.setOnClickListener(v -> selectOutputDirPath());
+        binding.icon.setOnClickListener(v -> selectIcon());
+        binding.fab.setOnClickListener(v -> buildApk());
     }
 
     private void checkApkBuilderPlugin() {
@@ -134,7 +98,6 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                     if (finishIfCanceled) finish();
                 })
                 .show();
-
     }
 
     private void downloadPlugin() {
@@ -147,21 +110,19 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
         if (dir.startsWith(getFilesDir().getPath())) {
             dir = Pref.getScriptDirPath();
         }
-        mOutputPath.setText(dir);
-        mAppName.setText(file.getSimplifiedName());
-        mPackageName.setText(getString(R.string.format_default_package_name, System.currentTimeMillis()));
+        binding.outputPath.setText(dir);
+        binding.appName.setText(file.getSimplifiedName());
+        binding.packageName.setText(getString(R.string.format_default_package_name, System.currentTimeMillis()));
         setSource(file);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-
     }
 
-    @Click(R.id.select_source)
     void selectSourceFilePath() {
-        String initialDir = new File(mSourcePath.getText().toString()).getParent();
+        String initialDir = new File(binding.sourcePath.getText().toString()).getParent();
         new FileChooserDialogBuilder(this)
                 .title(R.string.text_source_file_path)
                 .dir(Environment.getExternalStorageDirectory().getPath(),
@@ -172,52 +133,43 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
 
     private void setSource(File file) {
         if (!file.isDirectory()) {
-            mSourcePath.setText(file.getPath());
+            binding.sourcePath.setText(file.getPath());
             return;
         }
         mProjectConfig = ProjectConfig.fromProjectDir(file.getPath());
-        if (mProjectConfig == null) {
-            return;
-        }
-        mOutputPath.setText(new File(mSource, mProjectConfig.getBuildDir()).getPath());
-        mAppConfig.setVisibility(View.GONE);
-        mSourcePathContainer.setVisibility(View.GONE);
+        if (mProjectConfig == null) return;
+        binding.outputPath.setText(new File(mSource, mProjectConfig.getBuildDir()).getPath());
+        binding.appConfig.setVisibility(View.GONE);
+        binding.sourcePathContainer.setVisibility(View.GONE);
     }
 
-    @Click(R.id.select_output)
     void selectOutputDirPath() {
-        String initialDir = new File(mOutputPath.getText().toString()).exists() ?
-                mOutputPath.getText().toString() : Pref.getScriptDirPath();
+        String initialDir = new File(binding.outputPath.getText().toString()).exists() ?
+                binding.outputPath.getText().toString() : Pref.getScriptDirPath();
         new FileChooserDialogBuilder(this)
                 .title(R.string.text_output_apk_path)
                 .dir(initialDir)
                 .chooseDir()
-                .singleChoice(dir -> mOutputPath.setText(dir.getPath()))
+                .singleChoice(dir -> binding.outputPath.setText(dir.getPath()))
                 .show();
     }
 
-    @Click(R.id.icon)
     void selectIcon() {
-        ShortcutIconSelectActivity_.intent(this)
-                .startForResult(REQUEST_CODE);
+        startActivityForResult(new Intent(this, ShortcutIconSelectActivity.class), REQUEST_CODE);
     }
 
-    @Deprecated
-    @Click(R.id.fab)
     void buildApk() {
         Toast.makeText(this, "APK构建功能暂时不可用", Toast.LENGTH_SHORT).show();
-        // 原有实现已禁用
     }
 
     private boolean checkInputs() {
         boolean inputValid = true;
-        inputValid &= checkNotEmpty(mSourcePath);
-        inputValid &= checkNotEmpty(mOutputPath);
-        inputValid &= checkNotEmpty(mAppName);
-        inputValid &= checkNotEmpty(mSourcePath);
-        inputValid &= checkNotEmpty(mVersionCode);
-        inputValid &= checkNotEmpty(mVersionName);
-        inputValid &= checkPackageNameValid(mPackageName);
+        inputValid &= checkNotEmpty(binding.sourcePath);
+        inputValid &= checkNotEmpty(binding.outputPath);
+        inputValid &= checkNotEmpty(binding.appName);
+        inputValid &= checkNotEmpty(binding.versionCode);
+        inputValid &= checkNotEmpty(binding.versionName);
+        inputValid &= checkPackageNameValid(binding.packageName);
         return inputValid;
     }
 
@@ -233,13 +185,11 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
             return false;
         }
         return true;
-
     }
 
     private boolean checkNotEmpty(EditText editText) {
         if (!TextUtils.isEmpty(editText.getText()) || !editText.isShown())
             return true;
-        // TODO: 2017/12/8 more beautiful ways?
         String hint = ((TextInputLayout) editText.getParent().getParent()).getHint().toString();
         editText.setError(hint + getString(R.string.text_should_not_be_empty));
         return false;
@@ -249,7 +199,7 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
     private void doBuildingApk() {
         ApkBuilder.AppConfig appConfig = createAppConfig();
         File tmpDir = new File(getCacheDir(), "build/");
-        File outApk = new File(mOutputPath.getText().toString(),
+        File outApk = new File(binding.outputPath.getText().toString(),
                 String.format("%s_v%s.apk", appConfig.getAppName(), appConfig.getVersionName()));
         showProgressDialog();
         Observable.fromCallable(() -> callApkBuilder(tmpDir, outApk, appConfig))
@@ -263,19 +213,19 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
         if (mProjectConfig != null) {
             return ApkBuilder.AppConfig.fromProjectConfig(mSource, mProjectConfig);
         }
-        String jsPath = mSourcePath.getText().toString();
-        String versionName = mVersionName.getText().toString();
-        int versionCode = Integer.parseInt(mVersionCode.getText().toString());
-        String appName = mAppName.getText().toString();
-        String packageName = mPackageName.getText().toString();
+        String jsPath = binding.sourcePath.getText().toString();
+        String versionName = binding.versionName.getText().toString();
+        int versionCode = Integer.parseInt(binding.versionCode.getText().toString());
+        String appName = binding.appName.getText().toString();
+        String packageName = binding.packageName.getText().toString();
         return new ApkBuilder.AppConfig()
                 .setAppName(appName)
                 .setSourcePath(jsPath)
                 .setPackageName(packageName)
                 .setVersionCode(versionCode)
                 .setVersionName(versionName)
-                .setIcon(mIsDefaultIcon ? null : (Callable<Bitmap>) () ->
-                        BitmapTool.drawableToBitmap(mIcon.getDrawable())
+                .setIcon(mIsDefaultIcon ? null : () ->
+                        BitmapTool.drawableToBitmap(binding.icon.getDrawable())
                 );
     }
 
@@ -319,7 +269,6 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                         IntentUtil.installApkOrToast(BuildActivity.this, outApk.getPath(), AppFileProvider.AUTHORITY)
                 )
                 .show();
-
     }
 
     @Override
@@ -330,13 +279,11 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
     @Override
     public void onBuild(ApkBuilder builder) {
         mProgressDialog.setContent(R.string.apk_builder_build);
-
     }
 
     @Override
     public void onSign(ApkBuilder builder) {
         mProgressDialog.setContent(R.string.apk_builder_package);
-
     }
 
     @Override
@@ -347,17 +294,19 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
     @SuppressLint("CheckResult")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) {
-            return;
-        }
+        if (resultCode != RESULT_OK) return;
         ShortcutIconSelectActivity.getBitmapFromIntent(getApplicationContext(), data)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bitmap -> {
-                    mIcon.setImageBitmap(bitmap);
+                    binding.icon.setImageBitmap(bitmap);
                     mIsDefaultIcon = false;
                 }, Throwable::printStackTrace);
-
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
+    }
 }
