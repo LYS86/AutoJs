@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
-def AAVersion = '4.8.0'
 def SupportLibVersion = '28.0.0'
 
 configurations.all {
@@ -23,14 +22,6 @@ android {
         versionName versions.appVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = [
-                        "resourcePackageName": android.defaultConfig.applicationId,
-                        "androidManifestFile": "$projectDir/src/main/AndroidManifest.xml".toString()
-                ]
-            }
-        }
     }
     buildTypes {
         debug {
@@ -108,9 +99,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     // Kotlin
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1"
-    // Android Annotations
-    kapt "org.androidannotations:androidannotations:$AAVersion"
-    implementation "org.androidannotations:androidannotations-api:$AAVersion"
     // Android supports
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.cardview:cardview:1.0.0'
