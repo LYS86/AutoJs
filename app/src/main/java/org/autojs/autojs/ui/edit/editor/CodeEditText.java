@@ -17,6 +17,8 @@
  */
 package org.autojs.autojs.ui.edit.editor;
 
+import static org.autojs.autojs.ui.edit.editor.BracketMatching.UNMATCHED_BRACKET;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -25,8 +27,6 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.Layout;
 import android.util.AttributeSet;
@@ -37,17 +37,17 @@ import android.view.MotionEvent;
 import android.widget.TextView;
 import android.widget.TextViewHelper;
 
-import org.autojs.autojs.ui.edit.theme.Theme;
-import org.autojs.autojs.ui.edit.theme.TokenMapping;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.AppCompatEditText;
 
 import com.stardust.util.TextUtils;
 
+import org.autojs.autojs.ui.edit.theme.Theme;
+import org.autojs.autojs.ui.edit.theme.TokenMapping;
 import org.mozilla.javascript.Token;
 
 import java.util.LinkedHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import static org.autojs.autojs.ui.edit.editor.BracketMatching.UNMATCHED_BRACKET;
 
 /**
  * Created by Administrator on 2018/2/11.
@@ -65,12 +65,12 @@ public class CodeEditText extends AppCompatEditText {
     private final CopyOnWriteArrayList<CodeEditor.CursorChangeCallback> mCursorChangeCallbacks = new CopyOnWriteArrayList<>();
     private volatile JavaScriptHighlighter.HighlightTokens mHighlightTokens;
     private Theme mTheme;
-    private TimingLogger mLogger = new TimingLogger(LOG_TAG, "draw");
-    private Paint mLineHighlightPaint = new Paint();
+    private final TimingLogger mLogger = new TimingLogger(LOG_TAG, "draw");
+    private final Paint mLineHighlightPaint = new Paint();
     private int mFirstLineForDraw = -1, mLastLineForDraw;
-    private int[] mMatchingBrackets = {-1, -1};
+    private final int[] mMatchingBrackets = {-1, -1};
     private int mUnmatchedBracket = -1;
-    private LinkedHashMap<Integer, CodeEditor.Breakpoint> mBreakpoints = new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, CodeEditor.Breakpoint> mBreakpoints = new LinkedHashMap<>();
     private int mDebuggingLine = -1;
     private CodeEditor.BreakpointChangeListener mBreakpointChangeListener;
 
@@ -196,7 +196,6 @@ public class CodeEditText extends AppCompatEditText {
             return;
         }
         JavaScriptHighlighter.HighlightTokens highlightTokens = mHighlightTokens;
-        //Log.d(LOG_TAG, "drawText: tokens = " + highlightTokens);
         Layout layout = getLayout();
         int lineCount = getLineCount();
         int textLength = highlightTokens == null ? 0 : highlightTokens.getText().length();
@@ -206,36 +205,43 @@ public class CodeEditText extends AppCompatEditText {
         Paint paint = getPaint();
         int lineNumberColor = mTheme.getLineNumberColor();
         int breakPointColor = mTheme.getBreakpointColor();
-        if (DEBUG)
-            Log.d(LOG_TAG, "draw line: " + (mLastLineForDraw - mFirstLineForDraw + 1));
-        mLogger.addSplit("before draw line");
+
         for (int line = mFirstLineForDraw; line <= mLastLineForDraw && line < lineCount; line++) {
             int lineBottom = layout.getLineTop(line + 1);
             int lineTop = layout.getLineTop(line);
             int lineBaseline = lineBottom - layout.getLineDescent(line);
 
-            //drawLineNumber
+            // Draw line number
             String lineNumberText = Integer.toString(line + 1);
-            // if there is a breakpoint at this line, draw highlight background for line number
             if (mBreakpoints.containsKey(line)) {
                 paint.setColor(breakPointColor);
                 canvas.drawRect(0, lineTop, paddingLeft - 10, lineBottom, paint);
             }
             paint.setColor(lineNumberColor);
-            canvas.drawText(lineNumberText, 0, lineNumberText.length(), 10,
-                    lineBaseline, paint);
+            canvas.drawText(lineNumberText, 0, lineNumberText.length(), 10, lineBaseline, paint);
 
-            if (highlightTokens == null)
-                continue;
-
-            //drawCode
             int lineStart = layout.getLineStart(line);
-            if (lineStart >= textLength) {
-                return;
+            int lineEnd = layout.getLineVisibleEnd(line);
+            
+            // 检查行范围有效性
+            if (lineStart >= textLength || lineEnd > textLength) {
+                continue;
             }
-            int lineEnd = Math.min(layout.getLineVisibleEnd(line), highlightTokens.colors.length);
+            
+            // 处理空行
+            if (lineStart == lineEnd) {
+                continue;
+            }
+
+            if (highlightTokens == null) continue;
+
             int visibleCharStart = getVisibleCharIndex(paint, scrollX, lineStart, lineEnd);
             int visibleCharEnd = getVisibleCharIndex(paint, scrollX + mParentScrollView.getWidth(), lineStart, lineEnd) + 1;
+            
+            // 边界保护
+            visibleCharStart = Math.max(visibleCharStart, lineStart);
+            visibleCharEnd = Math.min(visibleCharEnd, textLength);
+
             int previousColorPos = visibleCharStart;
             int previousColor;
             if (previousColorPos == mUnmatchedBracket) {
@@ -268,13 +274,9 @@ public class CodeEditText extends AppCompatEditText {
             if (previousColorPos < 0 || visibleCharEnd > textLength || previousColorPos >= visibleCharEnd) {
                 Log.e(LOG_TAG, "IndexOutOfBounds: previousColorPos = " + previousColorPos + ", visibleCharEnd = "
                         + visibleCharEnd + ", textLength = " + textLength);
-                //postInvalidate();
                 return;
             }
             canvas.drawText(text, previousColorPos, visibleCharEnd, paddingLeft + offsetX, lineBaseline, paint);
-            if (DEBUG) {
-                mLogger.addSplit("draw line " + line + " (" + (visibleCharEnd - visibleCharStart) + ") ");
-            }
         }
     }
 
@@ -300,8 +302,9 @@ public class CodeEditText extends AppCompatEditText {
 
 
     private int getVisibleCharIndex(Paint paint, int x, int lineStart, int lineEnd) {
-        if (x == 0)
+        if (lineStart >= lineEnd) { // 空行保护
             return lineStart;
+        }
         int low = lineStart;
         int high = lineEnd - 1;
         while (low < high) {
