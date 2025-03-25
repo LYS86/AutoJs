@@ -97,9 +97,6 @@ tasks.whenTaskAdded { task ->
 }
 
 repositories {
-    flatDir {
-        dirs 'libs'
-    }
     google()
 }
 
