@@ -1,38 +1,38 @@
 package org.autojs.autojs.ui.doc;
 
+import android.os.Bundle;
 import android.webkit.WebView;
 
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ActivityDocumentationBinding;
 import org.autojs.autojs.ui.BaseActivity;
-import org.autojs.autojs.ui.widget.EWebView;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
-
-/**
- * Created by Stardust on 2017/10/24.
- */
-@EActivity(R.layout.activity_documentation)
 public class DocumentationActivity extends BaseActivity {
 
     public static final String EXTRA_URL = "url";
+    private ActivityDocumentationBinding binding;
+    private WebView mWebView;
 
-    @ViewById(R.id.eweb_view)
-    EWebView mEWebView;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = ActivityDocumentationBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-    WebView mWebView;
-
-    @AfterViews
-    void setUpViews() {
         setToolbarAsBack(getString(R.string.text_tutorial));
-        mWebView = mEWebView.getWebView();
+        mWebView = binding.ewebView.getWebView();
         String url = getIntent().getStringExtra(EXTRA_URL);
         if (url == null) {
             url = Pref.getDocumentationUrl() + "index.html";
         }
         mWebView.loadUrl(url);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
     }
 
     @Override
