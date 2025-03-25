@@ -10,15 +10,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.ShortcutCreateDialogBinding;
@@ -27,8 +25,8 @@ import org.autojs.autojs.external.shortcut.Shortcut;
 import org.autojs.autojs.external.shortcut.ShortcutActivity;
 import org.autojs.autojs.external.shortcut.ShortcutManager;
 import org.autojs.autojs.model.script.ScriptFile;
-import org.autojs.autojs.tool.BitmapTool;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
+import org.autojs.autojs.tool.BitmapTool;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -69,8 +67,8 @@ public class ShortcutCreateActivity extends AppCompatActivity {
     }
 
     void selectIcon() {
-        ShortcutIconSelectActivity_.intent(this)
-                .startForResult(21209);
+        Intent intent = new Intent(this, ShortcutIconSelectActivity.class);
+        startActivityForResult(intent, 21209);
     }
 
     @SuppressLint("NewApi")
