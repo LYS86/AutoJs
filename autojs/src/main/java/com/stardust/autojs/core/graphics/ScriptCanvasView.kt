@@ -55,9 +55,9 @@ class ScriptCanvasView(context: Context, private val mScriptRuntime: ScriptRunti
                 try {
                     while (mDrawing) {
                         canvas = lockCanvas()
-                        scriptCanvas.setCanvas(canvas)
+                        canvas?.let { scriptCanvas.setCanvas(it) }
                         emit("draw", scriptCanvas, this@ScriptCanvasView)
-                        unlockCanvasAndPost(canvas)
+                        canvas?.let { unlockCanvasAndPost(it) }
                         canvas = null
                         val dt = mTimePerDraw - (SystemClock.uptimeMillis() - time)
                         if (dt > 0) {
