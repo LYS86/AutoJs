@@ -4,13 +4,13 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import androidx.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EActivity;
+import androidx.annotation.Nullable;
+
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ActivityScriptWidgetSettingsBinding;
 import org.autojs.autojs.model.explorer.Explorer;
 import org.autojs.autojs.model.explorer.ExplorerDirPage;
 import org.autojs.autojs.model.explorer.ExplorerFileProvider;
@@ -18,12 +18,8 @@ import org.autojs.autojs.model.script.Scripts;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.explorer.ExplorerView;
 
-/**
- * Created by Stardust on 2017/7/11.
- */
-@EActivity(R.layout.activity_script_widget_settings)
 public class ScriptWidgetSettingsActivity extends BaseActivity {
-
+    private ActivityScriptWidgetSettingsBinding binding;
     private String mSelectedScriptFilePath;
     private Explorer mExplorer;
     private int mAppWidgetId;
@@ -31,19 +27,21 @@ public class ScriptWidgetSettingsActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAppWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-    }
+        binding = ActivityScriptWidgetSettingsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-    @AfterViews
-    void setUpViews() {
-        BaseActivity.setToolbarAsBack(this, R.id.toolbar, getString(R.string.text_please_choose_a_script));
+        mAppWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        setupToolbar();
         initScriptListRecyclerView();
     }
 
+    private void setupToolbar() {
+        BaseActivity.setToolbarAsBack(this, R.id.toolbar, getString(R.string.text_please_choose_a_script));
+    }
 
     private void initScriptListRecyclerView() {
         mExplorer = new Explorer(new ExplorerFileProvider(Scripts.INSTANCE.getFILE_FILTER()), 0);
-        ExplorerView explorerView = findViewById(R.id.script_list);
+        ExplorerView explorerView = binding.scriptList;
         explorerView.setExplorer(mExplorer, ExplorerDirPage.createRoot(Environment.getExternalStorageDirectory()));
         explorerView.setOnItemClickListener((view, file) -> {
             mSelectedScriptFilePath = file.getPath();
@@ -51,6 +49,11 @@ public class ScriptWidgetSettingsActivity extends BaseActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -61,7 +64,6 @@ public class ScriptWidgetSettingsActivity extends BaseActivity {
         }
         return true;
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -74,13 +76,10 @@ public class ScriptWidgetSettingsActivity extends BaseActivity {
         if (ScriptWidget.updateWidget(this, mAppWidgetId, mSelectedScriptFilePath)) {
             setResult(RESULT_OK, new Intent()
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId));
-
         } else {
             setResult(RESULT_CANCELED, new Intent()
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId));
         }
         super.finish();
     }
-
-
 }
