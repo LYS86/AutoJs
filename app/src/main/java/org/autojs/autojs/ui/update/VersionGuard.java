@@ -2,10 +2,9 @@ package org.autojs.autojs.ui.update;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
-
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+
 import org.autojs.autojs.BuildConfig;
 import org.autojs.autojs.R;
 import org.autojs.autojs.network.VersionService;
@@ -17,12 +16,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 /**
  * Created by Stardust on 2017/4/12.
  */
-
+@Deprecated
 public class VersionGuard {
 
-    private Activity mActivity;
+    private final Activity mActivity;
     private MaterialDialog mDeprecatedDialog;
-    private VersionService mVersionService = VersionService.getInstance();
+    private final VersionService mVersionService = VersionService.getInstance();
 
     public VersionGuard(Activity activity) {
         mActivity = activity;
