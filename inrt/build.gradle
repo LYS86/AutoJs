@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion versions.compile
@@ -91,7 +90,7 @@ task buildApkPlugin {
     }
 }
 
-tasks.whenTaskAdded { task ->
+tasks.whenTaskAdded { task -> 
     if (task.name == 'assembleRelease') {
         task.finalizedBy 'buildApkPlugin'
     }
