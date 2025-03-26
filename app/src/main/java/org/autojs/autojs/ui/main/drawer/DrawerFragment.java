@@ -100,7 +100,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 System.exit(0);
             }
         });
-        // 添加自动连接逻辑
         if (Pref.isConnected() && !DevPluginService.getInstance().isConnected()) {
             String host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(getActivity()));
             Disposable disposable = DevPluginService.getInstance()
@@ -169,6 +168,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 setProgress(mConnectionItem, state.getState() == DevPluginService.State.CONNECTING);
             }
             if (state.getException() != null) {
+                Pref.setConnected(false);
                 showMessage(state.getException().getMessage());
             }
         });
