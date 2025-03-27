@@ -66,9 +66,9 @@ dependencies {
 }
 
 dependencies /* LiteRT */ {
-    implementation("com.google.ai.edge.litert:litert:1.0.1")
-    implementation("com.google.ai.edge.litert:litert-gpu:1.0.1")
-    implementation("com.google.ai.edge.litert:litert-metadata:1.0.1")
-    implementation("com.google.ai.edge.litert:litert-support:1.0.1")
-    implementation("com.google.ai.edge.litert:litert-gpu-api:1.0.1")
+    implementation(libs.litert)
+    implementation(libs.litert.gpu)
+    implementation(libs.litert.metadata)
+    implementation(libs.litert.support)
+    implementation(libs.litert.gpu.api)
 }
