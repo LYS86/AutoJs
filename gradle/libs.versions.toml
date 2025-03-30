@@ -4,7 +4,6 @@ litert = "1.2.0"
 [libraries]
 litert = { module = "com.google.ai.edge.litert:litert", version.ref = "litert" }
 litert-gpu = { module = "com.google.ai.edge.litert:litert-gpu", version.ref = "litert" }
-litert-gpu-api = { module = "com.google.ai.edge.litert:litert-gpu-api", version.ref = "litert" }
 litert-support = { module = "com.google.ai.edge.litert:litert-support", version.ref = "litert" }
 litert-metadata = { module = "com.google.ai.edge.litert:litert-metadata", version.ref = "litert" }
 

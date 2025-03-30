@@ -5,7 +5,7 @@ import com.stardust.autojs.core.image.ImageWrapper
 import org.autojs.autojs.core.yolo.BaseModel
 
 class classify : BaseModel() {
-    fun run(input: Any?): Result {
+    fun detect(input: Any?): Result {
         threadLock.lock()
         try {
             val bitmap = when (input) {
@@ -14,7 +14,7 @@ class classify : BaseModel() {
                 else -> throw IllegalArgumentException("不支持的图像类型: ${input?.javaClass}")
             }
 
-            val (tensorImage, resizeInfo) = preprocessImage(bitmap)
+            val tensorImage = preprocessImage(bitmap)
             val outputBuffer = runInference(tensorImage)
             val results = parseOutput(outputBuffer.floatArray, labels)
 
