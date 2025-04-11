@@ -1,4 +1,4 @@
-package com.lin.ocr
+package com.google.ocr
 
 import android.graphics.Bitmap
 import android.graphics.Rect
@@ -10,13 +10,14 @@ import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.stardust.autojs.core.image.ImageWrapper
 
+@Suppress("unused")
 class MLKit {
     private lateinit var recognizer: com.google.mlkit.vision.text.TextRecognizer
     private var isLoaded = false
 
     /**
      * 初始化OCR识别器
-     * @param language 语言代码，默认为空(自动检测)，"zh"表示中文
+     * @param language 语言代码，默认为拉丁字母，"zh"表示中文
      */
     fun init(language: String = "") {
         if (isLoaded) recycle()
@@ -29,10 +30,8 @@ class MLKit {
     }
 
     fun detect(image: ImageWrapper): Results {
-        val bitmap = image.bitmap
-        return detect(bitmap)
+        return detect(image.bitmap)
     }
-
 
     /**
      * 执行OCR识别
@@ -51,6 +50,41 @@ class MLKit {
     }
 
     /**
+     * 执行局部区域OCR识别
+     * @param bitmap 要识别的位图
+     * @param rect 识别区域矩形
+     * @return Results对象包含识别结果
+     */
+    fun detect(bitmap: Bitmap, rect: Rect): Results {
+        if (!isLoaded) init()
+
+        if (rect.isEmpty || !Rect(0, 0, bitmap.width, bitmap.height).contains(rect)) {
+            return Results(error = "无效的识别区域: $rect,图片尺寸: ${bitmap.width}x${bitmap.height}")
+        }
+
+        val croppedBitmap = try {
+            Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
+        } catch (e: Exception) {
+            return Results(error = "区域裁剪失败: ${e.message}")
+        }
+
+        val results = detect(croppedBitmap)
+        croppedBitmap.recycle()
+        if (results.hasError()) return results
+        return  Results(results.raw, rect, results.error)
+    }
+
+    /**
+     * 执行局部区域OCR识别(ImageWrapper版本)
+     * @param image 要识别的图像
+     * @param rect 识别区域矩形
+     * @return Results对象包含识别结果
+     */
+    fun detect(image: ImageWrapper, rect: Rect): Results {
+        return detect(image.bitmap, rect)
+    }
+
+    /**
      * 释放识别器资源
      */
     fun recycle() {
@@ -61,9 +95,13 @@ class MLKit {
 
     /**
      * OCR识别结果封装类
+     * @param raw 原始识别结果
+     * @param regionRect 识别区域矩形(用于局部识别时坐标映射)
+     * @param error 错误信息
      */
     class Results(
         val raw: Text? = null,
+        private val regionRect: Rect? = null,
         val error: String? = null
     ) {
         /**
@@ -82,7 +120,7 @@ class MLKit {
         fun isEmpty() = text.isEmpty()
 
         /**
-         * 获取原始识别数据
+         * 获取原始识别数据(不进行坐标映射)
          */
         fun rawText(): Text? = raw
 
@@ -93,7 +131,7 @@ class MLKit {
             return raw?.textBlocks?.map { block ->
                 Result(
                     text = block.text,
-                    rect = block.boundingBox ?: Rect(),
+                    rect = mapRect(block.boundingBox),
                     conf = 0f
                 )
             }?.toTypedArray() ?: emptyArray()
@@ -107,7 +145,7 @@ class MLKit {
                 block.lines.map { line ->
                     Result(
                         text = line.text,
-                        rect = line.boundingBox ?: Rect(),
+                        rect = mapRect(line.boundingBox),
                         conf = line.confidence
                     )
                 }
@@ -123,12 +161,28 @@ class MLKit {
                     line.elements.map { element ->
                         Result(
                             text = element.text,
-                            rect = element.boundingBox ?: Rect(),
+                            rect = mapRect(element.boundingBox),
                             conf = element.confidence
                         )
                     }
                 }
             }?.toTypedArray() ?: emptyArray()
+        }
+
+        /**
+         * 将识别结果的坐标映射回原图坐标
+         */
+        private fun mapRect(rect: Rect?): Rect {
+            if (rect == null) return Rect()
+            return when (regionRect) {
+                null -> rect
+                else -> Rect(
+                    rect.left + regionRect.left,
+                    rect.top + regionRect.top,
+                    rect.right + regionRect.left,
+                    rect.bottom + regionRect.top
+                )
+            }
         }
     }
 

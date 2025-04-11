@@ -5,7 +5,7 @@ import android.os.Build;
 import android.os.Looper;
 import android.util.Log;
 
-import com.lin.ocr.MLKit;
+import com.google.ocr.MLKit;
 import com.stardust.app.GlobalAppContext;
 import com.stardust.autojs.R;
 import com.stardust.autojs.ScriptEngineService;
