@@ -1,1 +1,16 @@
-include ':app', ':automator', ':common', ':autojs', ':inrt'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+include ':app', ':automator', ':common', ':autojs', ':inrt',
+        ':emulatorview',
+        ':libtermexec',
+        ':term'
+
+// 设置AAR模块路径
+project(':emulatorview').projectDir = file('common/libs/emulatorview')
+project(':libtermexec').projectDir = file('common/libs/libtermexec')
+project(':term').projectDir = file('common/libs/term')
