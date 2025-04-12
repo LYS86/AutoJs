@@ -26,16 +26,16 @@ android {
 }
 
 dependencies {
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1-alpha01', {
+    androidTestImplementation(libs.espresso.core) {
         exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    testImplementation 'junit:junit:4.12'
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    api 'androidx.annotation:annotation:1.0.1'
-    api 'com.github.hyb1996:settingscompat:1.1.5'
-    
+    }
+    testImplementation libs.junit
+    api libs.kotlin.stdlib
+    api libs.androidx.annotation
+    api libs.settingscompat
+    api libs.opencv
+
     api files('libs/emulatorview-release.aar')
     api files('libs/libtermexec-release.aar')
-    api("org.opencv:opencv:4.9.0")
     api files('libs/term-debug.aar')
 }
