@@ -102,15 +102,15 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1-alpha01', {
+    androidTestImplementation(libs.espresso.core) {
         exclude group: 'com.android.support', module: 'support-annotations'
-    })
+    }
+    testImplementation libs.junit
+
     //Glide
-    implementation('com.github.bumptech.glide:glide:4.2.0', {
+    implementation(libs.glide) {
         exclude group: 'com.android.support'
-    })
-    testImplementation 'junit:junit:4.12'
-    implementation project(':automator')
-    implementation project(':common')
+    }
+
     implementation project(':autojs')
 }
