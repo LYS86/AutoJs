@@ -1,14 +1,14 @@
 # Auto.js
 ## 简介
-一个支持无障碍服务的Android平台上的JavaScript IDE，其发展目标是JsBox和Workflow。
+这是一款 Android 平台的自动化工具软件。
 
-同时有[VS Code 插件](https://github.com/hyb1996/Auto.js-VSCode-Extension)可提供基础的在桌面开发的功能。
+[Auto.js](https://github.com/hyb1996/NoRootScriptDroid)由[hyb1996](https://github.com/hyb1996)开发,已停止维护，最后版本名称为 4.1.1 Alpha2, 构建版本号为 461，基于该项目进行二次开发。
 
-下载地址：[酷安](http://www.coolapk.com/apk/org.autojs.autojs)
+电脑端使用[VS Code 插件](https://github.com/LYS86/Auto.js-VSCode-Extension)配合使用
 
-Alpha版本：[Releases](https://github.com/hyb1996/NoRootScriptDroid/releases)
+下载地址：[Releases](https://github.com/LYS86/AutoJs/releases)
 
-官方文档：https://hyb1996.github.io/AutoJs-Docs/
+文档：https://hyb1996.github.io/AutoJs-Docs/
 
 ### 特性
 1. 由无障碍服务实现的简单易用的自动操作函数
@@ -26,22 +26,6 @@ Alpha版本：[Releases](https://github.com/hyb1996/NoRootScriptDroid/releases)
 2. Auto.js兼容性更好。以坐标为基础的按键精灵、脚本精灵很容易出现分辨率问题，而以控件为基础的Auto.js则没有这个问题
 3. Auto.js执行大部分任务不需要root权限。只有需要精确坐标点击、滑动的相关函数才需要root权限
 4. Auto.js可以提供界面编写等功能，不仅仅是作为一个脚本软件而存在
-
-
-### 信息
-* 官方论坛： [autojs.org](http://www.autojs.org)
-* 文档：可在[这里](https://hyb1996.github.io/AutoJs-Docs/)查看在线文档。目前文档仍然不完善。
-* 示例：可在[这里](https://github.com/hyb1996/NoRootScriptDroid/tree/master/app/src/main/assets/sample)查看一些示例，或者直接在应用内查看和运行。
-
-### 截图
-
-![screen-capture2](https://raw.githubusercontent.com/hyb1996/NoRootScriptDroid/master/screen-captures/ss02.png)
-
-![screen-capture5](https://raw.githubusercontent.com/hyb1996/NoRootScriptDroid/master/screen-captures/ss05.png)
-
-![screen-capture5](https://raw.githubusercontent.com/hyb1996/NoRootScriptDroid/master/screen-captures/ss07.png)
-
-![screen-capture5](https://raw.githubusercontent.com/hyb1996/NoRootScriptDroid/master/screen-captures/ss08.png)
 
 ## License
 基于[Mozilla Public License Version 2.0](https://github.com/hyb1996/NoRootScriptDroid/blob/master/LICENSE.md)并附加以下条款：
