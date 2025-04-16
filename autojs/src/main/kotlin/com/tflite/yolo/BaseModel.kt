@@ -1,6 +1,7 @@
 package org.autojs.autojs.core.yolo
 
 import android.graphics.Bitmap
+import com.stardust.autojs.core.image.ImageWrapper
 import com.tflite.yolo.FileUtil
 import com.tflite.yolo.ImageProcessor
 import org.mozilla.javascript.NativeObject
@@ -30,7 +31,7 @@ abstract class BaseModel {
     // 图像处理
     protected var inputWidth = 640
     protected var inputHeight = 640
-    private lateinit var imageProcessor: ImageProcessor
+    protected lateinit var imageProcessor: ImageProcessor
 
     // 模型数据
     protected var labels: List<String> = emptyList()
@@ -45,7 +46,7 @@ abstract class BaseModel {
         try {
             val model = options["model"] as? String
             val labels = options["labels"] as? String
-            val isGPU = options["gpu"] as? Boolean ?: false
+            val isGPU = options["gpu"] as? Boolean == true
             if (model.isNullOrBlank()) {
                 throw IllegalArgumentException("模型路径不能为空")
             }
@@ -170,12 +171,15 @@ abstract class BaseModel {
         inputWidth = inputShape[1]
         inputHeight = inputShape[2]
         outputBuffer = TensorBuffer.createFixedSize(outputShape, DataType.FLOAT32)
-        imageProcessor = ImageProcessor(inputWidth, inputHeight)
+        imageProcessor = ImageProcessor.create()
+            .size(inputWidth, inputHeight)
+            .normalize()
+            .mode(ImageProcessor.Mode.OPENCV)
     }
 
     protected fun preprocessImage(bitmap: Bitmap): ByteBuffer {
-        val inputBuffer = imageProcessor.process(bitmap)
-        return inputBuffer
+        val inputBuffer = imageProcessor.ofBitmap(bitmap)
+        return inputBuffer.buffer
     }
 
     protected fun runInference(image: ByteBuffer): TensorBuffer {

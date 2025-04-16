@@ -1,6 +1,7 @@
 package com.tflite.yolo
 
 import android.graphics.RectF
+import android.util.Log
 
 object Output {
     var conf = 0.25F // 默认置信度阈值
@@ -24,15 +25,15 @@ object Output {
     fun setShape(shape: IntArray) {
         when {
             shape[1] == 300 && shape[2] == 6 -> { // YOLOv10
+                Log.d("Output","输出形状：${shape.contentToString()}")
                 numDetections = shape[1]
             }
-
-            shape[2] in arrayOf(2100, 8400) -> { // YOLOv8, YOLOv9, YOLOv11
+            else -> { // YOLOv8, YOLOv9, YOLOv11
+                Log.d("Output","输出形状：${shape.contentToString()}")
                 numClasses = shape[1] - 4
                 numDetections = shape[2]
             }
 
-            else -> throw IllegalArgumentException("未适配输出形状: ${shape.contentToString()}")
         }
     }
 

@@ -5,7 +5,6 @@ import com.stardust.autojs.core.image.ImageWrapper
 import org.autojs.autojs.core.yolo.BaseModel
 
 class Detection : BaseModel() {
-    private lateinit var preprocessor: ImageProcessor
     fun drawBoxes(bitmap: Any, results: Array<Result>): Any {
         return when (bitmap) {
             is Bitmap -> FileUtil.drawBoxes(bitmap, results)
@@ -46,13 +45,12 @@ class Detection : BaseModel() {
                 is ImageWrapper -> input.bitmap
                 else -> throw IllegalArgumentException("不支持的图像类型: ${input?.javaClass}")
             }
-            val image = preprocessor.process(bitmap)
+            val image = preprocessImage(bitmap)
             val output = runInference(image)
             val results = Output.parseOutput(output.floatArray, labels)
             results.forEach { result ->
-                result.rect = preprocessor.normToOrig(result.rect)
+                result.rect = imageProcessor.normToOrig(result.rect)
             }
-
             return results
         } finally {
             threadLock.unlock()
@@ -61,7 +59,6 @@ class Detection : BaseModel() {
 
     override fun initProcessors() {
         super.initProcessors()
-        preprocessor = ImageProcessor(inputWidth, inputHeight)
         val outputShape = interpreter.getOutputTensor(0).shape()
         Output.setShape(outputShape)
     }
