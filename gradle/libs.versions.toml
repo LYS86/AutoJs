@@ -80,7 +80,7 @@ rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxandroi
 rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava" }
 text-recognition-chinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "mlkit" }
 text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "mlkit" }
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
 settingscompat = { module = "com.github.hyb1996:settingscompat", version.ref = "settingscompat" }
 opencv = { module = "org.opencv:opencv", version.ref = "opencv" }
