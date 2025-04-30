@@ -17,6 +17,7 @@ import com.stardust.automator.simple_action.ActionTarget
 import com.stardust.automator.simple_action.SimpleAction
 import com.stardust.util.DeveloperUtils
 import com.stardust.util.ScreenMetrics
+import org.opencv.core.Point
 
 /**
  * Created by Stardust on 2017/4/2.
@@ -201,6 +202,15 @@ class SimpleActionAutomator(private val mAccessibilityBridge: AccessibilityBridg
         return mGlobalActionAutomator.click(x, y)
     }
 
+    fun click(rect: Rect): Boolean {
+        return click(rect.centerX(), rect.centerY())
+    }
+
+    fun click(point: Point): Boolean {
+        return click(point.x.toInt(), point.y.toInt())
+    }
+
+
     @ScriptInterface
     @RequiresApi(api = Build.VERSION_CODES.N)
     fun press(x: Int, y: Int, delay: Int): Boolean {
@@ -208,11 +218,27 @@ class SimpleActionAutomator(private val mAccessibilityBridge: AccessibilityBridg
         return mGlobalActionAutomator.press(x, y, delay)
     }
 
+    fun press(rect: Rect, delay: Int): Boolean {
+        return press(rect.centerX(), rect.centerY(), delay)
+    }
+
+    fun press(point: Point, delay: Int): Boolean {
+        return press(point.x.toInt(), point.y.toInt(), delay)
+    }
+
     @ScriptInterface
     @RequiresApi(api = Build.VERSION_CODES.N)
     fun longClick(x: Int, y: Int): Boolean {
         prepareForGesture()
         return mGlobalActionAutomator.longClick(x, y)
+    }
+
+    fun longClick(rect: Rect): Boolean {
+        return longClick(rect.centerX(), rect.centerY())
+    }
+
+    fun longClick(point: Point): Boolean {
+        return longClick(point.x.toInt(), point.y.toInt())
     }
 
     @ScriptInterface

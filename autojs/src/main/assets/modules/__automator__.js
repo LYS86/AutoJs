@@ -2,35 +2,30 @@
 module.exports = function(runtime, global){
     var automator = {};
 
-    function performAction(action, args){
-        if(args.length == 4){
+    function performAction(action, args) {
+        if (args.length === 2) {
+            if (typeof (args[0]) === 'string') {
+                return action(runtime.automator.text(args[0], args[1]));
+            }
+            return action(args[0], args[1]);
+        }
+
+        if (args.length === 1) {
+            if (typeof (args[0]) === 'string') {
+                return action(runtime.automator.text(args[0], -1));
+            }
+            return action(args[0]);
+        }
+
+        if (args.length === 4) {
             return action(runtime.automator.bounds(args[0], args[1], args[2], args[3]));
-        }else if(args.length == 2){
-            return action(runtime.automator.text(args[0], args[1]));
-        }else {
-            return action(runtime.automator.text(args[0], -1));
         }
+
     }
 
-    automator.click = function(){
-        if(arguments.length == 2 && typeof(arguments[0]) == 'number' && typeof(arguments[1]) == 'number'){
-            return runtime.automator.click(arguments[0], arguments[1]);
-        }
-        return performAction(function(target){
-            return runtime.automator.click(target);
-        }, arguments);
-    }
-
-    automator.longClick = function(a, b, c, d){
-        if(arguments.length == 2 && typeof(arguments[0]) == 'number' && typeof(arguments[1]) == 'number'){
-            return  runtime.automator.longClick(arguments[0], arguments[1]);
-        }
-        return performAction(function(target){
-            return runtime.automator.longClick(target);
-        }, arguments);
-    }
-
-     automator.press = runtime.automator.press.bind(runtime.automator);
+    automator.click = function () { return performAction(runtime.automator.click.bind(runtime.automator), arguments); }
+    automator.longClick = function () { return performAction(runtime.automator.longClick.bind(runtime.automator), arguments); }
+    automator.press = function () { return performAction(runtime.automator.press.bind(runtime.automator), arguments); }
      automator.gesture = runtime.automator.gesture.bind(runtime.automator, 0);
      automator.gestureAsync = runtime.automator.gestureAsync.bind(runtime.automator, 0);
      automator.swipe = runtime.automator.swipe.bind(runtime.automator);
