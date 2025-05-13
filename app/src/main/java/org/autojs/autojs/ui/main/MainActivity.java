@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -22,28 +21,20 @@ import com.stardust.app.OnActivityResultDelegate;
 import com.stardust.autojs.core.permission.OnRequestPermissionsResultCallback;
 import com.stardust.autojs.core.permission.PermissionRequestProxyActivity;
 import com.stardust.autojs.core.permission.RequestPermissionCallbacks;
-import com.stardust.pio.PFiles;
 import com.stardust.theme.ThemeColorManager;
 import com.stardust.util.BackPressedHandler;
-import com.stardust.util.DeveloperUtils;
 import com.stardust.util.DrawerAutoClose;
 
-import org.autojs.autojs.BuildConfig;
-import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.ActivityMainBinding;
 import org.autojs.autojs.model.explorer.Explorers;
-import org.autojs.autojs.tool.AccessibilityServiceTool;
 import org.autojs.autojs.ui.BaseActivity;
-import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.doc.DocsFragment;
 import org.autojs.autojs.ui.log.LogActivity;
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment;
-import org.autojs.autojs.ui.widget.CommonMarkdownView;
 import org.autojs.autojs.ui.widget.SearchViewItem;
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Arrays;
 
@@ -65,13 +56,8 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         checkPermissions();
-        EventBus.getDefault().register(this);
         applyDayNightMode();
         setUpViews();
-    }
-
-    @Subscribe
-    public void onDrawerOpened(DrawerOpenEvent event) {
     }
 
     private void setUpViews() {
@@ -81,12 +67,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         registerBackPressHandlers();
         ThemeColorManager.addViewBackground(findViewById(R.id.app_bar));
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                EventBus.getDefault().post(DrawerOpenEvent.SINGLETON);
-            }
-        });
     }
 
 
@@ -291,7 +271,4 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         binding = null;
     }
 
-    public static class DrawerOpenEvent {
-        static DrawerOpenEvent SINGLETON = new DrawerOpenEvent();
-    }
 }
