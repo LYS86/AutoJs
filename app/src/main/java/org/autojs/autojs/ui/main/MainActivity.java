@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,8 +24,10 @@ import com.stardust.autojs.core.permission.PermissionRequestProxyActivity;
 import com.stardust.autojs.core.permission.RequestPermissionCallbacks;
 import com.stardust.theme.ThemeColorManager;
 import com.stardust.util.BackPressedHandler;
+import com.stardust.util.DeveloperUtils;
 import com.stardust.util.DrawerAutoClose;
 
+import org.autojs.autojs.BuildConfig;
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.ActivityMainBinding;
 import org.autojs.autojs.model.explorer.Explorers;
@@ -163,9 +166,9 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     @Override
     protected void onStart() {
         super.onStart();
-//        if (!BuildConfig.DEBUG) {
-//            DeveloperUtils.verifyApk(this, R.string.dex_crcs);
-//        }
+        if (!BuildConfig.DEBUG) {
+            DeveloperUtils.verifyApk(this, R.string.dex_crcs);
+        }
     }
 
     @NonNull
