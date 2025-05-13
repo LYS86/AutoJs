@@ -29,6 +29,7 @@ android {
     }
     buildFeatures {
         buildConfig = true
+        aidl = true
     }
 }
 
@@ -61,14 +62,9 @@ dependencies {
     api(files("libs/rhino-1.7.15.jar"))
     api(project(":common"))
     api(project(":automator"))
-}
+    implementation(libs.bundles.shizuku)
+    implementation(libs.bundles.litert.all)
 
-// LiteRT dependencies
-dependencies {
-    implementation(libs.litert)
-    implementation(libs.litert.gpu)
-    implementation(libs.litert.metadata)
-    implementation(libs.litert.support)
 }
 
 // ML Kit dependencies

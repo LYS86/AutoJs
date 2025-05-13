@@ -3,6 +3,7 @@ package com.stardust.autojs.runtime.api;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.stardust.autojs.engine.RootAutomatorEngine;
 import com.stardust.util.ScreenMetrics;
 
@@ -24,6 +25,14 @@ public abstract class AbstractShell {
                     ", error='" + error + '\'' +
                     ", result='" + result + '\'' +
                     '}';
+        }
+
+        public String toJson() {
+            return new Gson().toJson(this);
+        }
+
+        public static Result ofJson(String json) {
+            return new Gson().fromJson(json, Result.class);
         }
     }
 
