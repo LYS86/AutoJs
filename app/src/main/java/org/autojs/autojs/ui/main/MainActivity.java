@@ -3,7 +3,11 @@ package org.autojs.autojs.ui.main;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -16,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.tabs.TabLayout;
 import com.stardust.app.FragmentPagerAdapterBuilder;
 import com.stardust.app.OnActivityResultDelegate;
@@ -31,6 +36,7 @@ import org.autojs.autojs.BuildConfig;
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.ActivityMainBinding;
 import org.autojs.autojs.model.explorer.Explorers;
+import org.autojs.autojs.tool.PermissionTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.doc.DocsFragment;
 import org.autojs.autojs.ui.log.LogActivity;
@@ -79,7 +85,42 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     }
 
     private void checkPermissions() {
-        checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (hasStoragePermission()) {
+                return;
+            }
+            new MaterialDialog.Builder(this).title(R.string.text_storage_permission).content(R.string.description_storage_permission).positiveText(R.string.text_go_to_settings).negativeText(android.R.string.cancel).cancelable(false).canceledOnTouchOutside(false).onPositive((dialog, which) -> {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+                startPermissionCheck();
+            }).show();
+            return;
+        }
+        if (!hasStoragePermission()) {
+            checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+    }
+
+
+    private void startPermissionCheck() {
+        Intent intent = new Intent(this, MainActivity.class);
+        PermissionTool.create(this::hasStoragePermission).start(new PermissionTool.Callback() {
+            @Override
+            public void onPermissionGranted() {
+                Explorers.workspace().refreshAll();
+                startActivity(intent);
+            }
+
+            @Override
+            public void onTimeout() {
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+                Log.e(LOG_TAG, "权限检查错误", throwable);
+            }
+        }).stop();
     }
 
 
@@ -150,8 +191,19 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         if (mRequestPermissionCallbacks.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
             return;
         }
-        if (getGrantResult(Manifest.permission.READ_EXTERNAL_STORAGE, permissions, grantResults) == PackageManager.PERMISSION_GRANTED) {
-            Explorers.workspace().refreshAll();
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            if (getGrantResult(Manifest.permission.READ_EXTERNAL_STORAGE, permissions, grantResults) == PackageManager.PERMISSION_GRANTED) {
+                Explorers.workspace().refreshAll();
+            }
+        }
+    }
+
+    public boolean hasStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageManager();
+        } else {
+            return checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         }
     }
 
@@ -270,7 +322,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
         binding = null;
     }
 

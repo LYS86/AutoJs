@@ -137,4 +137,7 @@ dependencies {
     // Project modules
     implementation(project(":autojs"))
     implementation(libs.commons.io)
+
+    implementation("io.reactivex.rxjava3:rxjava:3.1.10")
+    implementation ("io.reactivex.rxjava3:rxandroid:3.0.2")
 }
