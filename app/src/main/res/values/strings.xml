@@ -234,6 +234,7 @@
     <string name="text_shizuku_permission">Shizuku权限</string>
     <string name="text_shizuku_app_not_installed">请先安装Shizuku应用</string>
     <string name="text_shizuku_service_not_ready">Shizuku未运行</string>
+    <string name="text_to_shizuku">是否前往Shizuku启动服务</string>
     <string name="text_shizuku_permission_denied">Shizuku权限被拒绝</string>
     <string name="text_open_main_activity">打开主界面</string>
     <string name="text_generate_code">生成代码</string>

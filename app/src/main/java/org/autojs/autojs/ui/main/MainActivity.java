@@ -72,8 +72,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     private void setUpViews() {
         setUpToolbar();
         setUpTabViewPager();
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         registerBackPressHandlers();
         ThemeColorManager.addViewBackground(findViewById(R.id.app_bar));
     }

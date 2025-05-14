@@ -138,6 +138,6 @@ dependencies {
     implementation(project(":autojs"))
     implementation(libs.commons.io)
 
-    implementation("io.reactivex.rxjava3:rxjava:3.1.10")
-    implementation ("io.reactivex.rxjava3:rxandroid:3.0.2")
+    implementation(libs.rxjava3.rxjava)
+    implementation (libs.rxjava3.rxandroid)
 }

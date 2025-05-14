@@ -1,0 +1,468 @@
+package org.autojs.autojs.ui.main.drawer
+
+import android.app.AppOpsManager
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.provider.Settings
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.MaterialDialog
+import com.shizuku.Utils
+import com.stardust.app.GlobalAppContext
+import com.stardust.app.isOpPermissionGranted
+import com.stardust.notification.NotificationListenerService
+import com.stardust.util.IntentUtil
+import com.stardust.view.accessibility.AccessibilityService
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import org.autojs.autojs.Pref
+import org.autojs.autojs.R
+import org.autojs.autojs.databinding.FragmentDrawerBinding
+import org.autojs.autojs.external.foreground.ForegroundService
+import org.autojs.autojs.pluginclient.DevPluginService
+import org.autojs.autojs.tool.AccessibilityServiceTool
+import org.autojs.autojs.tool.WifiTool
+import org.autojs.autojs.ui.BaseActivity
+import org.autojs.autojs.ui.common.DialogUtils
+import org.autojs.autojs.ui.common.MessageUtils
+import org.autojs.autojs.ui.floating.CircularMenu
+import org.autojs.autojs.ui.floating.FloatyWindowManger
+import org.autojs.autojs.ui.settings.SettingsActivity
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import kotlin.system.exitProcess
+
+class DrawerFragment : Fragment() {
+
+    companion object {
+        private const val URL_DEV_PLUGIN = "https://www.autojs.org/topic/968/"
+    }
+
+    private val mStableModeItem = object : DrawerMenuItem(
+        R.drawable.ic_stable, R.string.text_stable_mode, R.string.key_stable_mode, null
+    ) {
+        override var isChecked: Boolean
+            get() = super.isChecked
+            set(checked) {
+                super.isChecked = checked
+                if (checked) showStableModePromptIfNeeded()
+            }
+    }
+
+    private val mNotificationPermissionItem = DrawerMenuItem(
+        R.drawable.ic_ali_notification, R.string.text_notification_permission, 0
+    ) { holder ->
+        goToNotificationServiceSettings(holder)
+    }
+
+    private val mForegroundServiceItem = DrawerMenuItem(
+        R.drawable.ic_service_green,
+        R.string.text_foreground_service,
+        R.string.key_foreground_servie
+    ) { holder ->
+        toggleForegroundService(holder)
+    }
+
+    private val mUsageStatsPermissionItem = DrawerMenuItem(
+        R.drawable.ic_ali_notification, R.string.text_usage_stats_permission, 0
+    ) { holder ->
+        goToUsageStatsSettings(holder)
+    }
+
+    private val mFloatingWindowItem =
+        DrawerMenuItem(R.drawable.ic_robot_64, R.string.text_floating_window, 0) { holder ->
+            showOrDismissFloatingWindow(holder)
+        }
+
+    private val mCheckForUpdatesItem =
+        DrawerMenuItem(R.drawable.ic_check_for_updates, R.string.text_check_for_updates) { holder ->
+            checkForUpdates(holder)
+        }
+
+    private val mConnectionItem =
+        DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0) { holder ->
+            connectOrDisconnectToRemote(holder)
+        }
+
+    private val mAccessibilityServiceItem = DrawerMenuItem(
+        R.drawable.ic_service_green, R.string.text_accessibility_service, 0
+    ) { holder ->
+        enableOrDisableAccessibilityService(holder)
+    }
+
+    private val mShizukuItem =
+        DrawerMenuItem(R.drawable.ic_service_green, R.string.text_shizuku_permission, 0) { holder ->
+            requestShizukuPermission(holder)
+        }
+
+    private val compositeDisposable = CompositeDisposable()
+    private var mConnectionStateDisposable: Disposable? = null
+    private var _binding: FragmentDrawerBinding? = null
+    private val binding get() = _binding!!
+    private var remoteHostDialog: MaterialDialog? = null
+    private lateinit var mDrawerMenuAdapter: DrawerMenuAdapter
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+
+    private fun inputRemoteHost() {
+        val host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(activity))
+        DialogUtils.custom(requireActivity())
+            .title(R.string.text_server_address)
+            .input("", host) { _, input ->
+                Pref.saveServerAddress(input.toString())
+                val disposable = DevPluginService.getInstance()
+                    .connectToServer(input.toString())
+                    .subscribe({}, this::onConnectException)
+                compositeDisposable.add(disposable)
+            }
+            .neutralText(R.string.text_help)
+            .onNeutral { _, _ ->
+                setChecked(mConnectionItem, false)
+                IntentUtil.browse(activity, URL_DEV_PLUGIN)
+            }
+            .cancelListener {
+                setChecked(mConnectionItem, false)
+            }
+            .show()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initMenuItems()
+        if (Pref.isFloatingMenuShown()) {
+            FloatyWindowManger.showCircularMenuIfNeeded()
+            setChecked(mFloatingWindowItem, true)
+        }
+        setChecked(mConnectionItem, DevPluginService.getInstance().isConnected)
+        if (Pref.isForegroundServiceEnabled()) {
+            ForegroundService.start(GlobalAppContext.get())
+            setChecked(mForegroundServiceItem, true)
+        }
+        binding.drawerMenu.adapter = mDrawerMenuAdapter
+        binding.drawerMenu.layoutManager = LinearLayoutManager(context)
+        binding.setting.setOnClickListener {
+            startActivity(Intent(activity, SettingsActivity::class.java))
+        }
+        binding.exit.setOnClickListener {
+            activity?.let {
+                it.finishAffinity()
+                exitProcess(0)
+            }
+        }
+        if (Pref.isConnected() && !DevPluginService.getInstance().isConnected) {
+            val host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(activity))
+            val disposable = DevPluginService.getInstance().connectToServer(host)
+                .subscribe({}, this::onConnectException)
+            compositeDisposable.add(disposable)
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentDrawerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    private fun enableAccessibilityServiceByRoot() {
+        setProgress(mAccessibilityServiceItem, true)
+        val disposable = Observable.fromCallable {
+            AccessibilityServiceTool.enableAccessibilityServiceByRootAndWaitFor(4000)
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            .subscribe { succeed ->
+                if (!succeed) {
+                    showMessage(R.string.text_enable_accessibitliy_service_by_root_failed)
+                    AccessibilityServiceTool.goToAccessibilitySetting()
+                }
+                setProgress(mAccessibilityServiceItem, false)
+            }
+        compositeDisposable.add(disposable)
+    }
+
+    private fun goToUsageStatsSettings(holder: DrawerMenuItemViewHolder) {
+        val enabled = context?.isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS) == true
+        val checked = holder.switchCompat.isChecked
+
+        if (checked && !enabled) {
+            DialogUtils.showConfirm(
+                context = requireContext(),
+                title = getString(R.string.text_usage_stats_permission),
+                content = getString(R.string.description_usage_stats_permission),
+                positiveText = getString(R.string.ok),
+                onPositive = { IntentUtil.requestAppUsagePermission(context) },
+                onNegative = { setChecked(mUsageStatsPermissionItem, false) }
+            ).apply {
+                setCancelable(false)
+                setCanceledOnTouchOutside(false)
+            }
+        }
+
+        if (!checked && enabled) {
+            IntentUtil.requestAppUsagePermission(context)
+        }
+    }
+
+    private fun checkForUpdates(holder: DrawerMenuItemViewHolder) {
+        setProgress(mCheckForUpdatesItem, true)
+        showMessage("功能维护中")
+        setProgress(mCheckForUpdatesItem, false)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    ForegroundService.start(requireContext())
+                    setChecked(mForegroundServiceItem, true)
+                } else {
+                    showMessage(R.string.foreground_service_need_notification_permission)
+                    setChecked(mForegroundServiceItem, false)
+                }
+            }
+        mConnectionStateDisposable = DevPluginService.getInstance().connectionState()
+            .observeOn(AndroidSchedulers.mainThread()).subscribe { state ->
+                mConnectionItem.let {
+                    setChecked(it, state.state == DevPluginService.State.CONNECTED)
+                    setProgress(it, state.state == DevPluginService.State.CONNECTING)
+                }
+                if (state.exception != null) {
+                    Pref.setConnected(false)
+                    showMessage(state.exception.message ?: "")
+                }
+            }
+        EventBus.getDefault().register(this)
+    }
+
+    private fun initMenuItems() {
+        mDrawerMenuAdapter = DrawerMenuAdapter(
+            arrayListOf(
+                DrawerMenuGroup(R.string.text_service),
+                mAccessibilityServiceItem,
+                mStableModeItem,
+                mNotificationPermissionItem,
+                mForegroundServiceItem,
+                mUsageStatsPermissionItem,
+                mShizukuItem,
+                DrawerMenuGroup(R.string.text_script_record),
+                mFloatingWindowItem,
+                DrawerMenuItem(
+                    R.drawable.ic_volume,
+                    R.string.text_volume_down_control,
+                    R.string.key_use_volume_control_record,
+                    null
+                ),
+                DrawerMenuGroup(R.string.text_others),
+                mConnectionItem,
+                DrawerMenuItem(
+                    R.drawable.ic_personalize, R.string.text_theme_color
+                ) { holder -> openThemeColorSettings(holder) },
+                DrawerMenuItem(
+                    R.drawable.ic_night_mode, R.string.text_night_mode, R.string.key_night_mode
+                ) { holder -> toggleNightMode(holder) },
+                mCheckForUpdatesItem
+            )
+        )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        remoteHostDialog?.let {
+            if (it.isShowing) it.dismiss()
+        }
+        _binding = null
+    }
+
+    private fun onConnectException(e: Throwable) {
+        setChecked(mConnectionItem, false)
+        Pref.setConnected(false)
+        showMessage(getString(R.string.error_connect_to_remote, e.message ?: ""))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mConnectionStateDisposable?.dispose()
+        compositeDisposable.clear()
+        EventBus.getDefault().unregister(this)
+    }
+
+    private fun goToNotificationServiceSettings(holder: DrawerMenuItemViewHolder) {
+        val enabled = NotificationListenerService.instance != null
+        val checked = holder.switchCompat.isChecked
+        if ((checked && !enabled) || (!checked && enabled)) {
+            startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+        }
+    }
+
+    private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {
+        val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
+        val checked = holder.switchCompat.isChecked
+        if (checked && !isAccessibilityServiceEnabled) {
+            enableAccessibilityService()
+        } else if (!checked && isAccessibilityServiceEnabled) {
+            if (!AccessibilityService.disable()) {
+                AccessibilityServiceTool.goToAccessibilitySetting()
+            }
+        }
+    }
+
+    private fun showOrDismissFloatingWindow(holder: DrawerMenuItemViewHolder) {
+        val isFloatingWindowShowing = FloatyWindowManger.isCircularMenuShowing()
+        val checked = holder.switchCompat.isChecked
+        if (checked && !isFloatingWindowShowing) {
+            val checked2 = FloatyWindowManger.showCircularMenu()
+            Pref.setFloatingMenuShown(checked2)
+            setChecked(mFloatingWindowItem, checked2)
+        } else if (!checked && isFloatingWindowShowing) {
+            FloatyWindowManger.hideCircularMenu()
+        }
+    }
+
+    private fun openThemeColorSettings(holder: DrawerMenuItemViewHolder) {
+        SettingsActivity.selectThemeColor(activity)
+    }
+
+    private fun toggleNightMode(holder: DrawerMenuItemViewHolder) {
+        (activity as? BaseActivity)?.setNightModeEnabled(holder.switchCompat.isChecked)
+    }
+
+    private fun connectOrDisconnectToRemote(holder: DrawerMenuItemViewHolder) {
+        val checked = holder.switchCompat.isChecked
+        val connected = DevPluginService.getInstance().isConnected
+        if (checked && !connected) {
+            inputRemoteHost()
+        } else if (!checked && connected) {
+            DevPluginService.getInstance().disconnectIfNeeded()
+        }
+    }
+
+    private fun toggleForegroundService(holder: DrawerMenuItemViewHolder) {
+        val checked = holder.switchCompat.isChecked
+        if (!checked) {
+            ForegroundService.stop(requireContext())
+            return
+        }
+
+        val hasPermission = ForegroundService.hasNotificationPermission(requireContext())
+        if (!hasPermission) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                showMessage(R.string.foreground_service_need_notification_permission)
+            }
+            setChecked(mForegroundServiceItem, false)
+            return
+        }
+        ForegroundService.start(requireContext())
+    }
+
+    private fun showStableModePromptIfNeeded() {
+        DialogUtils.showBasic(
+            context = requireContext(),
+            title = getString(R.string.text_stable_mode),
+            content = getString(R.string.description_stable_mode),
+            positiveText = getString(R.string.ok)
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        syncSwitchState()
+    }
+
+    private fun syncSwitchState() {
+        setChecked(
+            mAccessibilityServiceItem,
+            AccessibilityServiceTool.isAccessibilityServiceEnabled(activity)
+        )
+        setChecked(mNotificationPermissionItem, NotificationListenerService.instance != null)
+        setChecked(
+            mUsageStatsPermissionItem,
+            context?.isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS) == true
+        )
+        val utils = Utils(requireContext())
+        setChecked(mShizukuItem, utils.hasPermission())
+    }
+
+    private fun enableAccessibilityService() {
+        if (!Pref.shouldEnableAccessibilityServiceByRoot()) {
+            AccessibilityServiceTool.goToAccessibilitySetting()
+            return
+        }
+        enableAccessibilityServiceByRoot()
+    }
+
+    @Subscribe
+    fun onCircularMenuStateChange(event: CircularMenu.StateChangeEvent) {
+        setChecked(mFloatingWindowItem, event.currentState != CircularMenu.STATE_CLOSED)
+    }
+
+    private fun showMessage(id: Int) {
+        showMessage(getString(id))
+    }
+
+    private fun showMessage(text: CharSequence) {
+        MessageUtils.show(
+            context = context,
+            view = view,
+            message = text.toString()
+        )
+    }
+
+    private fun setProgress(item: DrawerMenuItem, progress: Boolean) {
+        item.isProgress = progress
+        mDrawerMenuAdapter.notifyItemChanged(item)
+    }
+
+    private fun setChecked(item: DrawerMenuItem, checked: Boolean) {
+        item.isChecked = checked
+        mDrawerMenuAdapter.notifyItemChanged(item)
+    }
+
+    private fun isAccessibilityServiceEnabled(): Boolean {
+        return AccessibilityServiceTool.isAccessibilityServiceEnabled(activity)
+    }
+
+    private fun requestShizukuPermission(holder: DrawerMenuItemViewHolder) {
+        val checked = holder.switchCompat.isChecked
+        if (!checked) {
+            return
+        }
+
+        val utils = Utils(requireContext())
+
+        if (!utils.hasApp()) {
+            showMessage(R.string.text_shizuku_app_not_installed)
+            setChecked(mShizukuItem, false)
+            return
+        }
+
+        if (!utils.isReady()) {
+            setChecked(mShizukuItem, false)
+            DialogUtils.showConfirm(
+                context = requireContext(),
+                title = getString(R.string.text_shizuku_service_not_ready),
+                content = getString(R.string.text_to_shizuku),
+                onPositive = {
+                    utils.launchApp()
+                }
+            )
+            return
+        }
+
+        utils.requestPermission { granted ->
+            setChecked(mShizukuItem, granted)
+            if (!granted) {
+                showMessage(R.string.text_shizuku_permission_denied)
+            }
+        }
+    }
+}

@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.floating;
 
+import static com.stardust.autojs.util.FloatingPermission.manageDrawOverlays;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -10,19 +12,10 @@ import com.stardust.app.GlobalAppContext;
 import com.stardust.autojs.util.FloatingPermission;
 import com.stardust.enhancedfloaty.FloatyService;
 import com.stardust.enhancedfloaty.FloatyWindow;
-import com.stardust.enhancedfloaty.util.FloatingWindowPermissionUtil;
 
-import org.autojs.autojs.App;
 import org.autojs.autojs.R;
-import org.autojs.autojs.ui.floating.CircularMenu;
-
-import com.stardust.util.IntentUtil;
 
 import java.lang.ref.WeakReference;
-
-import ezy.assist.compat.SettingsCompat;
-
-import static com.stardust.autojs.util.FloatingPermission.manageDrawOverlays;
 
 /**
  * Created by Stardust on 2017/9/30.
@@ -71,6 +64,10 @@ public class FloatyWindowManger {
             sCircularMenu = new WeakReference<>(menu);
             return true;
         }
+    }
+
+    public static boolean hasPermission() {
+        return FloatingPermission.canDrawOverlays(GlobalAppContext.get());
     }
 
     public static void hideCircularMenu() {
