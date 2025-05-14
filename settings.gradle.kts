@@ -1,8 +1,6 @@
-include(":app", ":automator", ":common", ":autojs", ":inrt",
-        ":emulatorview",
-        ":libtermexec",
-        ":term")
-
-project(":emulatorview").projectDir = file("common/libs/emulatorview")
-project(":libtermexec").projectDir = file("common/libs/libtermexec")
-project(":term").projectDir = file("common/libs/term")
+include(
+        ":app", ":automator", ":common", ":autojs", ":inrt",
+        ":common:libs:emulatorview",
+        ":common:libs:libtermexec",
+        ":common:libs:term"
+)
