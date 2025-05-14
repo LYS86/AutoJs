@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -66,6 +68,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     private FragmentDrawerBinding binding;
     private MaterialDialog remoteHostDialog;
     private DrawerMenuAdapter mDrawerMenuAdapter;
+    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     private void inputRemoteHost() {
         String host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(getActivity()));
@@ -89,7 +92,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
         setChecked(mConnectionItem, DevPluginService.getInstance().isConnected());
         if (Pref.isForegroundServiceEnabled()) {
-            ForegroundService.start(GlobalAppContext.get());
+            ForegroundService.Companion.start(GlobalAppContext.get());
             setChecked(mForegroundServiceItem, true);
         }
         binding.drawerMenu.setAdapter(mDrawerMenuAdapter);
@@ -164,6 +167,15 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                ForegroundService.Companion.start(requireContext());
+                setChecked(mForegroundServiceItem, true);
+            } else {
+                showMessage(R.string.foreground_service_need_notification_permission);
+                setChecked(mForegroundServiceItem, false);
+            }
+        });
         mConnectionStateDisposable = DevPluginService.getInstance().connectionState().observeOn(AndroidSchedulers.mainThread()).subscribe(state -> {
             if (mConnectionItem != null) {
                 setChecked(mConnectionItem, state.getState() == DevPluginService.State.CONNECTED);
@@ -273,16 +285,31 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         } else if (!checked && connected) {
             DevPluginService.getInstance().disconnectIfNeeded();
         }
-    }    private final DrawerMenuItem mConnectionItem = new DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote);
+    }
 
     private void toggleForegroundService(DrawerMenuItemViewHolder holder) {
         boolean checked = holder.getSwitchCompat().isChecked();
-        if (checked) {
-            ForegroundService.start(GlobalAppContext.get());
-        } else {
-            ForegroundService.stop(GlobalAppContext.get());
+        if (!checked) {
+            ForegroundService.Companion.stop(requireContext());
+            return;
         }
+
+        boolean hasPermission = ForegroundService.Companion.hasNotificationPermission(requireContext());
+        if (!hasPermission) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
+            } else {
+                showMessage(R.string.foreground_service_need_notification_permission);
+            }
+            setChecked(mForegroundServiceItem, false);
+            return;
+        }
+        ForegroundService.Companion.start(requireContext());
+
     }
+
+    private final DrawerMenuItem mConnectionItem = new DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote);
+
 
     private void showStableModePromptIfNeeded() {
         new NotAskAgainDialog.Builder(getContext(), "DrawerFragment.stable_mode").title(R.string.text_stable_mode).content(R.string.description_stable_mode).positiveText(R.string.ok).show();
@@ -371,15 +398,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         });
     }
 
-
-
-
-
-
-
     private final DrawerMenuItem mAccessibilityServiceItem = new DrawerMenuItem(R.drawable.ic_service_green, R.string.text_accessibility_service, 0, this::enableOrDisableAccessibilityService);
-
-
-
 
 }

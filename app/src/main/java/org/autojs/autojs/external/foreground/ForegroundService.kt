@@ -1,93 +1,100 @@
-package org.autojs.autojs.external.foreground;
+package org.autojs.autojs.external.foreground
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-import android.os.IBinder;
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.IBinder
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import org.autojs.autojs.R
+import org.autojs.autojs.ui.main.MainActivity
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
+class ForegroundService : Service() {
 
-import org.autojs.autojs.R;
-import org.autojs.autojs.ui.main.MainActivity;
+    companion object {
+        private const val NOTIFICATION_ID = 1
+        private val CHANNEL_ID = "${ForegroundService::class.java.name}.foreground"
 
-public class ForegroundService extends Service {
+        fun hasNotificationPermission(context: Context): Boolean {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                NotificationManagerCompat.from(context).areNotificationsEnabled()
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.getSystemService(NotificationManager::class.java)?.areNotificationsEnabled() ?: true
+            } else {
+                true
+            }
+        }
 
+        fun start(context: Context) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(Intent(context, ForegroundService::class.java))
+            } else {
+                context.startService(Intent(context, ForegroundService::class.java))
+            }
+        }
 
-    private static final int NOTIFICATION_ID = 1;
-    private static final String CHANEL_ID = ForegroundService.class.getName() + ".foreground";
-
-    public static void start(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(new Intent(context, ForegroundService.class));
-        } else {
-            context.startService(new Intent(context, ForegroundService.class));
+        fun stop(context: Context) {
+            context.stopService(Intent(context, ForegroundService::class.java))
         }
     }
 
-    public static void stop(Context context){
-        context.stopService(new Intent(context, ForegroundService.class));
+    override fun onCreate() {
+        super.onCreate()
+        startForeground()
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        startForeground();
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun startForeground() {
+        startForeground(NOTIFICATION_ID, buildNotification())
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    private void startForeground() {
-        startForeground(NOTIFICATION_ID, buildNotification());
-    }
-
-    private Notification buildNotification() {
+    private fun buildNotification(): Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel();
+            createNotificationChannel()
         }
-        PendingIntent contentIntent = PendingIntent.getActivity(
-                this,
-                0,
-                new Intent(this, MainActivity.class),
-                PendingIntent.FLAG_IMMUTABLE
-        );
-        return new NotificationCompat.Builder(this, CHANEL_ID)
-                .setContentTitle(getString(R.string.foreground_notification_title))
-                .setContentText(getString(R.string.foreground_notification_text))
-                .setSmallIcon(R.drawable.autojs_material)
-                .setWhen(System.currentTimeMillis())
-                .setContentIntent(contentIntent)
-                .setChannelId(CHANEL_ID)
-                .setVibrate(new long[0])
-                .build();
+
+        val contentIntent = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(getString(R.string.foreground_notification_title))
+            .setContentText(getString(R.string.foreground_notification_text))
+            .setSmallIcon(R.drawable.autojs_material)
+            .setWhen(System.currentTimeMillis())
+            .setContentIntent(contentIntent)
+            .setChannelId(CHANNEL_ID)
+            .setVibrate(longArrayOf(0))
+            .build()
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void createNotificationChannel() {
-        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        assert manager != null;
-        CharSequence name = getString(R.string.foreground_notification_channel_name);
-        String description = getString(R.string.foreground_notification_channel_name);
-        NotificationChannel channel = new NotificationChannel(CHANEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
-        channel.setDescription(description);
-        channel.enableLights(false);
-        manager.createNotificationChannel(channel);
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            getString(R.string.foreground_notification_channel_name),
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = getString(R.string.foreground_notification_channel_name)
+            enableLights(false)
+        }
+
+        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
+            .createNotificationChannel(channel)
     }
 
-    @Override
-    public void onDestroy() {
-        stopForeground(true);
-        super.onDestroy();
-
+    override fun onDestroy() {
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        super.onDestroy()
     }
 }
