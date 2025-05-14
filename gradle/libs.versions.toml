@@ -1,6 +1,5 @@
 [versions]
 android-issue-reporter = "1.3.1"
-android-job = "1.2.6"
 android-multi-level-listview = "1.1"
 android-plugin-client-sdk-for1-locale = "4.0.3"
 commonmark-java = "commonmark-parent-0.9.0"
@@ -46,11 +45,11 @@ rootshell = "1.6"
 gson = "2.8.2"
 android-logging-log4j = "1.0.3"
 log4j = "1.2.17"
+work = "2.8.1"
 
 
 [libraries]
 android-issue-reporter = { module = "com.heinrichreimersoftware:android-issue-reporter", version.ref = "android-issue-reporter" }
-android-job = { module = "com.evernote:android-job", version.ref = "android-job" }
 android-multi-level-listview = { module = "com.github.hyb1996:android-multi-level-listview", version.ref = "android-multi-level-listview" }
 android-plugin-client-sdk-for1-locale = { module = "com.twofortyfouram:android-plugin-client-sdk-for-locale", version.ref = "android-plugin-client-sdk-for1-locale" }
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
@@ -103,9 +102,12 @@ rootshell = { module = "com.github.Stericson:RootShell", version.ref = "rootshel
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 android-logging-log4j = { module = "de.mindpipe.android:android-logging-log4j", version.ref = "android-logging-log4j" }
 log4j = { module = "log4j:log4j", version.ref = "log4j" }
+work-runtime = { module = "androidx.work:work-runtime", version.ref = "work" }
+work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 
 [bundles]
 shizuku = ["shizuku-api", "shizuku-provider"]
 litert-all = ["litert", "litert-gpu", "litert-support", "litert-metadata"]
+work = ["work-runtime", "work-runtime-ktx"]
 
 [plugins]

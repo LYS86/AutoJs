@@ -41,8 +41,8 @@ android {
         abi {
             isEnable = true
             reset()
-            include("x86", "armeabi-v7a")
-            isUniversalApk = false
+            include("x86", "armeabi-v7a","arm64-v8a","x86_64")
+            isUniversalApk = true
         }
     }
 
@@ -132,8 +132,8 @@ dependencies {
     implementation(libs.commons) {
         exclude(group = "com.android.support")
     }
-    // Android job
-    implementation(libs.android.job)
+    // WorkManager
+    implementation(libs.bundles.work)
     // Project modules
     implementation(project(":autojs"))
     implementation(libs.commons.io)
