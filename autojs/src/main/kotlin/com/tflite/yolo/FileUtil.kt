@@ -74,18 +74,21 @@ object FileUtil {
      * 绘制检测结果。
      * @param bitmap 原始图片。
      * @param results 检测结果。
+     * @param paint (可选) 自定义画笔设置，如果为null则使用默认红色画笔。
      * @return 绘制检测结果的图片。
      */
-    fun drawBoxes(bitmap: Bitmap, results: Array<Result>): Bitmap {
+    fun drawBoxes(bitmap: Bitmap, results: Array<Result>, paint: Paint? = null): Bitmap {
         val output = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(output)
-        val paint = Paint().apply {
+        val defaultPaint = Paint().apply {
             style = Paint.Style.STROKE
             strokeWidth = 4f
             color = Color.RED
         }
+        val usedPaint = paint ?: defaultPaint
+
         results.forEach { result ->
-            result.draw(canvas, paint, bitmap)
+            result.draw(canvas, usedPaint)
         }
         return output
     }

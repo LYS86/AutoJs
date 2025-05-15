@@ -1,9 +1,7 @@
-package org.autojs.autojs.core.yolo
+package com.tflite.yolo
 
 import android.graphics.Bitmap
-import com.stardust.autojs.core.image.ImageWrapper
-import com.tflite.yolo.FileUtil
-import com.tflite.yolo.ImageProcessor
+import com.google.gson.Gson
 import org.mozilla.javascript.NativeObject
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.InterpreterApi
@@ -19,43 +17,49 @@ import java.util.concurrent.locks.ReentrantLock
 
 abstract class BaseModel {
 
-    // 线程保护
     protected val threadLock = ReentrantLock()
-
-    // TFLite组件
     protected lateinit var interpreter: InterpreterApi
     private lateinit var metadataExtractor: MetadataExtractor
-    private var gpuDelegate: GpuDelegate? = null
+    private val gpuDelegate: GpuDelegate? by lazy {
+        CompatibilityList().use { compatibilityList ->
+            if (compatibilityList.isDelegateSupportedOnThisDevice) {
+                GpuDelegate()
+            } else {
+                null
+            }
+        }
+    }
     private lateinit var outputBuffer: TensorBuffer
 
-    // 图像处理
-    protected var inputWidth = 640
-    protected var inputHeight = 640
     protected lateinit var imageProcessor: ImageProcessor
 
-    // 模型数据
-    protected var labels: List<String> = emptyList()
+    protected var mLabels: List<String> = emptyList()
     protected lateinit var options: InterpreterApi.Options
 
-    init {
-        initGpu()
+    protected val mMetadata: ModelData by lazy {
+        ModelData.ofJson(metadata)
     }
+    protected lateinit var config: Config
 
-    fun init(options: NativeObject) {
+    fun init(config: Any = Config()) {
         threadLock.lock()
         try {
-            val model = options["model"] as? String
-            val labels = options["labels"] as? String
-            val isGPU = options["gpu"] as? Boolean == true
-            if (model.isNullOrBlank()) {
-                throw IllegalArgumentException("模型路径不能为空")
+            this.config = when (config) {
+                is Config -> config
+                is NativeObject -> Config.ofNative(config)
+                is String -> Gson().fromJson(config, Config::class.java)
+                else -> throw IllegalArgumentException("Unsupported config type")
             }
-            loadModel(model, isGPU)
-            loadLabels(labels)
+            loadModel(this.config.modelPath, this.config.useGpu)
+            val labelsPath = this.config.labelsPath
+            if (labelsPath.isNotBlank()) {
+                loadLabels(labelsPath)
+            }
         } finally {
             threadLock.unlock()
         }
     }
+
 
     /**
      * 获取最后一次推理的运行时间（毫秒）
@@ -67,17 +71,10 @@ abstract class BaseModel {
     /**
      * 加载模型
      * @param path 模型文件路径
-     */
-    fun loadModel(path: String) {
-        loadModel(path, true)
-    }
-
-    /**
-     * 加载模型
-     * @param path 模型文件路径
      * @param isGPU 是否使用GPU
      */
-    fun loadModel(path: String, isGPU: Boolean) {
+    @JvmOverloads
+    fun loadModel(path: String, isGPU: Boolean = true) {
         options = getOptions(isGPU)
         loadModel(path, options)
     }
@@ -92,42 +89,36 @@ abstract class BaseModel {
             metadataExtractor = MetadataExtractor(modelBuffer)
             interpreter = InterpreterApi.create(modelBuffer, options)
             initProcessors()
-            loadLabels(null)
         } catch (e: Exception) {
+            e.printStackTrace()
             throw RuntimeException("${e.message}")
         } finally {
             threadLock.unlock()
         }
     }
 
-    /**
-     * 获取模型元数据
-     */
-    fun getMetadata(): String {
-        if (!hasMetadata()) return ""
-        return metadataExtractor.associatedFileNames.firstOrNull()?.let { getAssociatedFile(it) }
-            ?: ""
-    }
+    val metadata: String
+        get() {
+            if (!metadataExtractor.hasMetadata()) return ""
+            return metadataExtractor.associatedFileNames.firstOrNull()
+                ?.let { getAssociatedFile(it) } ?: ""
+        }
 
     /**
      * 加载标签
      */
-    fun loadLabels(path: String?) {
-        if (!path.isNullOrBlank()) {
-            labels = FileUtil.fromFile(path)
-            return
+    fun loadLabels(path: String) {
+        if (path.isBlank()) return
+        try {
+            mLabels = FileUtil.fromFile(path)
+            mMetadata.labels = mLabels
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        val info = getMetadata()
-        if (info.isBlank()) return
-        labels = FileUtil.fromJson(info)
     }
 
-    /**
-     * 获取标签列表
-     */
-    fun getLabels(): Array<String> {
-        return labels.toTypedArray()
-    }
+    val labels: String
+        get() = mLabels.joinToString(",")
 
     fun close() {
         threadLock.lock()
@@ -136,7 +127,6 @@ abstract class BaseModel {
                 interpreter.close()
             }
             gpuDelegate?.close()
-            gpuDelegate = null
             if (::imageProcessor.isInitialized) {
                 imageProcessor.release()
             }
@@ -145,14 +135,6 @@ abstract class BaseModel {
         }
     }
 
-
-    private fun initGpu() {
-        CompatibilityList().use { compatibilityList ->
-            if (compatibilityList.isDelegateSupportedOnThisDevice) {
-                gpuDelegate = GpuDelegate()
-            }
-        }
-    }
 
     private fun getOptions(isGPU: Boolean): InterpreterApi.Options {
         val opts = InterpreterApi.Options().apply {
@@ -166,14 +148,12 @@ abstract class BaseModel {
     }
 
     protected open fun initProcessors() {
-        val inputShape = interpreter.getInputTensor(0).shape()
         val outputShape = interpreter.getOutputTensor(0).shape()
-        inputWidth = inputShape[1]
-        inputHeight = inputShape[2]
+        val inputWidth = mMetadata.imageSize.getOrNull(0) ?: 640
+        val inputHeight = mMetadata.imageSize.getOrNull(1) ?: 640
+        Output.setShape(outputShape, mMetadata)
         outputBuffer = TensorBuffer.createFixedSize(outputShape, DataType.FLOAT32)
-        imageProcessor = ImageProcessor.create()
-            .size(inputWidth, inputHeight)
-            .normalize()
+        imageProcessor = ImageProcessor.create().size(inputWidth, inputHeight).normalize()
             .mode(ImageProcessor.Mode.OPENCV)
     }
 
@@ -186,8 +166,6 @@ abstract class BaseModel {
         interpreter.run(image, outputBuffer.buffer)
         return outputBuffer
     }
-
-    private fun hasMetadata(): Boolean = metadataExtractor.hasMetadata()
 
     private fun getAssociatedFile(fileName: String): String {
         return metadataExtractor.getAssociatedFile(fileName).use { stream ->

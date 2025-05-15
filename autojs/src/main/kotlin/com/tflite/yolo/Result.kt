@@ -1,26 +1,21 @@
 package com.tflite.yolo
 
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 
 data class Result(
-    var rect: RectF,
-    val cnf: Float,
-    val id: Int,
-    val name: String
+    @SerializedName("rect") var rect: RectF = RectF(),
+    @SerializedName("cnf") val cnf: Float = 0f,
+    @SerializedName("id") val id: Int = -1,
+    @SerializedName("name") val name: String = "",
+    @SerializedName("results") val allResults: List<Result> = emptyList()
 ) {
     companion object {
-        /**
-         * 从左上角和右下角坐标创建Result（用于YOLOv10）
-         * @param left 左上角x坐标
-         * @param top 左上角y坐标
-         * @param right 右下角x坐标
-         * @param bottom 右下角y坐标
-         */
-        fun fromLTRB(
+        fun ofLTRB(
             left: Float,
             top: Float,
             right: Float,
@@ -32,14 +27,7 @@ data class Result(
             return Result(RectF(left, top, right, bottom), cnf, cls, clsName)
         }
 
-        /**
-         * 从中心点坐标和宽高创建Result（用于YOLOv8/v9）
-         * @param centerX 中心点x坐标
-         * @param centerY 中心点y坐标
-         * @param width 宽度
-         * @param height 高度
-         */
-        fun fromXYWH(
+        fun ofXYWH(
             centerX: Float,
             centerY: Float,
             width: Float,
@@ -54,22 +42,55 @@ data class Result(
             val bottom = centerY + (height / 2f)
             return Result(RectF(left, top, right, bottom), cnf, cls, clsName)
         }
+
+        fun ofClassify(
+            name: String,
+            cnf: Float,
+            id: Int = -1,
+            allResults: List<Result> = emptyList()
+        ): Result {
+            return Result(cnf = cnf, id = id, name = name, allResults = allResults)
+        }
+
+        fun ofJson(json: String): Result {
+            if (json.isBlank()) return Result()
+            try {
+                return Gson().fromJson(json, Result::class.java) ?: Result()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return Result()
+            }
+        }
     }
 
-    /**
-     * 在画布上绘制边界框
-     */
-    fun draw(canvas: Canvas, paint: Paint, bitmap: Bitmap) {
-        canvas.drawRect(rect, paint)
+    fun draw(canvas: Canvas, paint: Paint) {
+        if (!rect.isEmpty) {
+            canvas.drawRect(rect, paint)
+        }
     }
-     fun toRect(): Rect{
-         return Rect(rect.left.toInt(),rect.top.toInt(),rect.right.toInt(),rect.bottom.toInt())
-     }
+
+    fun toRect(): Rect {
+        return Rect(
+            rect.left.toInt(),
+            rect.top.toInt(),
+            rect.right.toInt(),
+            rect.bottom.toInt()
+        )
+    }
+
+    fun top(n: Int = 1): List<Result> {
+        return if (allResults.isNotEmpty()) {
+            allResults.sortedByDescending { it.cnf }.take(n)
+        } else {
+            listOf(this)
+        }
+    }
+
+    fun toJson(): String {
+        return Gson().toJson(this)
+    }
 
     override fun toString(): String {
-        return "Result(rect=[%.1f, %.1f, %.1f, %.1f], cnf=%.3f, cls=%d, name='%s')".format(
-            rect.left, rect.top, rect.right, rect.bottom,
-            cnf, id, name
-        )
+        return this.toJson()
     }
 }

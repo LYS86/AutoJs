@@ -50,7 +50,7 @@ import com.stardust.util.ScreenMetrics;
 import com.stardust.util.SdkVersionUtil;
 import com.stardust.util.Supplier;
 import com.stardust.util.UiHandler;
-import com.tflite.yolo.Detection;
+import com.tflite.yolo.Yolo;
 
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.RhinoException;
@@ -196,7 +196,7 @@ public class ScriptRuntime {
     @ScriptVariable
     public final Plugins plugins;
 
-    private final Detection detection = new Detection();
+    private final Yolo detection = new Yolo();
     private final MLKit mlKit = new MLKit();
     private final Utils shell;
     private Images images;
