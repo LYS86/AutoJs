@@ -1,326 +1,336 @@
-package org.autojs.autojs.ui.main;
+package org.autojs.autojs.ui.main
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
+import android.util.Log
+import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
+import androidx.viewpager.widget.ViewPager
+import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.material.tabs.TabLayout
+import com.stardust.app.FragmentPagerAdapterBuilder
+import com.stardust.app.OnActivityResultDelegate
+import com.stardust.autojs.core.permission.OnRequestPermissionsResultCallback
+import com.stardust.autojs.core.permission.PermissionRequestProxyActivity
+import com.stardust.autojs.core.permission.RequestPermissionCallbacks
+import com.stardust.theme.ThemeColorManager
+import com.stardust.util.BackPressedHandler
+import com.stardust.util.DeveloperUtils
+import com.stardust.util.DrawerAutoClose
+import org.autojs.autojs.BuildConfig
+import org.autojs.autojs.R
+import org.autojs.autojs.databinding.ActivityMainBinding
+import org.autojs.autojs.model.explorer.Explorers
+import org.autojs.autojs.tool.PermissionTool
+import org.autojs.autojs.ui.BaseActivity
+import org.autojs.autojs.ui.doc.DocsFragment
+import org.autojs.autojs.ui.log.LogActivity
+import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
+import org.autojs.autojs.ui.main.task.TaskManagerFragment
+import org.autojs.autojs.ui.widget.SearchViewItem
+import org.greenrobot.eventbus.EventBus
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
+class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
+    BackPressedHandler.HostActivity, PermissionRequestProxyActivity {
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.android.material.tabs.TabLayout;
-import com.stardust.app.FragmentPagerAdapterBuilder;
-import com.stardust.app.OnActivityResultDelegate;
-import com.stardust.autojs.core.permission.OnRequestPermissionsResultCallback;
-import com.stardust.autojs.core.permission.PermissionRequestProxyActivity;
-import com.stardust.autojs.core.permission.RequestPermissionCallbacks;
-import com.stardust.theme.ThemeColorManager;
-import com.stardust.util.BackPressedHandler;
-import com.stardust.util.DeveloperUtils;
-import com.stardust.util.DrawerAutoClose;
-
-import org.autojs.autojs.BuildConfig;
-import org.autojs.autojs.R;
-import org.autojs.autojs.databinding.ActivityMainBinding;
-import org.autojs.autojs.model.explorer.Explorers;
-import org.autojs.autojs.tool.PermissionTool;
-import org.autojs.autojs.ui.BaseActivity;
-import org.autojs.autojs.ui.doc.DocsFragment;
-import org.autojs.autojs.ui.log.LogActivity;
-import org.autojs.autojs.ui.main.scripts.MyScriptListFragment;
-import org.autojs.autojs.ui.main.task.TaskManagerFragment;
-import org.autojs.autojs.ui.widget.SearchViewItem;
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.Arrays;
-
-public class MainActivity extends BaseActivity implements OnActivityResultDelegate.DelegateHost, BackPressedHandler.HostActivity, PermissionRequestProxyActivity {
-
-    private static final String LOG_TAG = "MainActivity";
-    private final OnActivityResultDelegate.Mediator mActivityResultMediator = new OnActivityResultDelegate.Mediator();
-    private final RequestPermissionCallbacks mRequestPermissionCallbacks = new RequestPermissionCallbacks();
-    private final BackPressedHandler.Observer mBackPressObserver = new BackPressedHandler.Observer();
-    private ActivityMainBinding binding;
-    private FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter mPagerAdapter;
-    private SearchViewItem mSearchViewItem;
-    private MenuItem mLogMenuItem;
-    private boolean mDocsSearchItemExpanded;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        checkPermissions();
-        applyDayNightMode();
-        setUpViews();
+    companion object {
+        private const val LOG_TAG = "MainActivity"
     }
 
-    private void setUpViews() {
-        setUpToolbar();
-        setUpTabViewPager();
-        registerBackPressHandlers();
-        ThemeColorManager.addViewBackground(findViewById(R.id.app_bar));
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var pagerAdapter: FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter
+    private var searchViewItem: SearchViewItem? = null
+    private var logMenuItem: MenuItem? = null
+    private var docsSearchItemExpanded = false
+
+    private val activityResultMediator = OnActivityResultDelegate.Mediator()
+    private val requestPermissionCallbacks = RequestPermissionCallbacks()
+    private val backPressObserver = BackPressedHandler.Observer()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        checkPermissions()
+        applyDayNightMode()
+        setUpViews()
     }
 
-
-    private void registerBackPressHandlers() {
-        mBackPressObserver.registerHandler(new DrawerAutoClose(binding.drawerLayout, Gravity.START));
-        mBackPressObserver.registerHandler(new BackPressedHandler.DoublePressExit(this, R.string.text_press_again_to_exit));
+    private fun setUpViews() {
+        setUpToolbar()
+        setUpTabViewPager()
+        registerBackPressHandlers()
+        ThemeColorManager.addViewBackground(findViewById(R.id.app_bar))
     }
 
-    private void checkPermissions() {
+    private fun registerBackPressHandlers() {
+        backPressObserver.registerHandler(DrawerAutoClose(binding.drawerLayout, Gravity.START))
+        backPressObserver.registerHandler(
+            BackPressedHandler.DoublePressExit(
+                this,
+                R.string.text_press_again_to_exit
+            )
+        )
+    }
+
+    private fun checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (hasStoragePermission()) {
-                return;
-            }
-            new MaterialDialog.Builder(this).title(R.string.text_storage_permission).content(R.string.description_storage_permission).positiveText(R.string.text_go_to_settings).negativeText(android.R.string.cancel).cancelable(false).canceledOnTouchOutside(false).onPositive((dialog, which) -> {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivity(intent);
-                startPermissionCheck();
-            }).show();
-            return;
-        }
-        if (!hasStoragePermission()) {
-            checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-    }
+            if (hasStoragePermission()) return
 
-
-    private void startPermissionCheck() {
-        Intent intent = new Intent(this, MainActivity.class);
-        PermissionTool.create(this::hasStoragePermission).start(new PermissionTool.Callback() {
-            @Override
-            public void onPermissionGranted() {
-                Explorers.workspace().refreshAll();
-                startActivity(intent);
-            }
-
-            @Override
-            public void onTimeout() {
-            }
-
-            @Override
-            public void onError(@NonNull Throwable throwable) {
-                Log.e(LOG_TAG, "权限检查错误", throwable);
-            }
-        }).stop();
-    }
-
-
-    private void setUpToolbar() {
-        Toolbar toolbar = $(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(R.string.app_name);
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, binding.drawerLayout, toolbar, R.string.text_drawer_open,
-                R.string.text_drawer_close);
-        drawerToggle.syncState();
-        binding.drawerLayout.addDrawerListener(drawerToggle);
-    }
-
-    private void setUpTabViewPager() {
-        TabLayout tabLayout = $(R.id.tab);
-        mPagerAdapter = new FragmentPagerAdapterBuilder(this)
-                .add(new MyScriptListFragment(), R.string.text_file)
-                .add(new DocsFragment(), R.string.text_tutorial)
-                .add(new TaskManagerFragment(), R.string.text_manage)
-                .build();
-        binding.viewpager.setAdapter(mPagerAdapter);
-        tabLayout.setupWithViewPager(binding.viewpager);
-        setUpViewPagerFragmentBehaviors();
-    }
-
-    private void setUpViewPagerFragmentBehaviors() {
-        mPagerAdapter.setOnFragmentInstantiateListener((pos, fragment) -> {
-            ((ViewPagerFragment) fragment).setFab(binding.fab);
-            if (pos == binding.viewpager.getCurrentItem()) {
-                ((ViewPagerFragment) fragment).onPageShow();
-            }
-        });
-        binding.viewpager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            private ViewPagerFragment mPreviousFragment;
-
-            @Override
-            public void onPageSelected(int position) {
-                Fragment fragment = mPagerAdapter.getStoredFragment(position);
-                if (fragment == null)
-                    return;
-                if (mPreviousFragment != null) {
-                    mPreviousFragment.onPageHide();
+            MaterialDialog.Builder(this)
+                .title(R.string.text_storage_permission)
+                .content(R.string.description_storage_permission)
+                .positiveText(R.string.text_go_to_settings)
+                .negativeText(android.R.string.cancel)
+                .cancelable(false)
+                .canceledOnTouchOutside(false)
+                .onPositive { _, _ ->
+                    val intent =
+                        Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
+                            data = "package:$packageName".toUri()
+                        }
+                    startActivity(intent)
+                    startPermissionCheck()
                 }
-                mPreviousFragment = (ViewPagerFragment) fragment;
-                mPreviousFragment.onPageShow();
+                .show()
+            return
+        }
+
+        if (!hasStoragePermission()) {
+            checkPermission(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        }
+    }
+
+    private fun startPermissionCheck() {
+        val intent = Intent(this, MainActivity::class.java)
+        PermissionTool.create(this::hasStoragePermission)
+            .start(object : PermissionTool.Callback {
+                override fun onPermissionGranted() {
+                    Explorers.workspace().refreshAll()
+                    startActivity(intent)
+                }
+
+                override fun onTimeout() {}
+
+                override fun onError(throwable: Throwable) {
+                    Log.e(LOG_TAG, "权限检查错误", throwable)
+                }
+            })
+    }
+
+    private fun setUpToolbar() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        toolbar.title = getString(R.string.app_name)
+
+        ActionBarDrawerToggle(
+            this,
+            binding.drawerLayout,
+            toolbar,
+            R.string.text_drawer_open,
+            R.string.text_drawer_close
+        ).apply {
+            syncState()
+            binding.drawerLayout.addDrawerListener(this)
+        }
+    }
+
+    private fun setUpTabViewPager() {
+        val tabLayout = findViewById<TabLayout>(R.id.tab)
+        pagerAdapter = FragmentPagerAdapterBuilder(this)
+            .add(MyScriptListFragment(), R.string.text_file)
+            .add(DocsFragment(), R.string.text_tutorial)
+            .add(TaskManagerFragment(), R.string.text_manage)
+            .build()
+
+        binding.viewpager.adapter = pagerAdapter
+        tabLayout.setupWithViewPager(binding.viewpager)
+        setUpViewPagerFragmentBehaviors()
+    }
+
+    private fun setUpViewPagerFragmentBehaviors() {
+        pagerAdapter.setOnFragmentInstantiateListener { pos, fragment ->
+            (fragment as? ViewPagerFragment)?.setFab(binding.fab)
+            if (pos == binding.viewpager.currentItem) {
+                (fragment as? ViewPagerFragment)?.onPageShow()
             }
-        });
+        }
+
+        binding.viewpager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            private var previousFragment: ViewPagerFragment? = null
+
+            override fun onPageSelected(position: Int) {
+                val fragment = pagerAdapter.getStoredFragment(position) as? ViewPagerFragment
+                previousFragment?.onPageHide()
+                previousFragment = fragment
+                fragment?.onPageShow()
+            }
+        })
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        activityResultMediator.onActivityResult(requestCode, resultCode, data)
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mActivityResultMediator.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (mRequestPermissionCallbacks.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
-            return;
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestPermissionCallbacks.onRequestPermissionsResult(
+                requestCode,
+                permissions,
+                grantResults
+            )
+        ) {
+            return
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            if (getGrantResult(Manifest.permission.READ_EXTERNAL_STORAGE, permissions, grantResults) == PackageManager.PERMISSION_GRANTED) {
-                Explorers.workspace().refreshAll();
+            if (getGrantResult(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    permissions,
+                    grantResults
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                Explorers.workspace().refreshAll()
             }
         }
     }
 
-    public boolean hasStoragePermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return Environment.isExternalStorageManager();
+    private fun hasStoragePermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
         } else {
-            return checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
         }
     }
 
-    private int getGrantResult(String permission, String[] permissions, int[] grantResults) {
-        int i = Arrays.asList(permissions).indexOf(permission);
-        if (i < 0) {
-            return 2;
-        }
-        return grantResults[i];
+    private fun getGrantResult(
+        permission: String,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ): Int {
+        val index = permissions.indexOf(permission)
+        return if (index < 0) 2 else grantResults[index]
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    override fun onStart() {
+        super.onStart()
         if (!BuildConfig.DEBUG) {
-            DeveloperUtils.verifyApk(this, R.string.dex_crcs);
+            DeveloperUtils.verifyApk(this, R.string.dex_crcs)
         }
     }
 
-    @NonNull
-    @Override
-    public OnActivityResultDelegate.Mediator getOnActivityResultDelegateMediator() {
-        return mActivityResultMediator;
+    override fun getOnActivityResultDelegateMediator(): OnActivityResultDelegate.Mediator {
+        return activityResultMediator
     }
 
-    @Override
-    public void onBackPressed() {
-        Fragment fragment = mPagerAdapter.getStoredFragment(binding.viewpager.getCurrentItem());
-        if (fragment instanceof BackPressedHandler) {
-            if (((BackPressedHandler) fragment).onBackPressed(this)) {
-                return;
-            }
+    override fun onBackPressed() {
+        (pagerAdapter.getStoredFragment(binding.viewpager.currentItem) as? BackPressedHandler)?.let {
+            if (it.onBackPressed(this)) return
         }
-        if (!mBackPressObserver.onBackPressed(this)) {
-            super.onBackPressed();
+
+        if (!backPressObserver.onBackPressed(this)) {
+            super.onBackPressed()
         }
     }
 
-    @Override
-    public void addRequestPermissionsCallback(OnRequestPermissionsResultCallback callback) {
-        mRequestPermissionCallbacks.addCallback(callback);
+    override fun addRequestPermissionsCallback(callback: OnRequestPermissionsResultCallback) {
+        requestPermissionCallbacks.addCallback(callback)
     }
 
-    @Override
-    public boolean removeRequestPermissionsCallback(OnRequestPermissionsResultCallback callback) {
-        return mRequestPermissionCallbacks.removeCallback(callback);
+    override fun removeRequestPermissionsCallback(callback: OnRequestPermissionsResultCallback): Boolean {
+        return requestPermissionCallbacks.removeCallback(callback)
     }
 
-    @Override
-    public BackPressedHandler.Observer getBackPressedObserver() {
-        return mBackPressObserver;
+    override fun getBackPressedObserver(): BackPressedHandler.Observer {
+        return backPressObserver
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
-        mLogMenuItem = menu.findItem(R.id.action_log);
-        setUpSearchMenuItem(searchMenuItem);
-        return true;
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        val searchMenuItem = menu.findItem(R.id.action_search)
+        logMenuItem = menu.findItem(R.id.action_log)
+        setUpSearchMenuItem(searchMenuItem)
+        return true
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_log) {
-            if (mDocsSearchItemExpanded) {
-                submitForwardQuery();
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_log) {
+            if (docsSearchItemExpanded) {
+                submitForwardQuery()
             } else {
-                startActivity(new Intent(this, LogActivity.class));
+                startActivity(Intent(this, LogActivity::class.java))
             }
-            return true;
+            return true
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    private void setUpSearchMenuItem(MenuItem searchMenuItem) {
-        mSearchViewItem = new SearchViewItem(this, searchMenuItem) {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                if (binding.viewpager.getCurrentItem() == 1) {
-                    mDocsSearchItemExpanded = true;
-                    mLogMenuItem.setIcon(R.drawable.ic_ali_up);
+    private fun setUpSearchMenuItem(searchMenuItem: MenuItem) {
+        searchViewItem = object : SearchViewItem(this, searchMenuItem) {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                if (binding.viewpager.currentItem == 1) {
+                    docsSearchItemExpanded = true
+                    logMenuItem?.setIcon(R.drawable.ic_ali_up)
                 }
-                return super.onMenuItemActionExpand(item);
+                return super.onMenuItemActionExpand(item)
             }
 
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                if (mDocsSearchItemExpanded) {
-                    mDocsSearchItemExpanded = false;
-                    mLogMenuItem.setIcon(R.drawable.ic_ali_log);
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                if (docsSearchItemExpanded) {
+                    docsSearchItemExpanded = false
+                    logMenuItem?.setIcon(R.drawable.ic_ali_log)
                 }
-                return super.onMenuItemActionCollapse(item);
+                return super.onMenuItemActionCollapse(item)
             }
-        };
-        mSearchViewItem.setQueryCallback(this::submitQuery);
+        }.apply {
+            setQueryCallback(this@MainActivity::submitQuery)
+        }
     }
 
-    private void submitQuery(String query) {
+    private fun submitQuery(query: String?) {
         if (query == null) {
-            EventBus.getDefault().post(QueryEvent.CLEAR);
-            return;
+            EventBus.getDefault().post(QueryEvent.CLEAR)
+            return
         }
-        QueryEvent event = new QueryEvent(query);
-        EventBus.getDefault().post(event);
+        val event = QueryEvent(query)
+        EventBus.getDefault().post(event)
         if (event.shouldCollapseSearchView()) {
-            mSearchViewItem.collapse();
+            searchViewItem?.collapse()
         }
     }
 
-    private void submitForwardQuery() {
-        QueryEvent event = QueryEvent.FIND_FORWARD;
-        EventBus.getDefault().post(event);
+    private fun submitForwardQuery() {
+        EventBus.getDefault().post(QueryEvent.FIND_FORWARD)
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding = null;
+    override fun onDestroy() {
+        super.onDestroy()
+        searchViewItem = null
     }
-
 }
