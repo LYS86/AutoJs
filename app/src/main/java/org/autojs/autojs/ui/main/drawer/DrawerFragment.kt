@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.shizuku.Utils
@@ -22,12 +23,16 @@ import com.stardust.view.accessibility.AccessibilityService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentDrawerBinding
 import org.autojs.autojs.external.foreground.ForegroundService
 import org.autojs.autojs.pluginclient.DevPluginService
 import org.autojs.autojs.tool.AccessibilityServiceTool
+import org.autojs.autojs.tool.AccessibilityServiceTool2
 import org.autojs.autojs.tool.PermissionTool
 import org.autojs.autojs.tool.WifiTool
 import org.autojs.autojs.ui.BaseActivity
@@ -39,6 +44,7 @@ import org.autojs.autojs.ui.main.MainActivity
 import org.autojs.autojs.ui.settings.SettingsActivity
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import timber.log.Timber
 import kotlin.system.exitProcess
 
 class DrawerFragment : Fragment() {
@@ -285,30 +291,26 @@ class DrawerFragment : Fragment() {
 
     private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {
         val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
+        Timber.d("无障碍是否开启: $isAccessibilityServiceEnabled")
         val checked = holder.switchCompat.isChecked
+        Timber.d("切换无障碍状态: $checked")
+
         when {
             checked && !isAccessibilityServiceEnabled -> {
-                PermissionTool.create(200, 20000).apply {
-                    add {
-                        val checked2 = AccessibilityServiceTool.start(2000)
-                        if (checked2) return@add
-                        AccessibilityServiceTool.goToAccessibilitySetting()
+                Timber.d("依次使用（shizuku，root）开启无障碍")
+                lifecycleScope.launch {
+                    if (!isAdded || isDetached) return@launch
+                    setProgress(mAccessibilityServiceItem, true)
+                    AccessibilityServiceTool2.start2(2000).also {
+                        Timber.d("开启无障碍服务结果2: $it")
+                        setChecked(mAccessibilityServiceItem, it)
+                        setProgress(mAccessibilityServiceItem, false)
                     }
-
-                    add(
-                        task = { isAccessibilityServiceEnabled() },
-                        callback = object : PermissionTool.Callback {
-                            override fun onSuccess() {
-                                setChecked(mAccessibilityServiceItem, true)
-                            }
-
-                        })
-                    start()
 
                 }
             }
-
             !checked && isAccessibilityServiceEnabled && !AccessibilityService.disable() -> AccessibilityServiceTool.goToAccessibilitySetting()
+
         }
 
     }
@@ -415,7 +417,13 @@ class DrawerFragment : Fragment() {
     }
 
     private fun isAccessibilityServiceEnabled(): Boolean {
-        return AccessibilityServiceTool.isAccessibilityServiceEnabled(activity)
+
+        return AccessibilityServiceTool.isAccessibilityServiceEnabled(activity).also {
+            Timber.d("无障碍是否开启1: $it")
+            AccessibilityServiceTool2.isAccessibilityServiceEnabled(requireContext()).also {
+                Timber.d("无障碍是否开启2: $it")
+            }
+        }
     }
 
     private fun requestShizukuPermission() {

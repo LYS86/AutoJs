@@ -102,6 +102,16 @@ object Utils {
         return ServiceManager.exec(command)
     }
 
+    /**
+     * 协程版本的命令执行
+     */
+    suspend fun exec2(command: String): AbstractShell.Result {
+        if (!hasPermission()) return AbstractShell.Result().apply {
+            error = "No permission or Shizuku not running"
+        }.also { Timber.d("result: $it") }
+        return ServiceManager.exec2(command)
+    }
+
     fun exit() {
         ServiceManager.exit()
     }

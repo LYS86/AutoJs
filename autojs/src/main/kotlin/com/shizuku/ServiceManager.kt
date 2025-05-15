@@ -9,6 +9,8 @@ import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.UserServiceArgs
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeout
 
 object ServiceManager {
     private var iUserService: IUserService? = null
@@ -77,5 +79,44 @@ object ServiceManager {
     fun exit() {
         Shizuku.unbindUserService(userServiceArgs, serviceConnection, true)
         iUserService = null
+    }
+
+    /**
+     * 协程版本的等待服务连接
+     */
+    suspend fun waitForService2() {
+        if (!isBinding.get()) {
+            bindService()
+        }
+        
+        withTimeout(10_000) {
+            while (!isBinding.get()) {
+                delay(100)
+            }
+        }
+    }
+
+    /**
+     * 协程版本的命令执行
+     */
+    suspend fun exec2(command: String): AbstractShell.Result {
+        return try {
+            waitForService2()
+            iUserService?.exec(command)?.let { json ->
+                AbstractShell.Result.ofJson(json).also {
+                    Timber.d("result: $it")
+                }
+            } ?: run {
+                Timber.e("Service not connected")
+                AbstractShell.Result().apply {
+                    error = "Service not connected"
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Command execution failed")
+            AbstractShell.Result().apply {
+                error = e.message
+            }
+        }
     }
 }
