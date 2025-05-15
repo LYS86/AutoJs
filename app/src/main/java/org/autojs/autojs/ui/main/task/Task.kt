@@ -1,165 +1,108 @@
-package org.autojs.autojs.ui.main.task;
+package org.autojs.autojs.ui.main.task
 
-import android.content.Intent;
+import com.stardust.app.GlobalAppContext
+import com.stardust.autojs.execution.ScriptExecution
+import com.stardust.autojs.script.AutoFileSource
+import com.stardust.autojs.script.JavaScriptSource
+import com.stardust.pio.PFiles
+import org.autojs.autojs.R
+import org.autojs.autojs.timing.IntentTask
+import org.autojs.autojs.timing.TimedTask
+import org.autojs.autojs.timing.TimedTaskManager
+import org.joda.time.format.DateTimeFormat
 
-import com.stardust.app.GlobalAppContext;
-import com.stardust.autojs.engine.ScriptEngine;
-import com.stardust.autojs.execution.ScriptExecution;
-import com.stardust.autojs.script.AutoFileSource;
-import com.stardust.autojs.script.JavaScriptSource;
-import com.stardust.pio.PFiles;
-import com.stardust.util.MapBuilder;
+abstract class Task {
 
-import org.autojs.autojs.R;
-import org.autojs.autojs.timing.IntentTask;
-import org.autojs.autojs.timing.TimedTask;
-import org.autojs.autojs.timing.TimedTaskManager;
+    abstract val name: String
+    abstract val desc: String
+    abstract val engineName: String
 
-import org.joda.time.format.DateTimeFormat;
+    abstract fun cancel()
 
-import java.util.Map;
+    class PendingTask private constructor() : Task() {
+        var timedTask: TimedTask? = null
+            private set
+        var intentTask: IntentTask? = null
+            private set
 
-import static org.autojs.autojs.ui.timing.TimedTaskSettingActivity.ACTION_DESC_MAP;
+        val id: Long
+            get() = timedTask?.id ?: intentTask!!.id
 
-/**
- * Created by Stardust on 2017/11/28.
- */
-
-public abstract class Task {
-
-
-    public abstract String getName();
-
-    public abstract String getDesc();
-
-    public abstract void cancel();
-
-    public abstract String getEngineName();
-
-    public static class PendingTask extends Task {
-
-
-        private TimedTask mTimedTask;
-        private IntentTask mIntentTask;
-
-
-        public PendingTask(TimedTask timedTask) {
-            mTimedTask = timedTask;
-            mIntentTask = null;
+        constructor(timedTask: TimedTask) : this() {
+            this.timedTask  = timedTask
         }
 
-        public PendingTask(IntentTask intentTask) {
-            mIntentTask = intentTask;
-            mTimedTask = null;
+        constructor(intentTask: IntentTask) : this() {
+            this.intentTask  = intentTask
         }
 
-        public boolean taskEquals(Object task) {
-            if (mTimedTask != null) {
-                return mTimedTask.equals(task);
-            }
-            return mIntentTask.equals(task);
-        }
-
-        public TimedTask getTimedTask() {
-            return mTimedTask;
-        }
-
-        @Override
-        public String getName() {
-            return PFiles.getSimplifiedPath(getScriptPath());
-        }
-
-        @Override
-        public String getDesc() {
-            if (mTimedTask != null) {
-                long nextTime = mTimedTask.getNextTime();
-                return GlobalAppContext.getString(R.string.text_next_run_time) + ": " +
-                        DateTimeFormat.forPattern("yyyy/MM/dd HH:mm").print(nextTime);
+        fun taskEquals(task: Any): Boolean {
+            return if (timedTask != null) {
+                timedTask == task
             } else {
-                assert mIntentTask != null;
-                Integer desc = ACTION_DESC_MAP.get(mIntentTask.getAction());
-                if(desc != null){
-                    return GlobalAppContext.getString(desc);
+                intentTask == task
+            }
+        }
+
+        override val name: String
+            get() = PFiles.getSimplifiedPath(scriptPath)
+
+        override val desc: String
+            get() {
+                return if (timedTask != null) {
+                    val nextTime = timedTask!!.nextTime
+                    "${GlobalAppContext.getString(R.string.text_next_run_time)}:  " +
+                            DateTimeFormat.forPattern("yyyy/MM/dd  HH:mm").print(nextTime)
+                } else {
+                    ACTION_DESC_MAP[intentTask!!.action]?.let { desc ->
+                        GlobalAppContext.getString(desc)
+                    } ?: intentTask!!.action
                 }
-                return mIntentTask.getAction();
             }
 
-        }
-
-        @Override
-        public void cancel() {
-            if (mTimedTask != null) {
-                TimedTaskManager.getInstance().removeTask(mTimedTask);
+        override fun cancel() {
+            if (timedTask != null) {
+                TimedTaskManager.getInstance().removeTask(timedTask!!)
             } else {
-                TimedTaskManager.getInstance().removeTask(mIntentTask);
+                TimedTaskManager.getInstance().removeTask(intentTask!!)
             }
         }
 
-        private String getScriptPath() {
-            if (mTimedTask != null) {
-                return mTimedTask.getScriptPath();
-            } else {
-                assert mIntentTask != null;
-                return mIntentTask.getScriptPath();
-            }
+        private val scriptPath: String
+            get() = timedTask?.scriptPath ?: intentTask!!.scriptPath
+
+        override val engineName: String
+            get() = if (scriptPath.endsWith(".js"))  JavaScriptSource.ENGINE else AutoFileSource.ENGINE
+
+        fun setTimedTask(timedTask: TimedTask) {
+            this.timedTask  = timedTask
         }
 
-        @Override
-        public String getEngineName() {
-            if (getScriptPath().endsWith(".js")) {
-                return JavaScriptSource.ENGINE;
-            } else {
-                return AutoFileSource.ENGINE;
-            }
-        }
-
-        public void setTimedTask(TimedTask timedTask) {
-            mTimedTask = timedTask;
-        }
-
-        public void setIntentTask(IntentTask intentTask) {
-            mIntentTask = intentTask;
-        }
-
-        public long getId() {
-            if(mTimedTask != null)
-                return mTimedTask.getId();
-            return mIntentTask.getId();
+        fun setIntentTask(intentTask: IntentTask) {
+            this.intentTask  = intentTask
         }
     }
 
-    public static class RunningTask extends Task {
-        private final ScriptExecution mScriptExecution;
+    class RunningTask(private val scriptExecution: ScriptExecution) : Task() {
 
-        public RunningTask(ScriptExecution scriptExecution) {
-            mScriptExecution = scriptExecution;
+        fun getScriptExecution(): ScriptExecution = scriptExecution
+
+        override val name: String
+            get() = scriptExecution.source.name
+
+        override val desc: String
+            get() = scriptExecution.source.toString()
+
+        override fun cancel() {
+            scriptExecution.engine?.forceStop()
         }
 
-        public ScriptExecution getScriptExecution() {
-            return mScriptExecution;
-        }
+        override val engineName: String
+            get() = scriptExecution.source.engineName
+    }
 
-        @Override
-        public String getName() {
-            return mScriptExecution.getSource().getName();
-        }
-
-        @Override
-        public String getDesc() {
-            return mScriptExecution.getSource().toString();
-        }
-
-        @Override
-        public void cancel() {
-            ScriptEngine engine = mScriptExecution.getEngine();
-            if (engine != null) {
-                engine.forceStop();
-            }
-        }
-
-        @Override
-        public String getEngineName() {
-            return mScriptExecution.getSource().getEngineName();
-        }
+    companion object {
+        val ACTION_DESC_MAP: Map<String, Int> =
+            org.autojs.autojs.ui.timing.TimedTaskSettingActivity.ACTION_DESC_MAP
     }
 }
