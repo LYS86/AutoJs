@@ -1,7 +1,10 @@
 package org.autojs.autojs.tool
 
+import android.content.Context
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
+import androidx.core.net.toUri
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -25,6 +28,17 @@ class PermissionTool private constructor(
         ): PermissionTool {
             return PermissionTool(interval, timeout)
         }
+
+        fun toSettings(context: Context, permission: String) {
+            val intent = Intent(permission).apply {
+                data = "package:${context.packageName}".toUri()
+            }
+            context.startActivity(intent)
+        }
+    }
+
+    fun toSettings(context: Context, permission: String) {
+        return Companion.toSettings(context, permission)
     }
 
     fun add(
@@ -32,9 +46,8 @@ class PermissionTool private constructor(
     ): PermissionTool {
         tasks.add(Observable.interval(0, interval, TimeUnit.MILLISECONDS).map { task() }
             .takeUntil { granted -> granted }.filter { granted -> granted }
-            .timeout(timeout, TimeUnit.MILLISECONDS).firstOrError()
-            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).toObservable()
-            .doOnNext {
+            .timeout(timeout, TimeUnit.MILLISECONDS).firstOrError().subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).toObservable().doOnNext {
                 callback.onSuccess()
                 safeStop()
             }.doOnError { error ->

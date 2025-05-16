@@ -7,14 +7,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.stardust.app.FragmentPagerAdapterBuilder
@@ -103,38 +101,25 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
             onPositive = {
                 PermissionTool.create().apply {
                     add {
-                        val intent =
-                            Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                                data = "package:$packageName".toUri()
-                            }
-                        startActivity(intent)
+                        toSettings(
+                            this@MainActivity,
+                            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+                        )
                     }
 
                     add(
-                        task = {
-                            Log.d(LOG_TAG, "检查中")
-                            hasStoragePermission()
-                        },
+                        task = { hasStoragePermission() },
                         callback = object : PermissionTool.Callback {
                             override fun onSuccess() {
-                                Log.d(LOG_TAG, "授权成功")
                                 Explorers.workspace().refreshAll()
                                 val intent = Intent(this@MainActivity, MainActivity::class.java)
                                 startActivity(intent)
                             }
 
-                            override fun onTimeout() {
-                                Log.d(LOG_TAG, "检查超时")
-                            }
-
-                            override fun onError(e: Throwable) {
-                                Log.d(LOG_TAG, "检查出错: ${e.message}")
-                            }
                         })
                     start()
                 }
-            }
-        ).apply {
+            }).apply {
             setCancelable(false)
             setCanceledOnTouchOutside(false)
         }
