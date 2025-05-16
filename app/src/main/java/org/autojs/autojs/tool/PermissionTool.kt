@@ -29,15 +29,21 @@ class PermissionTool private constructor(
             return PermissionTool(interval, timeout)
         }
 
-        fun toSettings(context: Context, permission: String) {
-            val intent = Intent(permission).apply {
-                data = "package:${context.packageName}".toUri()
+        fun toSettings(context: Context, permission: String): Boolean {
+            try {
+                val intent = Intent(permission).apply {
+                    data = "package:${context.packageName}".toUri()
+                }
+                context.startActivity(intent)
+                return true
+            }catch (e: Exception) {
+                e.printStackTrace()
+                return false
             }
-            context.startActivity(intent)
         }
     }
 
-    fun toSettings(context: Context, permission: String) {
+    fun toSettings(context: Context, permission: String): Boolean {
         return Companion.toSettings(context, permission)
     }
 

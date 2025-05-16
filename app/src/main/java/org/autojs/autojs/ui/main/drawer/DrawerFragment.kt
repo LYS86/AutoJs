@@ -30,6 +30,7 @@ import org.autojs.autojs.databinding.FragmentDrawerBinding
 import org.autojs.autojs.external.foreground.ForegroundService
 import org.autojs.autojs.pluginclient.DevPluginService
 import org.autojs.autojs.tool.AccessibilityServiceTool
+import org.autojs.autojs.tool.PermissionTool
 import org.autojs.autojs.tool.WifiTool
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.common.DialogUtils
@@ -295,7 +296,27 @@ class DrawerFragment : Fragment() {
         val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
         val checked = holder.switchCompat.isChecked
         when {
-            checked && !isAccessibilityServiceEnabled -> enableAccessibilityService()
+            checked && !isAccessibilityServiceEnabled -> {
+                PermissionTool.create(200, 20000).apply {
+                    add {
+                        val checked2 = AccessibilityServiceTool.start(2000)
+                        if (checked2) return@add
+                        AccessibilityServiceTool.goToAccessibilitySetting()
+                    }
+
+                    add(
+                        task = { isAccessibilityServiceEnabled() },
+                        callback = object : PermissionTool.Callback {
+                            override fun onSuccess() {
+                                setChecked(mAccessibilityServiceItem, true)
+                            }
+
+                        })
+                    start()
+
+                }
+            }
+
             !checked && isAccessibilityServiceEnabled && !AccessibilityService.disable() -> AccessibilityServiceTool.goToAccessibilitySetting()
         }
 
