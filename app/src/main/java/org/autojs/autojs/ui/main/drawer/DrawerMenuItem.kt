@@ -55,7 +55,7 @@ open class DrawerMenuItem {
     val isSwitchEnabled: Boolean
         get() = mSwitchEnabled
 
-    open var isChecked: Boolean
+    var isChecked: Boolean
         get() = mSwitchChecked
         set(checked) {
             mSwitchChecked = checked

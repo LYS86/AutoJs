@@ -1,6 +1,5 @@
 package org.autojs.autojs.ui.main.drawer
 
-import android.annotation.SuppressLint
 import android.app.AppOpsManager
 import android.content.Intent
 import android.os.Build
@@ -50,15 +49,15 @@ class DrawerFragment : Fragment() {
         private const val URL_DEV_PLUGIN = "https://www.autojs.org/topic/968/"
     }
 
-    private val mStableModeItem = object : DrawerMenuItem(
-        R.drawable.ic_stable, R.string.text_stable_mode, R.string.key_stable_mode, null
-    ) {
-        override var isChecked: Boolean
-            get() = super.isChecked
-            set(checked) {
-                super.isChecked = checked
-                if (checked) showStableModePromptIfNeeded()
-            }
+    private val mStableModeItem = DrawerMenuItem(
+        R.drawable.ic_stable,
+        R.string.text_stable_mode,
+        R.string.key_stable_mode,
+    ) { holder ->
+        val checked = holder.switchCompat.isChecked
+        if (!checked) {
+            showStableModePromptIfNeeded()
+        }
     }
 
     private val mNotificationPermissionItem = DrawerMenuItem(
@@ -268,8 +267,7 @@ class DrawerFragment : Fragment() {
     private fun goToNotificationServiceSettings(holder: DrawerMenuItemViewHolder) {
         val enabled = NotificationListenerService.hasNotificationAccess(requireContext())
         val checked = holder.switchCompat.isChecked
-        if (!checked) return
-        if (enabled) return
+        if (!checked || enabled) return
         PermissionTool.create(200, 30_000).apply {
             NotificationListenerService.toSettings(requireContext())
             add(
@@ -287,10 +285,9 @@ class DrawerFragment : Fragment() {
     }
 
     private fun goToUsageStatsSettings(holder: DrawerMenuItemViewHolder) {
-        val enabled=requireContext().hasPermission(AppOpsManager.OPSTR_GET_USAGE_STATS)
+        val enabled = requireContext().hasPermission(AppOpsManager.OPSTR_GET_USAGE_STATS)
         val checked = holder.switchCompat.isChecked
-        if (!checked) return
-        if (enabled) return
+        if (!checked || enabled) return
         DialogUtils.showConfirm(
             context = requireContext(),
             title = getString(R.string.text_usage_stats_permission),
