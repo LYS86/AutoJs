@@ -24,4 +24,8 @@ class AccessibilityService : AccessibilityService() {
         setServiceInfo(serviceInfo)
         super.onServiceConnected()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 }
