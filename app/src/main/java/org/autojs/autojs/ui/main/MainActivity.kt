@@ -87,56 +87,56 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
     }
 
     private fun checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (hasStoragePermission()) return
-
-            MaterialDialog.Builder(this).title(R.string.text_storage_permission)
-                .content(R.string.description_storage_permission)
-                .positiveText(R.string.text_go_to_settings).negativeText(android.R.string.cancel)
-                .cancelable(false).canceledOnTouchOutside(false).onPositive { _, _ ->
-                    PermissionTool.create().apply {
-                        add {
-                            val intent =
-                                Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                                    data = "package:$packageName".toUri()
-                                }
-                            startActivity(intent)
-                        }
-
-                        add(
-                            task = {
-                                Log.d(LOG_TAG, "检查中")
-                                hasStoragePermission() },
-                            callback = object : PermissionTool.Callback {
-                                override fun onSuccess() {
-                                    Log.d(LOG_TAG, "授权成功")
-                                    Explorers.workspace().refreshAll()
-                                    val intent = Intent(this@MainActivity, MainActivity::class.java)
-                                    startActivity(intent)
-                                }
-
-                                override fun onTimeout() {
-                                    Log.d(LOG_TAG, "检查超时")
-
-                                }
-
-                                override fun onError(e: Throwable) {
-                                    Log.d(LOG_TAG, "检查出错")
-
-                                }
-                            })
-                        start()
-                    }
-                }.show()
-            return
-        }
-
-        if (!hasStoragePermission()) {
+        if (hasStoragePermission()) return
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             checkPermission(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
+            return
         }
+
+        MaterialDialog.Builder(this).title(R.string.text_storage_permission)
+            .content(R.string.description_storage_permission)
+            .positiveText(R.string.text_go_to_settings).negativeText(android.R.string.cancel)
+            .cancelable(false).canceledOnTouchOutside(false).onPositive { _, _ ->
+                PermissionTool.create().apply {
+                    add {
+                        val intent =
+                            Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
+                                data = "package:$packageName".toUri()
+                            }
+                        startActivity(intent)
+                    }
+
+                    add(
+                        task = {
+                            Log.d(LOG_TAG, "检查中")
+                            hasStoragePermission()
+                        },
+                        callback = object : PermissionTool.Callback {
+                            override fun onSuccess() {
+                                Log.d(LOG_TAG, "授权成功")
+                                Explorers.workspace().refreshAll()
+                                val intent = Intent(this@MainActivity, MainActivity::class.java)
+                                startActivity(intent)
+                            }
+
+                            override fun onTimeout() {
+                                Log.d(LOG_TAG, "检查超时")
+
+                            }
+
+                            override fun onError(e: Throwable) {
+                                Log.d(LOG_TAG, "检查出错")
+
+                            }
+                        })
+                    start()
+                }
+            }.show()
+
+
     }
 
 
