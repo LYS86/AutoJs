@@ -1,5 +1,6 @@
 package org.autojs.autojs.ui.main.drawer
 
+import android.annotation.SuppressLint
 import android.app.AppOpsManager
 import android.content.Intent
 import android.os.Build
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.shizuku.Utils
 import com.stardust.app.GlobalAppContext
+import com.stardust.app.hasPermission
 import com.stardust.app.isOpPermissionGranted
 import com.stardust.notification.NotificationListenerService
 import com.stardust.util.IntentUtil
@@ -178,27 +180,6 @@ class DrawerFragment : Fragment() {
         compositeDisposable.add(disposable)
     }
 
-    private fun goToUsageStatsSettings(holder: DrawerMenuItemViewHolder) {
-        val enabled = context?.isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS) == true
-        val checked = holder.switchCompat.isChecked
-
-        if (checked && !enabled) {
-            DialogUtils.showConfirm(
-                context = requireContext(),
-                title = getString(R.string.text_usage_stats_permission),
-                content = getString(R.string.description_usage_stats_permission),
-                positiveText = getString(R.string.ok),
-                onPositive = { IntentUtil.requestAppUsagePermission(context) },
-                onNegative = { setChecked(mUsageStatsPermissionItem, false) }).apply {
-                setCancelable(false)
-                setCanceledOnTouchOutside(false)
-            }
-        }
-
-        if (!checked && enabled) {
-            IntentUtil.requestAppUsagePermission(context)
-        }
-    }
 
     private fun checkForUpdates(holder: DrawerMenuItemViewHolder) {
         setProgress(mCheckForUpdatesItem, true)
@@ -293,8 +274,7 @@ class DrawerFragment : Fragment() {
             NotificationListenerService.toSettings(requireContext())
             add(
                 task = { NotificationListenerService.hasNotificationAccess(requireContext()) },
-                callback = object :
-                    PermissionTool.Callback {
+                callback = object : PermissionTool.Callback {
                     override fun onSuccess() {
                         setChecked(mNotificationPermissionItem, true)
                         startActivity(Intent(requireContext(), MainActivity::class.java))
@@ -304,6 +284,23 @@ class DrawerFragment : Fragment() {
 
             start()
         }
+    }
+
+    private fun goToUsageStatsSettings(holder: DrawerMenuItemViewHolder) {
+        val enabled=requireContext().hasPermission(AppOpsManager.OPSTR_GET_USAGE_STATS)
+        val checked = holder.switchCompat.isChecked
+        if (!checked) return
+        if (enabled) return
+        DialogUtils.showConfirm(
+            context = requireContext(),
+            title = getString(R.string.text_usage_stats_permission),
+            content = getString(R.string.description_usage_stats_permission),
+            onPositive = { IntentUtil.requestAppUsagePermission(context) },
+            onNegative = { setChecked(mUsageStatsPermissionItem, false) }).apply {
+            setCancelable(false)
+            setCanceledOnTouchOutside(false)
+        }
+
     }
 
     private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {

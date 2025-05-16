@@ -4,10 +4,8 @@ import android.app.AppOpsManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.annotation.RequiresApi
 
 
-@RequiresApi(Build.VERSION_CODES.KITKAT)
 fun Context.isOpPermissionGranted(permission: String): Boolean {
     val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
     val mode = appOps.checkOpNoThrow(permission, android.os.Process.myUid(), packageName)
@@ -16,5 +14,27 @@ fun Context.isOpPermissionGranted(permission: String): Boolean {
         checkCallingOrSelfPermission(android.Manifest.permission.PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED
     } else {
         mode == AppOpsManager.MODE_ALLOWED
+    }
+}
+
+fun Context.hasPermission(op: String): Boolean {
+    val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+    return try {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                appOps.unsafeCheckOpNoThrow(
+                    op, android.os.Process.myUid(), packageName
+                ) == AppOpsManager.MODE_ALLOWED
+            }
+
+            else -> {
+                @Suppress("DEPRECATION")
+                appOps.checkOpNoThrow(
+                    op, android.os.Process.myUid(), packageName
+                ) == AppOpsManager.MODE_ALLOWED
+            }
+        }
+    } catch (e: Exception) {
+        false
     }
 }

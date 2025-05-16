@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 
 import android.os.Build;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import com.stardust.R;
@@ -187,14 +188,18 @@ public class IntentUtil {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static void requestAppUsagePermission(Context context) {
-        Intent intent = new Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+            intent.putExtra(Settings.EXTRA_CHANNEL_ID, context.getApplicationInfo().uid);
+        }
+
         try {
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            context.startActivity(new Intent(Settings.ACTION_SETTINGS));
+            Toast.makeText(context, "请手动找到「使用情况访问」权限", Toast.LENGTH_LONG).show();
         }
     }
 }
