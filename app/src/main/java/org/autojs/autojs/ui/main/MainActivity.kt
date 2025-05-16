@@ -16,7 +16,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.viewpager.widget.ViewPager
-import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.tabs.TabLayout
 import com.stardust.app.FragmentPagerAdapterBuilder
 import com.stardust.app.OnActivityResultDelegate
@@ -33,6 +32,7 @@ import org.autojs.autojs.databinding.ActivityMainBinding
 import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.tool.PermissionTool
 import org.autojs.autojs.ui.BaseActivity
+import org.autojs.autojs.ui.common.DialogUtils
 import org.autojs.autojs.ui.doc.DocsFragment
 import org.autojs.autojs.ui.log.LogActivity
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
@@ -96,10 +96,11 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
             return
         }
 
-        MaterialDialog.Builder(this).title(R.string.text_storage_permission)
-            .content(R.string.description_storage_permission)
-            .positiveText(R.string.text_go_to_settings).negativeText(android.R.string.cancel)
-            .cancelable(false).canceledOnTouchOutside(false).onPositive { _, _ ->
+        DialogUtils.showConfirm(
+            context = this,
+            title = getString(R.string.text_not_permission),
+            content = getString(R.string.description_storage_permission),
+            onPositive = {
                 PermissionTool.create().apply {
                     add {
                         val intent =
@@ -124,19 +125,19 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
 
                             override fun onTimeout() {
                                 Log.d(LOG_TAG, "检查超时")
-
                             }
 
                             override fun onError(e: Throwable) {
-                                Log.d(LOG_TAG, "检查出错")
-
+                                Log.d(LOG_TAG, "检查出错: ${e.message}")
                             }
                         })
                     start()
                 }
-            }.show()
-
-
+            }
+        ).apply {
+            setCancelable(false)
+            setCanceledOnTouchOutside(false)
+        }
     }
 
 
