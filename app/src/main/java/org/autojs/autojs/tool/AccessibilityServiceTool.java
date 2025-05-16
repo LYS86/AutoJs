@@ -66,7 +66,7 @@ public class AccessibilityServiceTool {
         }
     }
 
-    public static boolean enableAccessibilityServiceByRootAndWaitFor(long timeOut) {
+    public static boolean byRoot(long timeOut) {
         if (enableAccessibilityServiceByRoot(sAccessibilityServiceClass)) {
             return AccessibilityService.Companion.waitForEnabled(timeOut);
         }
@@ -82,6 +82,16 @@ public class AccessibilityServiceTool {
 
     public static boolean isAccessibilityServiceEnabled(Context context) {
         return AccessibilityServiceUtils.INSTANCE.isAccessibilityServiceEnabled(context, sAccessibilityServiceClass);
+    }
+
+    /**
+     * 尝试启动无障碍服务（依次尝试 Shizuku 和 Root 方式）
+     * @param timeout 超时时间（毫秒）
+     * @return 是否成功启动
+     */
+    public static boolean start(long timeout) {
+        return byShizuku(timeout) ||
+                byRoot(timeout);
     }
 
     public static boolean byShizuku(long timeout) {

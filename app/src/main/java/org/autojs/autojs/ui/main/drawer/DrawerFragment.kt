@@ -65,9 +65,7 @@ class DrawerFragment : Fragment() {
     }
 
     private val mForegroundServiceItem = DrawerMenuItem(
-        R.drawable.ic_service_green,
-        R.string.text_foreground_service,
-        R.string.key_foreground_servie
+        R.drawable.ic_service_green, R.string.text_foreground_service, 0
     ) { holder ->
         toggleForegroundService(holder)
     }
@@ -114,24 +112,18 @@ class DrawerFragment : Fragment() {
 
     private fun inputRemoteHost() {
         val host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(activity))
-        DialogUtils.custom(requireActivity())
-            .title(R.string.text_server_address)
+        DialogUtils.custom(requireActivity()).title(R.string.text_server_address)
             .input("", host) { _, input ->
                 Pref.saveServerAddress(input.toString())
-                val disposable = DevPluginService.getInstance()
-                    .connectToServer(input.toString())
+                val disposable = DevPluginService.getInstance().connectToServer(input.toString())
                     .subscribe({}, this::onConnectException)
                 compositeDisposable.add(disposable)
-            }
-            .neutralText(R.string.text_help)
-            .onNeutral { _, _ ->
+            }.neutralText(R.string.text_help).onNeutral { _, _ ->
                 setChecked(mConnectionItem, false)
                 IntentUtil.browse(activity, URL_DEV_PLUGIN)
-            }
-            .cancelListener {
+            }.cancelListener {
                 setChecked(mConnectionItem, false)
-            }
-            .show()
+            }.show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -152,10 +144,8 @@ class DrawerFragment : Fragment() {
             startActivity(Intent(activity, SettingsActivity::class.java))
         }
         binding.exit.setOnClickListener {
-            activity?.let {
-                it.finishAffinity()
-                exitProcess(0)
-            }
+            activity?.finishAffinity()
+            exitProcess(0)
         }
         if (Pref.isConnected() && !DevPluginService.getInstance().isConnected) {
             val host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(activity))
@@ -175,7 +165,7 @@ class DrawerFragment : Fragment() {
     private fun enableAccessibilityServiceByRoot() {
         setProgress(mAccessibilityServiceItem, true)
         val disposable = Observable.fromCallable {
-            AccessibilityServiceTool.enableAccessibilityServiceByRootAndWaitFor(4000)
+            AccessibilityServiceTool.start(4000)
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
             .subscribe { succeed ->
                 if (!succeed) {
@@ -198,8 +188,7 @@ class DrawerFragment : Fragment() {
                 content = getString(R.string.description_usage_stats_permission),
                 positiveText = getString(R.string.ok),
                 onPositive = { IntentUtil.requestAppUsagePermission(context) },
-                onNegative = { setChecked(mUsageStatsPermissionItem, false) }
-            ).apply {
+                onNegative = { setChecked(mUsageStatsPermissionItem, false) }).apply {
                 setCancelable(false)
                 setCanceledOnTouchOutside(false)
             }
@@ -282,8 +271,8 @@ class DrawerFragment : Fragment() {
     }
 
     private fun onConnectException(e: Throwable) {
-        setChecked(mConnectionItem, false)
         Pref.setConnected(false)
+        setChecked(mConnectionItem, false)
         showMessage(getString(R.string.error_connect_to_remote, e.message ?: ""))
     }
 
@@ -305,13 +294,11 @@ class DrawerFragment : Fragment() {
     private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {
         val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
         val checked = holder.switchCompat.isChecked
-        if (checked && !isAccessibilityServiceEnabled) {
-            enableAccessibilityService()
-        } else if (!checked && isAccessibilityServiceEnabled) {
-            if (!AccessibilityService.disable()) {
-                AccessibilityServiceTool.goToAccessibilitySetting()
-            }
+        when {
+            checked && !isAccessibilityServiceEnabled -> enableAccessibilityService()
+            !checked && isAccessibilityServiceEnabled && !AccessibilityService.disable() -> AccessibilityServiceTool.goToAccessibilitySetting()
         }
+
     }
 
     private fun showOrDismissFloatingWindow(holder: DrawerMenuItemViewHolder) {
@@ -411,9 +398,7 @@ class DrawerFragment : Fragment() {
 
     private fun showMessage(text: CharSequence) {
         MessageUtils.show(
-            context = context,
-            view = view,
-            message = text.toString()
+            context = context, view = view, message = text.toString()
         )
     }
 
@@ -453,8 +438,7 @@ class DrawerFragment : Fragment() {
                 content = getString(R.string.text_to_shizuku),
                 onPositive = {
                     utils.launchApp()
-                }
-            )
+                })
             return
         }
 

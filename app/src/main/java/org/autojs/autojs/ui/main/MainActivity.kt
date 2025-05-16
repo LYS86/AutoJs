@@ -61,10 +61,13 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        checkPermissions()
         applyDayNightMode()
         setUpViews()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkPermissions()
     }
 
     private fun setUpViews() {
@@ -78,8 +81,7 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
         backPressObserver.registerHandler(DrawerAutoClose(binding.drawerLayout, Gravity.START))
         backPressObserver.registerHandler(
             BackPressedHandler.DoublePressExit(
-                this,
-                R.string.text_press_again_to_exit
+                this, R.string.text_press_again_to_exit
             )
         )
     }
@@ -88,22 +90,44 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (hasStoragePermission()) return
 
-            MaterialDialog.Builder(this)
-                .title(R.string.text_storage_permission)
+            MaterialDialog.Builder(this).title(R.string.text_storage_permission)
                 .content(R.string.description_storage_permission)
-                .positiveText(R.string.text_go_to_settings)
-                .negativeText(android.R.string.cancel)
-                .cancelable(false)
-                .canceledOnTouchOutside(false)
-                .onPositive { _, _ ->
-                    val intent =
-                        Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                            data = "package:$packageName".toUri()
+                .positiveText(R.string.text_go_to_settings).negativeText(android.R.string.cancel)
+                .cancelable(false).canceledOnTouchOutside(false).onPositive { _, _ ->
+                    PermissionTool.create().apply {
+                        add {
+                            val intent =
+                                Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
+                                    data = "package:$packageName".toUri()
+                                }
+                            startActivity(intent)
                         }
-                    startActivity(intent)
-                    startPermissionCheck()
-                }
-                .show()
+
+                        add(
+                            task = {
+                                Log.d(LOG_TAG, "检查中")
+                                hasStoragePermission() },
+                            callback = object : PermissionTool.Callback {
+                                override fun onSuccess() {
+                                    Log.d(LOG_TAG, "授权成功")
+                                    Explorers.workspace().refreshAll()
+                                    val intent = Intent(this@MainActivity, MainActivity::class.java)
+                                    startActivity(intent)
+                                }
+
+                                override fun onTimeout() {
+                                    Log.d(LOG_TAG, "检查超时")
+
+                                }
+
+                                override fun onError(e: Throwable) {
+                                    Log.d(LOG_TAG, "检查出错")
+
+                                }
+                            })
+                        start()
+                    }
+                }.show()
             return
         }
 
@@ -115,22 +139,6 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
         }
     }
 
-    private fun startPermissionCheck() {
-        val intent = Intent(this, MainActivity::class.java)
-        PermissionTool.create(this::hasStoragePermission)
-            .start(object : PermissionTool.Callback {
-                override fun onPermissionGranted() {
-                    Explorers.workspace().refreshAll()
-                    startActivity(intent)
-                }
-
-                override fun onTimeout() {}
-
-                override fun onError(throwable: Throwable) {
-                    Log.e(LOG_TAG, "权限检查错误", throwable)
-                }
-            })
-    }
 
     private fun setUpToolbar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -151,11 +159,10 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
 
     private fun setUpTabViewPager() {
         val tabLayout = findViewById<TabLayout>(R.id.tab)
-        pagerAdapter = FragmentPagerAdapterBuilder(this)
-            .add(MyScriptListFragment(), R.string.text_file)
-            .add(DocsFragment(), R.string.text_tutorial)
-            .add(TaskManagerFragment(), R.string.text_manage)
-            .build()
+        pagerAdapter =
+            FragmentPagerAdapterBuilder(this).add(MyScriptListFragment(), R.string.text_file)
+                .add(DocsFragment(), R.string.text_tutorial)
+                .add(TaskManagerFragment(), R.string.text_manage).build()
 
         binding.viewpager.adapter = pagerAdapter
         tabLayout.setupWithViewPager(binding.viewpager)
@@ -188,15 +195,11 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestPermissionCallbacks.onRequestPermissionsResult(
-                requestCode,
-                permissions,
-                grantResults
+                requestCode, permissions, grantResults
             )
         ) {
             return
@@ -204,9 +207,7 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             if (getGrantResult(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    permissions,
-                    grantResults
+                    Manifest.permission.READ_EXTERNAL_STORAGE, permissions, grantResults
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 Explorers.workspace().refreshAll()
@@ -219,20 +220,15 @@ class MainActivity : BaseActivity(), OnActivityResultDelegate.DelegateHost,
             Environment.isExternalStorageManager()
         } else {
             ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
+                this, Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
         }
     }
 
     private fun getGrantResult(
-        permission: String,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        permission: String, permissions: Array<out String>, grantResults: IntArray
     ): Int {
         val index = permissions.indexOf(permission)
         return if (index < 0) 2 else grantResults[index]
