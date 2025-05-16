@@ -4,7 +4,6 @@ import android.app.AppOpsManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +36,7 @@ import org.autojs.autojs.ui.common.DialogUtils
 import org.autojs.autojs.ui.common.MessageUtils
 import org.autojs.autojs.ui.floating.CircularMenu
 import org.autojs.autojs.ui.floating.FloatyWindowManger
+import org.autojs.autojs.ui.main.MainActivity
 import org.autojs.autojs.ui.settings.SettingsActivity
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -285,10 +285,24 @@ class DrawerFragment : Fragment() {
     }
 
     private fun goToNotificationServiceSettings(holder: DrawerMenuItemViewHolder) {
-        val enabled = NotificationListenerService.instance != null
+        val enabled = NotificationListenerService.hasNotificationAccess(requireContext())
         val checked = holder.switchCompat.isChecked
-        if ((checked && !enabled) || (!checked && enabled)) {
-            startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+        if (!checked) return
+        if (enabled) return
+        PermissionTool.create(200, 30_000).apply {
+            NotificationListenerService.toSettings(requireContext())
+            add(
+                task = { NotificationListenerService.hasNotificationAccess(requireContext()) },
+                callback = object :
+                    PermissionTool.Callback {
+                    override fun onSuccess() {
+                        setChecked(mNotificationPermissionItem, true)
+                        startActivity(Intent(requireContext(), MainActivity::class.java))
+                    }
+
+                })
+
+            start()
         }
     }
 

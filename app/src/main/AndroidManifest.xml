@@ -3,7 +3,7 @@
           xmlns:tools="http://schemas.android.com/tools">
 
     <!-- 添加 MANAGE_EXTERNAL_STORAGE 权限 -->
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" 
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -287,6 +287,7 @@
             </intent-filter>
         </activity>
 
+        <!-- 通知读取权限 -->
         <service
             android:name="com.stardust.notification.NotificationListenerService"
             android:label="@string/app_name"
