@@ -24,3 +24,17 @@
 
 
 ## 开发进度
+
+### MyScriptListFragment迁移
+- [x] 创建Kotlin版本Fragment
+- [x] 移除FAB依赖，改为标题栏菜单
+- [x] 迁移权限逻辑到Fragment
+- [ ] 集成Navigation组件
+- [ ] 测试验证
+
+### 整体迁移计划
+- [ ] MyScriptListFragment迁移完成
+- [ ] DocsFragment迁移完成
+- [ ] TaskManagerFragment迁移完成
+- [ ] FragmentPagerAdapterBuilder迁移到Navigation
+- [ ] MainActivity迁移到BaseActivityV2
