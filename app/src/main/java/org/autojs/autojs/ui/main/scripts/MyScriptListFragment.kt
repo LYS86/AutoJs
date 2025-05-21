@@ -1,6 +1,7 @@
 package org.autojs.autojs.ui.main.scripts
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -28,8 +29,9 @@ import org.autojs.autojs.ui.project.ProjectConfigActivity
 import org.autojs.autojs.ui.viewmodel.ExplorerItemList
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import com.stardust.util.BackPressedHandler
 
-class MyScriptListFragment : BaseFragment() {
+class MyScriptListFragment : BaseFragment(), BackPressedHandler {
 
     private var _binding: FragmentMyScriptListBinding? = null
     private val binding get() = _binding!!
@@ -122,6 +124,15 @@ class MyScriptListFragment : BaseFragment() {
             }
 
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onBackPressed(activity: Activity): Boolean {
+        return if (binding.scriptFileList.canGoBack()) {
+            binding.scriptFileList.goBack()
+            true
+        } else {
+            false
         }
     }
 

@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/menu_stop_all"
-        android:icon="@drawable/ic_add_white_48dp"
+        android:icon="@drawable/ic_clear_white_48dp"
         android:title="Stop All"
         app:showAsAction="ifRoom" />
 </menu>
