@@ -1,190 +1,188 @@
-package org.autojs.autojs.ui.main.scripts;
+package org.autojs.autojs.ui.main.scripts
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.Manifest
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
+import android.preference.PreferenceManager
+import android.provider.Settings
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import org.autojs.autojs.Pref
+import org.autojs.autojs.R
+import org.autojs.autojs.databinding.FragmentMyScriptListBinding
+import org.autojs.autojs.model.explorer.ExplorerChangeEvent
+import org.autojs.autojs.model.explorer.ExplorerDirPage
+import org.autojs.autojs.model.explorer.Explorers
+import org.autojs.autojs.model.script.Scripts
+import org.autojs.autojs.ui.base.BaseFragment
+import org.autojs.autojs.ui.common.ScriptOperations
+import org.autojs.autojs.ui.main.QueryEvent
+import org.autojs.autojs.ui.project.ProjectConfigActivity
+import org.autojs.autojs.ui.viewmodel.ExplorerItemList
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class MyScriptListFragment : BaseFragment() {
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.stardust.app.GlobalAppContext;
-import com.stardust.util.IntentUtil;
+    private var _binding: FragmentMyScriptListBinding? = null
+    private val binding get() = _binding!!
 
-import org.autojs.autojs.Pref;
-import org.autojs.autojs.R;
-import org.autojs.autojs.databinding.FragmentMyScriptListBinding;
-import org.autojs.autojs.external.fileprovider.AppFileProvider;
-import org.autojs.autojs.model.explorer.ExplorerChangeEvent;
-import org.autojs.autojs.model.explorer.ExplorerDirPage;
-import org.autojs.autojs.model.explorer.Explorers;
-import org.autojs.autojs.model.script.Scripts;
-import org.autojs.autojs.tool.SimpleObserver;
-import org.autojs.autojs.ui.common.ScriptOperations;
-import org.autojs.autojs.ui.main.FloatingActionMenu;
-import org.autojs.autojs.ui.main.QueryEvent;
-import org.autojs.autojs.ui.main.ViewPagerFragment;
-import org.autojs.autojs.ui.project.ProjectConfigActivity;
-import org.autojs.autojs.ui.viewmodel.ExplorerItemList;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-
-public class MyScriptListFragment extends ViewPagerFragment implements FloatingActionMenu.OnFloatingActionButtonClickListener {
-
-    private FragmentMyScriptListBinding binding;
-    private FloatingActionMenu mFloatingActionMenu;
-
-    public MyScriptListFragment() {
-        super(0);
+    private val requestManageStorage = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (hasStoragePermission()) {
+            Explorers.workspace().refreshAll()
+        }
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+        checkPermissions()
+        EventBus.getDefault().register(this)
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentMyScriptListBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentMyScriptListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        setUpViews();
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupScriptListView()
     }
 
-    private void setUpViews() {
-        ExplorerItemList.SortConfig sortConfig = ExplorerItemList.SortConfig.from(PreferenceManager.getDefaultSharedPreferences(getContext()));
-        binding.scriptFileList.setSortConfig(sortConfig);
-        binding.scriptFileList.setExplorer(Explorers.workspace(), ExplorerDirPage.createRoot(Pref.getScriptDirPath()));
-        binding.scriptFileList.setOnItemClickListener((v, item) -> {
+    private fun setupScriptListView() {
+        val sortConfig = ExplorerItemList.SortConfig.from(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+        )
+        binding.scriptFileList.sortConfig = sortConfig
+        binding.scriptFileList.setExplorer(
+            Explorers.workspace(),
+            ExplorerDirPage.createRoot(Pref.getScriptDirPath())
+        )
+        binding.scriptFileList.setOnItemClickListener { v, item ->
             if (item.isEditable()) {
-                Scripts.INSTANCE.edit(getActivity(), item.toScriptFile());
-            } else {
-                IntentUtil.viewFile(GlobalAppContext.get(), item.getPath(), AppFileProvider.AUTHORITY);
+                Scripts.edit(requireActivity(), item.toScriptFile())
             }
-        });
-    }
-
-    @Override
-    protected void onFabClick(FloatingActionButton fab) {
-        initFloatingActionMenuIfNeeded(fab);
-        if (mFloatingActionMenu.isExpanded()) {
-            mFloatingActionMenu.collapse();
-        } else {
-            mFloatingActionMenu.expand();
         }
     }
 
-    private void initFloatingActionMenuIfNeeded(final FloatingActionButton fab) {
-        if (mFloatingActionMenu != null) return;
-        mFloatingActionMenu = getActivity().findViewById(R.id.floating_action_menu);
-        mFloatingActionMenu.getState()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SimpleObserver<Boolean>() {
-                    @Override
-                    public void onNext(@io.reactivex.annotations.NonNull Boolean expanding) {
-                        fab.animate()
-                                .rotation(expanding ? 45 : 0)
-                                .setDuration(300)
-                                .start();
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_script_list, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_new_directory -> {
+                ScriptOperations(
+                    requireContext(), binding.scriptFileList,
+                    binding.scriptFileList.currentPage
+                ).newDirectory()
+                true
+            }
+
+            R.id.menu_new_file -> {
+                ScriptOperations(
+                    requireContext(), binding.scriptFileList,
+                    binding.scriptFileList.currentPage
+                ).newFile()
+                true
+            }
+
+            R.id.menu_import -> {
+                ScriptOperations(
+                    requireContext(), binding.scriptFileList,
+                    binding.scriptFileList.currentPage
+                ).importFile()
+                true
+            }
+
+            R.id.menu_new_project -> {
+                startActivity(Intent(context, ProjectConfigActivity::class.java).apply {
+                    putExtra(
+                        ProjectConfigActivity.EXTRA_PARENT_DIRECTORY,
+                        binding.scriptFileList.currentPage.path
+                    )
+                    putExtra(ProjectConfigActivity.EXTRA_NEW_PROJECT, true)
+                })
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun checkPermissions() {
+        if (!hasStoragePermission()) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                requestPermission(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) { isGranted ->
+                    if (isGranted) {
+                        Explorers.workspace().refreshAll()
                     }
-                });
-        mFloatingActionMenu.setOnFloatingActionButtonClickListener(this);
+                }
+            } else {
+                requestManageStorage.launch(
+                    Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                )
+            }
+        }
     }
 
-    @Override
-    public boolean onBackPressed(Activity activity) {
-        if (mFloatingActionMenu != null && mFloatingActionMenu.isExpanded()) {
-            mFloatingActionMenu.collapse();
-            return true;
-        }
-        if (binding.scriptFileList.canGoBack()) {
-            binding.scriptFileList.goBack();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void onPageHide() {
-        super.onPageHide();
-        if (mFloatingActionMenu != null && mFloatingActionMenu.isExpanded()) {
-            mFloatingActionMenu.collapse();
+    private fun hasStoragePermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
+        } else {
+            hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }
 
     @Subscribe
-    public void onQuerySummit(QueryEvent event) {
-        if (!isShown()) return;
+    fun onQuerySubmit(event: QueryEvent) {
+        if (!isAdded) return
         if (event == QueryEvent.CLEAR) {
-            binding.scriptFileList.setFilter(null);
-            return;
+            binding.scriptFileList.setFilter(null)
+            return
         }
-        String query = event.getQuery();
-        binding.scriptFileList.setFilter(item -> item.getName().contains(query));
+        event.query?.let { query ->
+            binding.scriptFileList.setFilter { item -> item.name.contains(query) }
+        }
     }
 
     @Subscribe
-    public void onGlobalExplorerChange(ExplorerChangeEvent event) {
-        if (event.getAction() == ExplorerChangeEvent.ALL) {
-            binding.scriptFileList.setExplorer(Explorers.workspace(), ExplorerDirPage.createRoot(Pref.getScriptDirPath()));
+    fun onGlobalExplorerChange(event: ExplorerChangeEvent) {
+        if (event.action == ExplorerChangeEvent.ALL) {
+            binding.scriptFileList.setExplorer(
+                Explorers.workspace(),
+                ExplorerDirPage.createRoot(Pref.getScriptDirPath())
+            )
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        binding.scriptFileList.getSortConfig().saveInto(PreferenceManager.getDefaultSharedPreferences(getContext()));
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.scriptFileList.sortConfig?.saveInto(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+        )
+        _binding = null
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        if (mFloatingActionMenu != null)
-            mFloatingActionMenu.setOnFloatingActionButtonClickListener(null);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public void onClick(FloatingActionButton button, int pos) {
-        if (binding.scriptFileList == null) return;
-        switch (pos) {
-            case 0:
-                new ScriptOperations(getContext(), binding.scriptFileList, binding.scriptFileList.getCurrentPage()).newDirectory();
-                break;
-            case 1:
-                new ScriptOperations(getContext(), binding.scriptFileList, binding.scriptFileList.getCurrentPage()).newFile();
-                break;
-            case 2:
-                new ScriptOperations(getContext(), binding.scriptFileList, binding.scriptFileList.getCurrentPage()).importFile();
-                break;
-            case 3:
-                Intent intent = new Intent(getContext(), ProjectConfigActivity.class);
-                intent.putExtra(ProjectConfigActivity.EXTRA_PARENT_DIRECTORY, binding.scriptFileList.getCurrentPage().getPath());
-                intent.putExtra(ProjectConfigActivity.EXTRA_NEW_PROJECT, true);
-                startActivity(intent);
-                break;
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 }

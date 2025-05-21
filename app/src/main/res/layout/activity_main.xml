@@ -8,13 +8,11 @@
     android:fitsSystemWindows="true"
     tools:context="org.autojs.autojs.ui.main.MainActivity">
 
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipChildren="false"
         android:fitsSystemWindows="true">
-        android:clipToPadding="false">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar"
@@ -48,30 +46,6 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <com.stardust.theme.widget.ThemeColorFloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|end|bottom"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_add_white_48dp"
-            app:backgroundTint="@color/colorPrimary"
-            app:layout_anchor="@id/viewpager"
-            app:layout_anchorGravity="bottom|right|end"
-            app:layout_behavior="org.autojs.autojs.ui.widget.ScrollAwareFABBehavior" />
-
-        <org.autojs.autojs.ui.main.FloatingActionMenu
-            android:id="@+id/floating_action_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|end|bottom"
-            android:layout_margin="16dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:visibility="invisible"
-            app:layout_anchor="@id/viewpager"
-            app:layout_anchorGravity="bottom|right|end" />
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <fragment
@@ -81,7 +55,5 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true" />
-    android:fitsSystemWindows="false" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
-
