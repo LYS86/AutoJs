@@ -4,7 +4,7 @@
 
 
 ## 开发规范
-- 使用kotlin
+- 使用kotlin，遵循kotlin规范
 - 全面使用AndroidX，Android KTX库
 - Kotlin Flow 替代 RxJava
 - DataStore 替代 SharedPreferences
