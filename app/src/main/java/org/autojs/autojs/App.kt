@@ -25,6 +25,8 @@ import org.autojs.autojs.timing.TimedTaskManager
 import org.autojs.autojs.timing.TimedTaskScheduler
 import org.autojs.autojs.tool.CrashHandler
 import org.autojs.autojs.ui.error.ErrorReportActivity
+import timber.log.Timber
+import timber.log.Timber.DebugTree
 import java.lang.ref.WeakReference
 
 /**
@@ -39,14 +41,10 @@ class App : MultiDexApplication() {
         super.onCreate()
         GlobalAppContext.set(this)
         instance = WeakReference(this)
-        setUpStaticsTool()
         setUpDebugEnvironment()
         init()
     }
 
-    private fun setUpStaticsTool() {
-        if (BuildConfig.DEBUG) return
-    }
 
     private fun setUpDebugEnvironment() {
         val crashHandler = CrashHandler(ErrorReportActivity::class.java)
@@ -75,6 +73,9 @@ class App : MultiDexApplication() {
         setupDrawableImageLoader()
         TimedTaskScheduler.init(this)
         initDynamicBroadcastReceivers()
+        if (BuildConfig.DEBUG) {
+            Timber.plant(DebugTree())
+        }
     }
 
     @SuppressLint("CheckResult")

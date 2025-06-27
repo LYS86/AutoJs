@@ -16,7 +16,7 @@ public abstract class AbstractShell {
     public static class Result {
         public int code = -1;
         public String error;
-        public String result;
+        public String result="";
 
         @Override
         public String toString() {

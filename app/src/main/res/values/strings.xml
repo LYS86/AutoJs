@@ -231,7 +231,8 @@
     <string name="text_cannot_read_file">无法读取文件</string>
     <string name="text_service">服务</string>
     <string name="text_notification_permission">通知读取权限</string>
-    <string name="text_shizuku_permission">Shizuku权限</string>
+    <string name="text_shizuku_permission">Shizuku权限申请</string>
+    <string name="text_shizuku_hasPermission">Shizuku权限已授权</string>
     <string name="text_shizuku_app_not_installed">请先安装Shizuku应用</string>
     <string name="text_shizuku_service_not_ready">Shizuku未运行</string>
     <string name="text_to_shizuku">是否前往Shizuku启动服务</string>

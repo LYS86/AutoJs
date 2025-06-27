@@ -3,25 +3,26 @@ package com.shizuku
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import com.stardust.app.GlobalAppContext
 import com.stardust.autojs.runtime.api.AbstractShell
 import rikka.shizuku.Shizuku
+import timber.log.Timber
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
-class Utils(private val context: Context) {
-    companion object {
-        private const val TAG = "ShellUtils"
-        private const val PERMISSION_CODE = 1234
-        private const val SHIZUKU_PACKAGE_NAME = "moe.shizuku.privileged.api"
-    }
+object Utils {
+    private const val PERMISSION_CODE = 1234
+    private const val SHIZUKU_PACKAGE_NAME = "moe.shizuku.privileged.api"
 
-    init {
-        ServiceManager.initialize(context)
-    }
+    private val context: Context
+        get() = GlobalAppContext.get()
 
     fun hasApp(): Boolean = try {
         context.packageManager.getPackageInfo(SHIZUKU_PACKAGE_NAME, 0)
         true
     } catch (e: Exception) {
+        Timber.w(e, "Check Shizuku app failed")
         false
     }
 
@@ -31,30 +32,29 @@ class Utils(private val context: Context) {
             if (intent != null) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
+                Timber.d("Launch Shizuku app")
                 true
             } else {
+                Timber.w("No launch intent for Shizuku")
                 false
             }
         } catch (e: Exception) {
+            Timber.w(e, "Launch Shizuku app failed")
             false
         }
     }
 
-    fun isReady(): Boolean {
-        return Shizuku.pingBinder()
-    }
+    fun isReady(): Boolean = Shizuku.pingBinder()
 
-    fun hasPermission(): Boolean {
-        if (!isReady()) return false
-        return Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
-    }
+    fun hasPermission(): Boolean =
+        isReady() && Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
 
     fun requestPermission(callback: Consumer<Boolean>) {
         requestPermission { granted -> callback.accept(granted) }
     }
 
     fun requestPermission(): Boolean {
-        val latch = java.util.concurrent.CountDownLatch(1)
+        val latch = CountDownLatch(1)
         var granted = false
 
         requestPermission { result ->
@@ -62,7 +62,11 @@ class Utils(private val context: Context) {
             latch.countDown()
         }
 
-        latch.await(10, java.util.concurrent.TimeUnit.SECONDS)
+        try {
+            latch.await(10, TimeUnit.SECONDS)
+        } catch (e: InterruptedException) {
+            Timber.e(e, "Permission request interrupted")
+        }
         return granted
     }
 
@@ -92,6 +96,9 @@ class Utils(private val context: Context) {
     }
 
     fun exec(command: String): AbstractShell.Result {
+        if (!hasPermission()) return AbstractShell.Result().apply {
+            error = "No permission or Shizuku not running"
+        }.also { Timber.d("result: $it") }
         return ServiceManager.exec(command)
     }
 

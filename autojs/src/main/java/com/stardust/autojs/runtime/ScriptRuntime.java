@@ -198,7 +198,6 @@ public class ScriptRuntime {
 
     private final Yolo detection = new Yolo();
     private final MLKit mlKit = new MLKit();
-    private final Utils shell;
     private Images images;
 
     private static WeakReference<Context> applicationContext;
@@ -231,7 +230,6 @@ public class ScriptRuntime {
         files = new Files(this);
         media = new Media(context, this);
         plugins = new Plugins(context, this);
-        shell = new Utils(context);
     }
 
     public void init() {
@@ -257,7 +255,7 @@ public class ScriptRuntime {
 
         mTopLevelScope.put("yolo", mTopLevelScope, detection);
         mTopLevelScope.put("mlkit", mTopLevelScope, mlKit);
-        mTopLevelScope.put("shizuku", mTopLevelScope, shell);
+        mTopLevelScope.put("shizuku", mTopLevelScope, Utils.INSTANCE);
     }
 
     public static void setApplicationContext(Context context) {

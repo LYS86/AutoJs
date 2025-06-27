@@ -20,10 +20,8 @@ import com.stardust.notification.NotificationListenerService
 import com.stardust.util.IntentUtil
 import com.stardust.view.accessibility.AccessibilityService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentDrawerBinding
@@ -100,8 +98,8 @@ class DrawerFragment : Fragment() {
     }
 
     private val mShizukuItem =
-        DrawerMenuItem(R.drawable.ic_service_green, R.string.text_shizuku_permission, 0) { holder ->
-            requestShizukuPermission(holder)
+        DrawerMenuItem(R.drawable.ic_service_green, R.string.text_shizuku_permission) { holder ->
+            requestShizukuPermission()
         }
 
     private val compositeDisposable = CompositeDisposable()
@@ -164,21 +162,6 @@ class DrawerFragment : Fragment() {
         return binding.root
     }
 
-    private fun enableAccessibilityServiceByRoot() {
-        setProgress(mAccessibilityServiceItem, true)
-        val disposable = Observable.fromCallable {
-            AccessibilityServiceTool.start(4000)
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-            .subscribe { succeed ->
-                if (!succeed) {
-                    showMessage(R.string.text_enable_accessibitliy_service_by_root_failed)
-                    AccessibilityServiceTool.goToAccessibilitySetting()
-                }
-                setProgress(mAccessibilityServiceItem, false)
-            }
-        compositeDisposable.add(disposable)
-    }
-
 
     private fun checkForUpdates(holder: DrawerMenuItemViewHolder) {
         setProgress(mCheckForUpdatesItem, true)
@@ -234,7 +217,7 @@ class DrawerFragment : Fragment() {
                 mConnectionItem,
                 DrawerMenuItem(
                     R.drawable.ic_personalize, R.string.text_theme_color
-                ) { holder -> openThemeColorSettings(holder) },
+                ) { holder -> openThemeColorSettings() },
                 DrawerMenuItem(
                     R.drawable.ic_night_mode, R.string.text_night_mode, R.string.key_night_mode
                 ) { holder -> toggleNightMode(holder) },
@@ -342,7 +325,7 @@ class DrawerFragment : Fragment() {
         }
     }
 
-    private fun openThemeColorSettings(holder: DrawerMenuItemViewHolder) {
+    private fun openThemeColorSettings() {
         SettingsActivity.selectThemeColor(activity)
     }
 
@@ -404,16 +387,6 @@ class DrawerFragment : Fragment() {
             mUsageStatsPermissionItem,
             context?.isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS) == true
         )
-        val utils = Utils(requireContext())
-        setChecked(mShizukuItem, utils.hasPermission())
-    }
-
-    private fun enableAccessibilityService() {
-        if (!Pref.shouldEnableAccessibilityServiceByRoot()) {
-            AccessibilityServiceTool.goToAccessibilitySetting()
-            return
-        }
-        enableAccessibilityServiceByRoot()
     }
 
     @Subscribe
@@ -445,36 +418,29 @@ class DrawerFragment : Fragment() {
         return AccessibilityServiceTool.isAccessibilityServiceEnabled(activity)
     }
 
-    private fun requestShizukuPermission(holder: DrawerMenuItemViewHolder) {
-        val checked = holder.switchCompat.isChecked
-        if (!checked) {
-            return
-        }
+    private fun requestShizukuPermission() {
+        when {
+            !Utils.hasApp() -> {
+                showMessage(R.string.text_shizuku_app_not_installed)
+            }
 
-        val utils = Utils(requireContext())
+            !Utils.isReady() -> {
+                DialogUtils.showConfirm(
+                    context = requireContext(),
+                    title = getString(R.string.text_shizuku_service_not_ready),
+                    content = getString(R.string.text_to_shizuku),
+                    onPositive = { Utils.launchApp() }
+                )
+            }
 
-        if (!utils.hasApp()) {
-            showMessage(R.string.text_shizuku_app_not_installed)
-            setChecked(mShizukuItem, false)
-            return
-        }
-
-        if (!utils.isReady()) {
-            setChecked(mShizukuItem, false)
-            DialogUtils.showConfirm(
-                context = requireContext(),
-                title = getString(R.string.text_shizuku_service_not_ready),
-                content = getString(R.string.text_to_shizuku),
-                onPositive = {
-                    utils.launchApp()
-                })
-            return
-        }
-
-        utils.requestPermission { granted ->
-            setChecked(mShizukuItem, granted)
-            if (!granted) {
-                showMessage(R.string.text_shizuku_permission_denied)
+            else -> {
+                Utils.requestPermission { granted ->
+                    if (granted) {
+                        showMessage(R.string.text_shizuku_hasPermission)
+                        return@requestPermission
+                    }
+                    showMessage(R.string.text_shizuku_permission_denied)
+                }
             }
         }
     }

@@ -2,7 +2,11 @@ plugins {
     id("com.android.library")
     kotlin("android")
 }
-
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 android {
     val versions = rootProject.extra["versions"] as Map<*, *>
     
@@ -64,6 +68,10 @@ dependencies {
     api(project(":automator"))
     implementation(libs.bundles.shizuku)
     implementation(libs.bundles.litert.all)
+
+    implementation (libs.androidx.core.ktx)
+    // https://mvnrepository.com/artifact/com.jakewharton.timber/timber
+    api("com.jakewharton.timber:timber:5.0.1")
 
 }
 

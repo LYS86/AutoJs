@@ -3,7 +3,6 @@ package org.autojs.autojs.tool;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.shizuku.Utils;
 import com.stardust.app.GlobalAppContext;
@@ -15,6 +14,8 @@ import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 
 import java.util.Locale;
+
+import timber.log.Timber;
 
 /**
  * Created by Stardust on 2017/1/26.
@@ -96,20 +97,14 @@ public class AccessibilityServiceTool {
 
     public static boolean byShizuku(long timeout) {
         Context context = GlobalAppContext.get();
-        Utils utils = new Utils(context);
-        if (!utils.hasPermission()) {
-            return false;
-        }
         try {
             String pkg = context.getPackageName();
             String cmd = "settings put secure enabled_accessibility_services " + pkg + "/" + sAccessibilityServiceClass.getName() + "\nsettings put secure accessibility_enabled 1";
-            utils.exec(cmd);
+            Utils.INSTANCE.exec(cmd);
             return AccessibilityService.Companion.waitForEnabled(timeout);
         } catch (Exception e) {
-            Log.e("AccessibilityServiceTool", "Shizuku启用无障碍服务失败: ", e);
+            Timber.e(e, "Shizuku启用无障碍服务失败");
             return false;
-        } finally {
-            utils.exit();
         }
     }
 }
