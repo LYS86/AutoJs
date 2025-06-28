@@ -2,10 +2,14 @@ plugins {
     id("com.android.library")
     kotlin("android")
 }
-
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 android {
     val versions = rootProject.extra["versions"] as Map<*, *>
-    
+
     compileSdk = versions["compile"].toString().toInt()
 
     defaultConfig {
@@ -22,7 +26,7 @@ android {
     }
 
     namespace = "com.stardust"
-    
+
     lint {
         abortOnError = false
     }

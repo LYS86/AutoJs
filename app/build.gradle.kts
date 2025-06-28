@@ -2,10 +2,14 @@ plugins {
     id("com.android.application")
     kotlin("android")
 }
-
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 android {
     val versions = rootProject.extra["versions"] as Map<*, *>
-    
+
     compileSdk = versions["compile"].toString().toInt()
 
     defaultConfig {
@@ -36,12 +40,12 @@ android {
     }
 
     flavorDimensions += "channel"
-    
+
     splits {
         abi {
             isEnable = true
             reset()
-            include("x86", "armeabi-v7a","arm64-v8a","x86_64")
+            include("x86", "armeabi-v7a", "arm64-v8a", "x86_64")
             isUniversalApk = true
         }
     }
@@ -139,5 +143,5 @@ dependencies {
     implementation(libs.commons.io)
 
     implementation(libs.rxjava3.rxjava)
-    implementation (libs.rxjava3.rxandroid)
+    implementation(libs.rxjava3.rxandroid)
 }
