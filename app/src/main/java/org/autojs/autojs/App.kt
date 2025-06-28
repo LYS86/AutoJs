@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -73,9 +74,20 @@ class App : MultiDexApplication() {
         setupDrawableImageLoader()
         TimedTaskScheduler.init(this)
         initDynamicBroadcastReceivers()
-        if (BuildConfig.DEBUG) {
-            Timber.plant(DebugTree())
+        Timber.plant(
+            when (BuildConfig.DEBUG) {
+                true -> DebugTree()
+                else -> ReleaseTree()
+            }
+        )
+    }
+
+    private class ReleaseTree : DebugTree() {
+        override fun isLoggable(tag: String?, priority: Int): Boolean {
+            // 只允许 INFO 及以上级别的日志
+            return priority >= Log.INFO
         }
+
     }
 
     @SuppressLint("CheckResult")

@@ -1,10 +1,8 @@
 package com.tflite.yolo
 
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-
-private const val TAG = "Config"
+import timber.log.Timber
 
 data class ModelData(
     @SerializedName("description") var description: String = "",
@@ -38,7 +36,7 @@ data class ModelData(
             return try {
                 Gson().fromJson(json, ModelData::class.java) ?: ModelData()
             } catch (e: Exception) {
-                Log.e(TAG, "error: ${e.message}")
+                Timber.w(e)
                 ModelData()
             }
         }

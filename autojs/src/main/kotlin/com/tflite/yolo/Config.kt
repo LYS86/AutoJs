@@ -1,17 +1,15 @@
 package com.tflite.yolo
 
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import org.mozilla.javascript.NativeObject
+import timber.log.Timber
 
-private const val TAG = "Config"
 
 data class Config(
     @SerializedName("model") val modelPath: String = "",
     @SerializedName("labels") val labelsPath: String = "",
     @SerializedName("gpu") val useGpu: Boolean = true,
-
     ) {
     companion object {
         fun ofJson(json: String): Config {
@@ -19,7 +17,7 @@ data class Config(
             return try {
                 Gson().fromJson(json, Config::class.java) ?: Config()
             } catch (e: Exception) {
-                Log.e(TAG, "error: ${e.message}", e)
+                Timber.w(e)
                 Config()
             }
         }
@@ -28,7 +26,7 @@ data class Config(
             return try {
                 ofJson(Gson().toJson(nativeObject))
             } catch (e: Exception) {
-                Log.e(TAG, "error: ${e.message}", e)
+                Timber.w(e)
                 Config()
             }
         }

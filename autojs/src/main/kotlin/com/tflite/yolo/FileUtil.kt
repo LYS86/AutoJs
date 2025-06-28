@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.util.Log
 import com.google.gson.Gson
+import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -65,7 +65,7 @@ object FileUtil {
                 return namesAny.values.map { it as String }
             }
         } catch (e: Exception) {
-            Log.e("FileUtil", "${e.message}")
+            Timber.w(e)
         }
         return emptyList()
     }

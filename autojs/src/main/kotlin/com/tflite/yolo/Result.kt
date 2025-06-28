@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import timber.log.Timber
 
 data class Result(
     @SerializedName("rect") var rect: RectF = RectF(),
@@ -57,7 +58,7 @@ data class Result(
             try {
                 return Gson().fromJson(json, Result::class.java) ?: Result()
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.w(e)
                 return Result()
             }
         }

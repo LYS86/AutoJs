@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.RectF
 import androidx.core.graphics.createBitmap
 import com.stardust.autojs.core.image.ImageWrapper
-import org.opencv.android.OpenCVLoader
 import org.opencv.android.Utils
 import org.opencv.core.Core
 import org.opencv.core.CvType
@@ -52,15 +51,6 @@ class ImageProcessor private constructor() {
     private var padX = 0f
     private var padY = 0f
 
-    private val opencvAvailable = run {
-        try {
-            OpenCVLoader.initLocal()
-            true
-        } catch (e: Throwable) {
-            false
-        }
-    }
-
     val buffer: ByteBuffer
         get() = when (mode) {
             Mode.TENSORFLOW -> _tfImage.buffer
@@ -78,7 +68,7 @@ class ImageProcessor private constructor() {
 
         fun create(): ImageProcessor {
             return ImageProcessor().apply {
-                if (!opencvAvailable) {
+                if (!OpenCV.isInit) {
                     mode = Mode.TENSORFLOW
                 }
             }
@@ -98,7 +88,10 @@ class ImageProcessor private constructor() {
     }
 
     fun mode(mode: Mode): ImageProcessor {
-        this.mode  = if (mode == Mode.OPENCV && !opencvAvailable) Mode.TENSORFLOW else mode
+        this.mode = when {
+            mode == Mode.OPENCV && !OpenCV.isInit -> Mode.TENSORFLOW
+            else -> mode
+        }
         return this
     }
 

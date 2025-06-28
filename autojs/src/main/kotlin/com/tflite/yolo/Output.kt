@@ -1,7 +1,7 @@
 package com.tflite.yolo
 
 import android.graphics.RectF
-import android.util.Log
+import timber.log.Timber
 
 object Output {
     /**
@@ -16,7 +16,7 @@ object Output {
             }
 
             else -> {
-                Log.w("Output", "未知任务类型: ${data.task}")
+                Timber.w("未知任务类型: ${data.task}")
                 emptyArray()
             }
         }
