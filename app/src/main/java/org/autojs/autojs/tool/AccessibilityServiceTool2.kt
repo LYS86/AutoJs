@@ -5,8 +5,8 @@ import android.content.Context
 import android.text.TextUtils
 import com.shizuku.Utils
 import com.stardust.app.GlobalAppContext
-//import com.stardust.autojs.core.accessibility.AccessibilityService
-import com.stardust.view.accessibility.AccessibilityService
+import com.stardust.autojs.core.accessibility.AccessibilityService as AccessibilityService1
+import com.stardust.view.accessibility.AccessibilityService as AccessibilityService2
 import com.stardust.autojs.core.util.ProcessShell
 import com.stardust.view.accessibility.AccessibilityServiceUtils
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +18,7 @@ import java.util.Locale
 
 object AccessibilityServiceTool2 {
 
-    private val sAccessibilityServiceClass = AccessibilityService::class.java
+    private val sAccessibilityServiceClass = AccessibilityService1::class.java
 
     fun enableAccessibilityService() {
         if (Pref.shouldEnableAccessibilityServiceByRoot()) {
@@ -68,13 +68,13 @@ object AccessibilityServiceTool2 {
             return false
         }
         if (enableAccessibilityServiceByRoot(sAccessibilityServiceClass)) {
-            return AccessibilityService.waitForEnabled(timeOut)
+            return AccessibilityService2.waitForEnabled(timeOut)
         }
         return false
     }
 
     fun enableAccessibilityServiceByRootIfNeeded() {
-        if (AccessibilityService.instance == null && Pref.shouldEnableAccessibilityServiceByRoot()) {
+        if (AccessibilityService2.instance == null && Pref.shouldEnableAccessibilityServiceByRoot()) {
             enableAccessibilityServiceByRoot(sAccessibilityServiceClass)
         }
     }
@@ -106,7 +106,7 @@ object AccessibilityServiceTool2 {
             val cmd = "settings put secure enabled_accessibility_services $pkg/${sAccessibilityServiceClass.name}\n" +
                     "settings put secure accessibility_enabled 1"
             Utils.exec(cmd)
-            AccessibilityService.waitForEnabled(timeout)
+            AccessibilityService2.waitForEnabled(timeout)
         } catch (e: Exception) {
             Timber.e(e, "Shizuku启用无障碍服务失败")
             false
@@ -122,7 +122,7 @@ object AccessibilityServiceTool2 {
                     "settings put secure accessibility_enabled 1"
             Utils.exec2(cmd) // 使用协程版本的exec2
             withContext(Dispatchers.IO) {
-                AccessibilityService.waitForEnabled(timeout)
+                AccessibilityService2.waitForEnabled(timeout)
             }
         } catch (e: Exception) {
             Timber.e(e, "Shizuku启用无障碍服务失败")
