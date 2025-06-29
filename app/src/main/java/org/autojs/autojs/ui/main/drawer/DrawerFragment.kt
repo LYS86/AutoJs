@@ -59,9 +59,10 @@ class DrawerFragment : Fragment() {
         R.string.text_stable_mode,
         R.string.key_stable_mode,
     ) { holder ->
-        val checked = holder.switchCompat.isChecked
-        if (!checked) {
-            showStableModePromptIfNeeded()
+        holder.switchCompat.isChecked.also {
+            if (it) {
+                showStableModePromptIfNeeded()
+            }
         }
     }
 
@@ -290,63 +291,23 @@ class DrawerFragment : Fragment() {
 
     }
 
-//    private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {
-//        val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
-//        val checked = holder.switchCompat.isChecked
-//        when {
-//            checked && !isAccessibilityServiceEnabled -> {
-//                PermissionTool.create(200, 20000).apply {
-//                    add {
-//                        val checked2 = AccessibilityServiceTool.start(2000).also {
-//                            Timber.d("无障碍开启结果：$it")
-//                        }
-//                        if (checked2) return@add
-//                        AccessibilityServiceTool.goToAccessibilitySetting()
-//                    }
-//
-//                    add(
-//                        task = { isAccessibilityServiceEnabled() },
-//                        callback = object : PermissionTool.Callback {
-//                            override fun onSuccess() {
-//                                setChecked(mAccessibilityServiceItem, true)
-//                            }
-//
-//                        })
-//                    start()
-//
-//                }
-//            }
-//
-//            !checked && isAccessibilityServiceEnabled && !AccessibilityService.disable() -> AccessibilityServiceTool.goToAccessibilitySetting()
-//        }
-//
-//    }
-
     private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {
         val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
         val checked = holder.switchCompat.isChecked
 
         when {
             checked && !isAccessibilityServiceEnabled -> {
-                // 使用协程启动无障碍服务
                 lifecycleScope.launch {
                     setProgress(mAccessibilityServiceItem, true)
 
                     try {
-                        // 使用协程版本的start2方法
-                        val success = AccessibilityServiceTool2.start2(2000)
-
-                        if (success) {
-                            setChecked(mAccessibilityServiceItem, true)
-                            Timber.d("协程启动无障碍服务成功")
-                        } else {
-                            setChecked(mAccessibilityServiceItem, false)
-                            Timber.d("协程启动无障碍服务失败，跳转设置")
-                            AccessibilityServiceTool2.goToAccessibilitySetting()
+                        AccessibilityServiceTool2.start2(2000).also {
+                            setChecked(mAccessibilityServiceItem, it)
+                            Timber.d("启动无障碍服务: $it")
+                            if (!it) AccessibilityServiceTool2.goToAccessibilitySetting()
                         }
                     } catch (e: Exception) {
                         Timber.e(e, "协程启动无障碍服务异常")
-                        setChecked(mAccessibilityServiceItem, false)
                     } finally {
                         setProgress(mAccessibilityServiceItem, false)
                     }
