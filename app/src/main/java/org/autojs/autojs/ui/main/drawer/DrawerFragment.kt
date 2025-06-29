@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.shizuku.Utils
@@ -22,6 +24,7 @@ import com.stardust.view.accessibility.AccessibilityService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.launch
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentDrawerBinding
@@ -44,6 +47,8 @@ import timber.log.Timber
 import kotlin.system.exitProcess
 
 class DrawerFragment : Fragment() {
+    private val lifecycleScope: LifecycleCoroutineScope
+        get() = lifecycle.coroutineScope
 
     companion object {
         private const val URL_DEV_PLUGIN = "https://www.autojs.org/topic/968/"
@@ -285,36 +290,73 @@ class DrawerFragment : Fragment() {
 
     }
 
+//    private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {
+//        val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
+//        val checked = holder.switchCompat.isChecked
+//        when {
+//            checked && !isAccessibilityServiceEnabled -> {
+//                PermissionTool.create(200, 20000).apply {
+//                    add {
+//                        val checked2 = AccessibilityServiceTool.start(2000).also {
+//                            Timber.d("无障碍开启结果：$it")
+//                        }
+//                        if (checked2) return@add
+//                        AccessibilityServiceTool.goToAccessibilitySetting()
+//                    }
+//
+//                    add(
+//                        task = { isAccessibilityServiceEnabled() },
+//                        callback = object : PermissionTool.Callback {
+//                            override fun onSuccess() {
+//                                setChecked(mAccessibilityServiceItem, true)
+//                            }
+//
+//                        })
+//                    start()
+//
+//                }
+//            }
+//
+//            !checked && isAccessibilityServiceEnabled && !AccessibilityService.disable() -> AccessibilityServiceTool.goToAccessibilitySetting()
+//        }
+//
+//    }
+
     private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {
         val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
         val checked = holder.switchCompat.isChecked
+
         when {
             checked && !isAccessibilityServiceEnabled -> {
-                PermissionTool.create(200, 20000).apply {
-                    add {
-                        val checked2 = AccessibilityServiceTool.start(2000).also {
-                            Timber.d("无障碍开启结果：$it")
+                // 使用协程启动无障碍服务
+                lifecycleScope.launch {
+                    setProgress(mAccessibilityServiceItem, true)
+
+                    try {
+                        // 使用协程版本的start2方法
+                        val success = AccessibilityServiceTool2.start2(2000)
+
+                        if (success) {
+                            setChecked(mAccessibilityServiceItem, true)
+                            Timber.d("协程启动无障碍服务成功")
+                        } else {
+                            setChecked(mAccessibilityServiceItem, false)
+                            Timber.d("协程启动无障碍服务失败，跳转设置")
+                            AccessibilityServiceTool2.goToAccessibilitySetting()
                         }
-                        if (checked2) return@add
-                        AccessibilityServiceTool.goToAccessibilitySetting()
+                    } catch (e: Exception) {
+                        Timber.e(e, "协程启动无障碍服务异常")
+                        setChecked(mAccessibilityServiceItem, false)
+                    } finally {
+                        setProgress(mAccessibilityServiceItem, false)
                     }
-
-                    add(
-                        task = { isAccessibilityServiceEnabled() },
-                        callback = object : PermissionTool.Callback {
-                            override fun onSuccess() {
-                                setChecked(mAccessibilityServiceItem, true)
-                            }
-
-                        })
-                    start()
-
                 }
             }
 
-            !checked && isAccessibilityServiceEnabled && !AccessibilityService.disable() -> AccessibilityServiceTool.goToAccessibilitySetting()
+            !checked && isAccessibilityServiceEnabled && !AccessibilityService.disable() -> {
+                AccessibilityServiceTool2.goToAccessibilitySetting()
+            }
         }
-
     }
 
     private fun showOrDismissFloatingWindow(holder: DrawerMenuItemViewHolder) {
