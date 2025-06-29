@@ -61,6 +61,11 @@ dependencies {
     api(libs.androidx.annotation)
     api(libs.settingscompat)
     api(libs.opencv)
+    // https://mvnrepository.com/artifact/androidx.core/core-ktx
+    api(libs.androidx.core.ktx)
+
+    // https://mvnrepository.com/artifact/com.jakewharton.timber/timber
+    api(libs.timber)
 
     api(project(":common:libs:emulatorview"))
     api(project(":common:libs:libtermexec"))

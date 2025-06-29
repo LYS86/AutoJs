@@ -5,8 +5,6 @@ import android.content.Context
 import android.text.TextUtils
 import com.shizuku.Utils
 import com.stardust.app.GlobalAppContext
-import com.stardust.autojs.core.accessibility.AccessibilityService as AccessibilityService1
-import com.stardust.view.accessibility.AccessibilityService as AccessibilityService2
 import com.stardust.autojs.core.util.ProcessShell
 import com.stardust.view.accessibility.AccessibilityServiceUtils
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +13,8 @@ import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import timber.log.Timber
 import java.util.Locale
+import com.stardust.autojs.core.accessibility.AccessibilityService as AccessibilityService1
+import com.stardust.view.accessibility.AccessibilityService as AccessibilityService2
 
 object AccessibilityServiceTool2 {
 
@@ -38,6 +38,7 @@ object AccessibilityServiceTool2 {
         try {
             AccessibilityServiceUtils.goToAccessibilitySetting(context)
         } catch (e: ActivityNotFoundException) {
+            Timber.e(e)
             GlobalAppContext.toast("${context.getString(R.string.go_to_accessibility_settings)} ${context.getString(R.string.app_name)}")
         }
     }
@@ -88,44 +89,25 @@ object AccessibilityServiceTool2 {
      * @param timeout 超时时间（毫秒）
      * @return 是否成功启动
      */
-    fun start(timeout: Long): Boolean {
-        return byShizuku(timeout) || byRoot(timeout)
-    }
-
-    // 新增协程版本
     suspend fun start2(timeout: Long): Boolean {
         return byShizuku2(timeout) || withContext(Dispatchers.IO) {
             byRoot(timeout)
         }
     }
 
-    fun byShizuku(timeout: Long): Boolean {
-        val context = GlobalAppContext.get()
-        return try {
-            val pkg = context.packageName
-            val cmd = "settings put secure enabled_accessibility_services $pkg/${sAccessibilityServiceClass.name}\n" +
-                    "settings put secure accessibility_enabled 1"
-            Utils.exec(cmd)
-            AccessibilityService2.waitForEnabled(timeout)
-        } catch (e: Exception) {
-            Timber.e(e, "Shizuku启用无障碍服务失败")
-            false
-        }
-    }
 
-    // 新增协程版本
     suspend fun byShizuku2(timeout: Long): Boolean {
         val context = GlobalAppContext.get()
         return try {
             val pkg = context.packageName
             val cmd = "settings put secure enabled_accessibility_services $pkg/${sAccessibilityServiceClass.name}\n" +
                     "settings put secure accessibility_enabled 1"
-            Utils.exec2(cmd) // 使用协程版本的exec2
+            Utils.exec2(cmd)
             withContext(Dispatchers.IO) {
                 AccessibilityService2.waitForEnabled(timeout)
             }
         } catch (e: Exception) {
-            Timber.e(e, "Shizuku启用无障碍服务失败")
+            Timber.e(e, "Shizuku切换无障碍服务失败")
             false
         }
     }

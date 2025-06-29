@@ -19,8 +19,7 @@ import com.stardust.app.GlobalAppContext
 import com.stardust.app.hasPermission
 import com.stardust.app.isOpPermissionGranted
 import com.stardust.notification.NotificationListenerService
-import com.stardust.util.IntentUtil
-import com.stardust.view.accessibility.AccessibilityService
+import com.stardust.util.IntentUtil2
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -128,7 +127,7 @@ class DrawerFragment : Fragment() {
                 compositeDisposable.add(disposable)
             }.neutralText(R.string.text_help).onNeutral { _, _ ->
                 setChecked(mConnectionItem, false)
-                IntentUtil.browse(activity, URL_DEV_PLUGIN)
+                IntentUtil2.browse(requireContext(), URL_DEV_PLUGIN)
             }.cancelListener {
                 setChecked(mConnectionItem, false)
             }.show()
@@ -303,7 +302,7 @@ class DrawerFragment : Fragment() {
         PermissionTool().apply {
             add(
                 task = {
-                    IntentUtil.requestAppUsagePermission(requireContext()).also {
+                    IntentUtil2.requestAppUsagePermission(requireContext()).also {
                         Timber.d("跳转使用情况访问权限设置")
                     }
                 },
@@ -336,33 +335,24 @@ class DrawerFragment : Fragment() {
     }
 
     private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {
-        val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
         val checked = holder.switchCompat.isChecked
-
-        when {
-            checked && !isAccessibilityServiceEnabled -> {
-                lifecycleScope.launch {
-                    setProgress(mAccessibilityServiceItem, true)
-
-                    try {
-                        AccessibilityServiceTool2.start2(2000).also {
-                            setChecked(mAccessibilityServiceItem, it)
-                            Timber.d("启动无障碍服务: $it")
-                            if (!it) AccessibilityServiceTool2.goToAccessibilitySetting()
-                        }
-                    } catch (e: Exception) {
-                        Timber.e(e, "协程启动无障碍服务异常")
-                    } finally {
-                        setProgress(mAccessibilityServiceItem, false)
-                    }
+        Timber.d("开关状态: $checked", "当前状态: ${isAccessibilityServiceEnabled()}")
+        lifecycleScope.launch {
+            setProgress(mAccessibilityServiceItem, true)
+            try {
+                AccessibilityServiceTool2.start2(2000).also {
+                    setChecked(mAccessibilityServiceItem, it)
+                    Timber.d("切换无障碍服务: $it")
+                    if (!it) AccessibilityServiceTool2.goToAccessibilitySetting()
                 }
-            }
-
-            !checked && isAccessibilityServiceEnabled && !AccessibilityService.disable() -> {
-                AccessibilityServiceTool2.goToAccessibilitySetting()
+            } catch (e: Exception) {
+                Timber.e(e, "切换无障碍服务异常")
+            } finally {
+                setProgress(mAccessibilityServiceItem, false)
             }
         }
     }
+
 
     private fun showOrDismissFloatingWindow(holder: DrawerMenuItemViewHolder) {
         val isFloatingWindowShowing = FloatyWindowManger.isCircularMenuShowing()
@@ -466,12 +456,8 @@ class DrawerFragment : Fragment() {
     }
 
     private fun isAccessibilityServiceEnabled(): Boolean {
-
-        return AccessibilityServiceTool.isAccessibilityServiceEnabled(activity).also {
-            Timber.d("无障碍是否开启1: $it")
-            AccessibilityServiceTool2.isAccessibilityServiceEnabled(requireContext()).also {
-                Timber.d("无障碍是否开启2: $it")
-            }
+        return AccessibilityServiceTool2.isAccessibilityServiceEnabled(requireContext()).also {
+            Timber.d("无障碍是否开启: $it")
         }
     }
 

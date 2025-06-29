@@ -17,7 +17,10 @@ import com.stardust.R;
 
 import java.io.File;
 
-
+/**
+ * @deprecated Use {@link IntentUtil2} instead.
+ */
+@Deprecated
 public class IntentUtil {
 
     public static boolean chatWithQQ(Context context, String qq) {

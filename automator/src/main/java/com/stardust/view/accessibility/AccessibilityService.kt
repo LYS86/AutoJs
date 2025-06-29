@@ -139,6 +139,9 @@ open class AccessibilityService : android.accessibilityservice.AccessibilityServ
                 eventTypes.addAll(set)
         }
 
+        /**
+         * 使用该方法可能出现内存泄露，慎用
+         */
         fun disable(): Boolean {
             if (instance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 instance!!.disableSelf()
