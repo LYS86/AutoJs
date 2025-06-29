@@ -259,10 +259,6 @@ class DrawerFragment : Fragment() {
         val enabled = NotificationListenerService.hasNotificationAccess(requireContext())
         val checked = holder.switchCompat.isChecked
         Timber.d("通知权限状态: $enabled, 开关状态: $checked")
-
-        if (!checked || enabled) return
-
-
         PermissionTool().apply {
             add(
                 task = {
@@ -277,9 +273,10 @@ class DrawerFragment : Fragment() {
 
             check(
                 task = {
-                    NotificationListenerService.hasNotificationAccess(requireContext()).also {
-                        Timber.d("通知权限状态: $it")
-                    }
+                    val hasPermission =
+                        NotificationListenerService.hasNotificationAccess(requireContext())
+                    Timber.d("检查通知权限: 当前状态=$hasPermission, 目标状态=$checked")
+                    hasPermission == checked
                 },
                 timeout = 30_000L,
                 onSuccess = {
