@@ -258,6 +258,7 @@ class DrawerFragment : Fragment() {
     private fun goToNotificationServiceSettings(holder: DrawerMenuItemViewHolder) {
         val enabled = NotificationListenerService.hasNotificationAccess(requireContext())
         val checked = holder.switchCompat.isChecked
+        if (enabled == checked) return
         Timber.d("通知权限状态: $enabled, 开关状态: $checked")
         PermissionTool().apply {
             add(
@@ -268,6 +269,7 @@ class DrawerFragment : Fragment() {
                 },
                 onError = { error ->
                     Timber.e(error,"跳转通知设置失败")
+                    setChecked(mNotificationPermissionItem, !checked)
                 }
             )
 
@@ -281,10 +283,11 @@ class DrawerFragment : Fragment() {
                 timeout = 30_000L,
                 onSuccess = {
                     Timber.d("通知权限状态切换成功")
-                    startActivity(Intent(requireContext(), MainActivity::class.java).addFlags( Intent.FLAG_ACTIVITY_NEW_TASK))
+                    startActivity(Intent(requireContext(), MainActivity::class.java))
                 },
                 onError = { error ->
                     Timber.e(error,"检查通知权限失败")
+                    setChecked(mNotificationPermissionItem, !checked)
                 }
             )
 
@@ -295,17 +298,41 @@ class DrawerFragment : Fragment() {
     private fun goToUsageStatsSettings(holder: DrawerMenuItemViewHolder) {
         val enabled = requireContext().hasPermission(AppOpsManager.OPSTR_GET_USAGE_STATS)
         val checked = holder.switchCompat.isChecked
-        if (!checked || enabled) return
-        DialogUtils.showConfirm(
-            context = requireContext(),
-            title = getString(R.string.text_usage_stats_permission),
-            content = getString(R.string.description_usage_stats_permission),
-            onPositive = { IntentUtil.requestAppUsagePermission(context) },
-            onNegative = { setChecked(mUsageStatsPermissionItem, false) }).apply {
-            setCancelable(false)
-            setCanceledOnTouchOutside(false)
-        }
+        if (enabled == checked) return
+        Timber.d("使用情况访问权限状态: $enabled, 开关状态: $checked")
+        PermissionTool().apply {
+            add(
+                task = {
+                    IntentUtil.requestAppUsagePermission(requireContext()).also {
+                        Timber.d("跳转使用情况访问权限设置")
+                    }
+                },
+                onError = { error ->
+                    Timber.e(error, "跳转使用情况访问权限设置失败")
+                    setChecked(mUsageStatsPermissionItem, !checked)
+                }
+            )
 
+            check(
+                task = {
+                    val hasProgression =
+                        requireContext().isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS)
+                    Timber.d("检查使用情况访问权限: 当前状态=$hasProgression, 目标状态=$checked")
+                    hasProgression == checked
+                },
+                timeout = 30_000L,
+                onSuccess = {
+                    Timber.d("使用情况访问权限状态切换成功")
+                    startActivity(Intent(requireContext(), MainActivity::class.java))
+                },
+                onError = { error ->
+                    Timber.e(error, "检查使用情况访问权限失败")
+                    setChecked(mUsageStatsPermissionItem, !checked)
+                }
+            )
+
+            start()
+        }
     }
 
     private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {

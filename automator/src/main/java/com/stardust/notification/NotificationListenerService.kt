@@ -3,6 +3,7 @@ package com.stardust.notification
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.provider.Settings
 import android.service.notification.StatusBarNotification
 import com.stardust.view.accessibility.NotificationListener
@@ -64,7 +65,18 @@ class NotificationListenerService : android.service.notification.NotificationLis
         }
 
         fun toSettings(context: Context) {
-            context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+            val intent = when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ->
+                    Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS).apply {
+                        putExtra(
+                            Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
+                            ComponentName(context, NotificationListenerService::class.java).flattenToString()
+                        )
+                    }
+                else -> Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+            }
+
+            context.startActivity(intent)
         }
     }
 }
