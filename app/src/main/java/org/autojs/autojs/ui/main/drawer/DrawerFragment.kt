@@ -29,8 +29,7 @@ import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentDrawerBinding
 import org.autojs.autojs.external.foreground.ForegroundService
 import org.autojs.autojs.pluginclient.DevPluginService
-import org.autojs.autojs.tool.AccessibilityServiceTool
-import org.autojs.autojs.tool.AccessibilityServiceTool2
+import org.autojs.autojs.tool.AccessibilityServiceTool3
 import org.autojs.autojs.tool.PermissionTool
 import org.autojs.autojs.tool.WifiTool
 import org.autojs.autojs.ui.BaseActivity
@@ -101,7 +100,7 @@ class DrawerFragment : Fragment() {
     private val mAccessibilityServiceItem = DrawerMenuItem(
         R.drawable.ic_service_green, R.string.text_accessibility_service, 0
     ) { holder ->
-        enableOrDisableAccessibilityService(holder)
+        switchAccessibilityService(holder)
     }
 
     private val mShizukuItem =
@@ -267,7 +266,7 @@ class DrawerFragment : Fragment() {
                     }
                 },
                 onError = { error ->
-                    Timber.e(error,"跳转通知设置失败")
+                    Timber.e(error, "跳转通知设置失败")
                     setChecked(mNotificationPermissionItem, !checked)
                 }
             )
@@ -285,7 +284,7 @@ class DrawerFragment : Fragment() {
                     startActivity(Intent(requireContext(), MainActivity::class.java))
                 },
                 onError = { error ->
-                    Timber.e(error,"检查通知权限失败")
+                    Timber.e(error, "检查通知权限失败")
                     setChecked(mNotificationPermissionItem, !checked)
                 }
             )
@@ -334,21 +333,12 @@ class DrawerFragment : Fragment() {
         }
     }
 
-    private fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {
+    private fun switchAccessibilityService(holder: DrawerMenuItemViewHolder) {
         val checked = holder.switchCompat.isChecked
-        Timber.d("开关状态: $checked", "当前状态: ${isAccessibilityServiceEnabled()}")
         lifecycleScope.launch {
-            setProgress(mAccessibilityServiceItem, true)
-            try {
-                AccessibilityServiceTool2.start2(2000).also {
-                    setChecked(mAccessibilityServiceItem, it)
-                    Timber.d("切换无障碍服务: $it")
-                    if (!it) AccessibilityServiceTool2.goToAccessibilitySetting()
-                }
-            } catch (e: Exception) {
-                Timber.e(e, "切换无障碍服务异常")
-            } finally {
-                setProgress(mAccessibilityServiceItem, false)
+            AccessibilityServiceTool3.switch(checked).also {
+                setChecked(mAccessibilityServiceItem, it)
+                if (!it == checked) AccessibilityServiceTool3.toSetting()
             }
         }
     }
@@ -421,7 +411,7 @@ class DrawerFragment : Fragment() {
     private fun syncSwitchState() {
         setChecked(
             mAccessibilityServiceItem,
-            AccessibilityServiceTool.isAccessibilityServiceEnabled(activity)
+            AccessibilityServiceTool3.isEnabled(requireContext())
         )
         setChecked(mNotificationPermissionItem, NotificationListenerService.instance != null)
         setChecked(
@@ -456,9 +446,7 @@ class DrawerFragment : Fragment() {
     }
 
     private fun isAccessibilityServiceEnabled(): Boolean {
-        return AccessibilityServiceTool2.isAccessibilityServiceEnabled(requireContext()).also {
-            Timber.d("无障碍是否开启: $it")
-        }
+        return AccessibilityServiceTool3.isEnabled(requireContext())
     }
 
     private fun requestShizukuPermission() {
@@ -466,7 +454,6 @@ class DrawerFragment : Fragment() {
             !Utils.hasApp() -> {
                 showMessage(R.string.text_shizuku_app_not_installed)
             }
-
             !Utils.isReady() -> {
                 DialogUtils.showConfirm(
                     context = requireContext(),
@@ -475,14 +462,14 @@ class DrawerFragment : Fragment() {
                     onPositive = { Utils.launchApp() }
                 )
             }
-
             else -> {
-                Utils.requestPermission { granted ->
+                lifecycleScope.launch {
+                    val granted = Utils.requestPermissionSuspend()
                     if (granted) {
                         showMessage(R.string.text_shizuku_hasPermission)
-                        return@requestPermission
+                    } else {
+                        showMessage(R.string.text_shizuku_permission_denied)
                     }
-                    showMessage(R.string.text_shizuku_permission_denied)
                 }
             }
         }
