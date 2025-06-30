@@ -16,6 +16,8 @@ android {
         minSdk = versions["mini"].toString().toInt()
         targetSdk = versions["target"].toString().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "VERSION_NAME", "\"${versions["appVersionName"]}\"")
+        buildConfigField("int", "VERSION_CODE", versions["appVersionCode"].toString())
     }
 
     buildTypes {
