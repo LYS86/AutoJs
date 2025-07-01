@@ -21,11 +21,10 @@ import com.stardust.view.accessibility.LayoutInspector;
 import com.stardust.view.accessibility.NodeInfo;
 
 import org.autojs.autojs.BuildConfig;
-import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
 import org.autojs.autojs.pluginclient.DevPluginService;
-import org.autojs.autojs.tool.AccessibilityServiceTool;
+import org.autojs.autojs.tool.AccessibilityServiceTool3;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow;
@@ -121,53 +120,39 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
     }
 
     public void ensureAccessibilityServiceEnabled() {
-        if (AccessibilityService.Companion.getInstance() != null) {
-            return;
-        }
-        String errorMessage = null;
-        if (AccessibilityServiceTool.isAccessibilityServiceEnabled(GlobalAppContext.get())) {
-            errorMessage = GlobalAppContext.getString(R.string.text_auto_operate_service_enabled_but_not_running);
-        } else {
-
-            if (Pref.shouldEnableAccessibilityServiceByRoot()) {
-                if (!AccessibilityServiceTool.byRoot(2000)) {
-                    errorMessage = GlobalAppContext.getString(R.string.text_enable_accessibility_service_by_root_timeout);
-                }
-            } else {
-                errorMessage = GlobalAppContext.getString(R.string.text_no_accessibility_permission);
-            }
-        }
-
-        if (errorMessage != null) {
-//            AccessibilityServiceTool.goToAccessibilitySetting();
-            throw new ScriptException(errorMessage);
+        if (isServiceRunning()) return;
+        String error = checkServiceState();
+        if (error != null) {
+            throw new ScriptException(error);
         }
     }
 
-
     @Override
     public void waitForAccessibilityServiceEnabled() {
-        if (AccessibilityService.Companion.getInstance() != null) {
-            return;
-        }
-        String errorMessage = null;
-        if (AccessibilityServiceTool.isAccessibilityServiceEnabled(GlobalAppContext.get())) {
-            errorMessage = GlobalAppContext.getString(R.string.text_auto_operate_service_enabled_but_not_running);
-        } else {
-            if (Pref.shouldEnableAccessibilityServiceByRoot()) {
-                if (!AccessibilityServiceTool.byRoot(2000)) {
-                    errorMessage = GlobalAppContext.getString(R.string.text_enable_accessibility_service_by_root_timeout);
-                }
-            } else {
-                errorMessage = GlobalAppContext.getString(R.string.text_no_accessibility_permission);
-            }
-        }
-        if (errorMessage != null) {
-            AccessibilityServiceTool.goToAccessibilitySetting();
+        if (isServiceRunning()) return;
+        String error = checkServiceState();
+        if (error != null) {
+            AccessibilityServiceTool3.INSTANCE.toSetting();
             if (!AccessibilityService.Companion.waitForEnabled(-1)) {
                 throw new ScriptInterruptedException();
             }
         }
+    }
+
+
+    private boolean isServiceRunning() {
+        return AccessibilityService.Companion.getInstance() != null;
+    }
+
+    private String checkServiceState() {
+        Context context = GlobalAppContext.get();
+        if (AccessibilityServiceTool3.INSTANCE.isEnabled(context)) {
+            return GlobalAppContext.getString(R.string.text_auto_operate_service_enabled_but_not_running);
+        }
+        if (!AccessibilityServiceTool3.INSTANCE.switchService(true)) {
+            return GlobalAppContext.getString(R.string.text_no_accessibility_permission);
+        }
+        return null;
     }
 
     @Override
