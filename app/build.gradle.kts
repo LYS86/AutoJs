@@ -146,5 +146,6 @@ dependencies {
     implementation(libs.rxjava3.rxandroid)
 
     // https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-runtime-ktx
-    runtimeOnly(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+
 }
