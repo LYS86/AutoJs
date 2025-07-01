@@ -141,7 +141,7 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
 
 
     private boolean isServiceRunning() {
-        return AccessibilityService.Companion.getInstance() != null;
+        return AccessibilityService.Companion.isRunning();
     }
 
     private String checkServiceState() {
