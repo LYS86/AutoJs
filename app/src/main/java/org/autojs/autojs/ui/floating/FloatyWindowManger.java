@@ -19,8 +19,8 @@ import java.lang.ref.WeakReference;
 
 /**
  * Created by Stardust on 2017/9/30.
+ * @deprecated Use {@link FloatyWindowManagerV2} instead.
  */
-
 public class FloatyWindowManger {
 
     private static WeakReference<CircularMenu> sCircularMenu;
