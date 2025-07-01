@@ -18,7 +18,7 @@ public abstract class FullScreenFloatyWindow extends FloatyWindow {
         return new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
-                FloatyWindowManger.getWindowType(),
+                FloatyWindowManagerV2.INSTANCE.getWindowType(),
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
     }
