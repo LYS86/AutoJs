@@ -36,7 +36,7 @@ import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.common.DialogUtils
 import org.autojs.autojs.ui.common.MessageUtils
 import org.autojs.autojs.ui.floating.CircularMenu
-import org.autojs.autojs.ui.floating.FloatyWindowManger
+import org.autojs.autojs.ui.floating.FloatyWindowManagerV2
 import org.autojs.autojs.ui.main.MainActivity
 import org.autojs.autojs.ui.settings.SettingsActivity
 import org.greenrobot.eventbus.EventBus
@@ -135,15 +135,30 @@ class DrawerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initMenuItems()
-        if (Pref.isFloatingMenuShown()) {
-            FloatyWindowManger.showCircularMenuIfNeeded()
-            setChecked(mFloatingWindowItem, true)
-        }
+        initButton()
+        setupStates()
+    }
+
+    /**
+     * 恢复状态
+     * @see DrawerMenuItem
+     */
+    private fun setupStates() {
+        setChecked(mFloatingWindowItem, FloatyWindowManagerV2.restore())
         setChecked(mConnectionItem, DevPluginService.getInstance().isConnected)
         if (Pref.isForegroundServiceEnabled()) {
             ForegroundService.start(GlobalAppContext.get())
             setChecked(mForegroundServiceItem, true)
         }
+        if (Pref.isConnected() && !DevPluginService.getInstance().isConnected) {
+            val host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(activity))
+            val disposable = DevPluginService.getInstance().connectToServer(host)
+                .subscribe({}, this::onConnectException)
+            compositeDisposable.add(disposable)
+        }
+    }
+
+    private fun initButton() {
         binding.drawerMenu.adapter = mDrawerMenuAdapter
         binding.drawerMenu.layoutManager = LinearLayoutManager(context)
         binding.setting.setOnClickListener {
@@ -152,12 +167,6 @@ class DrawerFragment : Fragment() {
         binding.exit.setOnClickListener {
             activity?.finishAffinity()
             exitProcess(0)
-        }
-        if (Pref.isConnected() && !DevPluginService.getInstance().isConnected) {
-            val host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(activity))
-            val disposable = DevPluginService.getInstance().connectToServer(host)
-                .subscribe({}, this::onConnectException)
-            compositeDisposable.add(disposable)
         }
     }
 
@@ -259,35 +268,27 @@ class DrawerFragment : Fragment() {
         if (enabled == checked) return
         Timber.d("通知权限状态: $enabled, 开关状态: $checked")
         PermissionTool().apply {
-            add(
-                task = {
-                    NotificationListenerService.toSettings(requireContext()).also {
-                        Timber.d("跳转通知设置")
-                    }
-                },
-                onError = { error ->
-                    Timber.e(error, "跳转通知设置失败")
-                    setChecked(mNotificationPermissionItem, !checked)
+            add(task = {
+                NotificationListenerService.toSettings(requireContext()).also {
+                    Timber.d("跳转通知设置")
                 }
-            )
+            }, onError = { error ->
+                Timber.e(error, "跳转通知设置失败")
+                setChecked(mNotificationPermissionItem, !checked)
+            })
 
-            check(
-                task = {
-                    val hasPermission =
-                        NotificationListenerService.hasNotificationAccess(requireContext())
-                    Timber.d("检查通知权限: 当前状态=$hasPermission, 目标状态=$checked")
-                    hasPermission == checked
-                },
-                timeout = 30_000L,
-                onSuccess = {
-                    Timber.d("通知权限状态切换成功")
-                    startActivity(Intent(requireContext(), MainActivity::class.java))
-                },
-                onError = { error ->
-                    Timber.e(error, "检查通知权限失败")
-                    setChecked(mNotificationPermissionItem, !checked)
-                }
-            )
+            check(task = {
+                val hasPermission =
+                    NotificationListenerService.hasNotificationAccess(requireContext())
+                Timber.d("检查通知权限: 当前状态=$hasPermission, 目标状态=$checked")
+                hasPermission == checked
+            }, timeout = 30_000L, onSuccess = {
+                Timber.d("通知权限状态切换成功")
+                startActivity(Intent(requireContext(), MainActivity::class.java))
+            }, onError = { error ->
+                Timber.e(error, "检查通知权限失败")
+                setChecked(mNotificationPermissionItem, !checked)
+            })
 
             start()
         }
@@ -299,35 +300,27 @@ class DrawerFragment : Fragment() {
         if (enabled == checked) return
         Timber.d("使用情况访问权限状态: $enabled, 开关状态: $checked")
         PermissionTool().apply {
-            add(
-                task = {
-                    IntentUtil2.requestAppUsagePermission(requireContext()).also {
-                        Timber.d("跳转使用情况访问权限设置")
-                    }
-                },
-                onError = { error ->
-                    Timber.e(error, "跳转使用情况访问权限设置失败")
-                    setChecked(mUsageStatsPermissionItem, !checked)
+            add(task = {
+                IntentUtil2.requestAppUsagePermission(requireContext()).also {
+                    Timber.d("跳转使用情况访问权限设置")
                 }
-            )
+            }, onError = { error ->
+                Timber.e(error, "跳转使用情况访问权限设置失败")
+                setChecked(mUsageStatsPermissionItem, !checked)
+            })
 
-            check(
-                task = {
-                    val hasProgression =
-                        requireContext().isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS)
-                    Timber.d("检查使用情况访问权限: 当前状态=$hasProgression, 目标状态=$checked")
-                    hasProgression == checked
-                },
-                timeout = 30_000L,
-                onSuccess = {
-                    Timber.d("使用情况访问权限状态切换成功")
-                    startActivity(Intent(requireContext(), MainActivity::class.java))
-                },
-                onError = { error ->
-                    Timber.e(error, "检查使用情况访问权限失败")
-                    setChecked(mUsageStatsPermissionItem, !checked)
-                }
-            )
+            check(task = {
+                val hasProgression =
+                    requireContext().isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS)
+                Timber.d("检查使用情况访问权限: 当前状态=$hasProgression, 目标状态=$checked")
+                hasProgression == checked
+            }, timeout = 30_000L, onSuccess = {
+                Timber.d("使用情况访问权限状态切换成功")
+                startActivity(Intent(requireContext(), MainActivity::class.java))
+            }, onError = { error ->
+                Timber.e(error, "检查使用情况访问权限失败")
+                setChecked(mUsageStatsPermissionItem, !checked)
+            })
 
             start()
         }
@@ -343,17 +336,23 @@ class DrawerFragment : Fragment() {
         }
     }
 
+    fun showOrDismissFloatingWindow(holder: DrawerMenuItemViewHolder) {
+        val isChecked = holder.switchCompat.isChecked
+        val activity = requireActivity()
 
-    private fun showOrDismissFloatingWindow(holder: DrawerMenuItemViewHolder) {
-        val isFloatingWindowShowing = FloatyWindowManger.isCircularMenuShowing()
-        val checked = holder.switchCompat.isChecked
-        if (checked && !isFloatingWindowShowing) {
-            val checked2 = FloatyWindowManger.showCircularMenu()
-            Pref.setFloatingMenuShown(checked2)
-            setChecked(mFloatingWindowItem, checked2)
-        } else if (!checked && isFloatingWindowShowing) {
-            FloatyWindowManger.hideCircularMenu()
+        if (!isChecked) {
+            FloatyWindowManagerV2.switchMenu(false)
+            return
         }
+
+        FloatyWindowManagerV2.requestPermission(activity = activity, onSuccess = {
+            FloatyWindowManagerV2.switchMenu()
+            startActivity(Intent(requireContext(), MainActivity::class.java))
+        }, onError = {
+            setChecked(mFloatingWindowItem, false)
+            Timber.e(it, "请求悬浮窗权限失败")
+        })
+
     }
 
     private fun openThemeColorSettings() {
@@ -408,10 +407,12 @@ class DrawerFragment : Fragment() {
         syncSwitchState()
     }
 
+    /**
+     * 同步开关状态
+     */
     private fun syncSwitchState() {
         setChecked(
-            mAccessibilityServiceItem,
-            AccessibilityServiceTool3.isEnabled(requireContext())
+            mAccessibilityServiceItem, AccessibilityServiceTool3.isEnabled(requireContext())
         )
         setChecked(mNotificationPermissionItem, NotificationListenerService.instance != null)
         setChecked(
@@ -425,13 +426,13 @@ class DrawerFragment : Fragment() {
         setChecked(mFloatingWindowItem, event.currentState != CircularMenu.STATE_CLOSED)
     }
 
-    private fun showMessage(id: Int) {
-        showMessage(getString(id))
+    private fun showMessage(id: Int, forceToast: Boolean = false) {
+        showMessage(getString(id), forceToast = forceToast)
     }
 
-    private fun showMessage(text: CharSequence) {
+    private fun showMessage(text: CharSequence, forceToast: Boolean = false) {
         MessageUtils.show(
-            context = context, view = view, message = text.toString()
+            context = context, view = view, message = text.toString(), forceToast = forceToast
         )
     }
 
@@ -445,23 +446,20 @@ class DrawerFragment : Fragment() {
         mDrawerMenuAdapter.notifyItemChanged(item)
     }
 
-    private fun isAccessibilityServiceEnabled(): Boolean {
-        return AccessibilityServiceTool3.isEnabled(requireContext())
-    }
-
     private fun requestShizukuPermission() {
         when {
             !Utils.hasApp() -> {
                 showMessage(R.string.text_shizuku_app_not_installed)
             }
+
             !Utils.isReady() -> {
                 DialogUtils.showConfirm(
                     context = requireContext(),
                     title = getString(R.string.text_shizuku_service_not_ready),
                     content = getString(R.string.text_to_shizuku),
-                    onPositive = { Utils.launchApp() }
-                )
+                    onPositive = { Utils.launchApp() })
             }
+
             else -> {
                 lifecycleScope.launch {
                     val granted = Utils.requestPermissionSuspend()
