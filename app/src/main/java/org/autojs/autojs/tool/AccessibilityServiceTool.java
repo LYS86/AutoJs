@@ -19,6 +19,7 @@ import timber.log.Timber;
 
 /**
  * Created by Stardust on 2017/1/26.
+ * @deprecated use {@link AccessibilityServiceTool3} instead.
  */
 
 public class AccessibilityServiceTool {
