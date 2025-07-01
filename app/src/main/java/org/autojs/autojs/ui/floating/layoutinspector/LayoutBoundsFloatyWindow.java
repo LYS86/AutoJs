@@ -10,15 +10,13 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.stardust.app.DialogUtils;
 import com.stardust.enhancedfloaty.FloatyService;
-
-import org.autojs.autojs.R;
-import org.autojs.autojs.ui.codegeneration.CodeGenerateDialog;
-import org.autojs.autojs.ui.floating.FloatyWindowManger;
-import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
-
 import com.stardust.view.accessibility.LayoutInspector;
 import com.stardust.view.accessibility.NodeInfo;
 
+import org.autojs.autojs.R;
+import org.autojs.autojs.ui.codegeneration.CodeGenerateDialog;
+import org.autojs.autojs.ui.floating.FloatyWindowManagerV2;
+import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 import org.autojs.autojs.ui.widget.BubblePopupMenu;
 
 import java.util.Arrays;
@@ -47,7 +45,7 @@ public class LayoutBoundsFloatyWindow extends FullScreenFloatyWindow {
             public void onCaptureAvailable(NodeInfo capture) {
                 inspector.removeCaptureAvailableListener(this);
                 LayoutBoundsFloatyWindow window = new LayoutBoundsFloatyWindow(capture);
-                FloatyWindowManger.addWindow(context, window);
+                FloatyWindowManagerV2.INSTANCE.addWindow(context, window);
             }
         };
         inspector.addCaptureAvailableListener(listener);
@@ -133,7 +131,7 @@ public class LayoutBoundsFloatyWindow extends FullScreenFloatyWindow {
                     .customView(mNodeInfoView, false)
                     .theme(Theme.LIGHT)
                     .build();
-            mNodeInfoDialog.getWindow().setType(FloatyWindowManger.getWindowType());
+            mNodeInfoDialog.getWindow().setType(FloatyWindowManagerV2.INSTANCE.getWindowType());
         }
     }
 
