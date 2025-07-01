@@ -124,11 +124,15 @@ open class AccessibilityService : android.accessibilityservice.AccessibilityServ
         private val mDelegates = TreeMap<Int, AccessibilityDelegate>()
         private val LOCK = ReentrantLock()
         private val ENABLED = LOCK.newCondition()
+        @Volatile
         var instance: AccessibilityService? = null
             private set
         val stickOnKeyObserver = OnKeyListener.Observer()
         private var containsAllEventTypes = false
         private val eventTypes = HashSet<Int>()
+
+        val isRunning: Boolean
+            get() = instance != null
 
         fun addDelegate(uniquePriority: Int, delegate: AccessibilityDelegate) {
             mDelegates[uniquePriority] = delegate
