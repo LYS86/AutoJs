@@ -3,11 +3,11 @@ package org.autojs.autojs
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import androidx.core.content.edit
 import com.stardust.app.GlobalAppContext
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
-import androidx.core.content.edit
 
 /**
  * 偏好设置工具类
@@ -34,8 +34,8 @@ object PrefV2 {
     fun int(key: String, default: Int) = IntPreference(key, default)
     fun long(key: String, default: Long) = LongPreference(key, default)
     fun float(key: String, default: Float) = FloatPreference(key, default)
-    fun string(key: String, default: String? = null) = StringPreference(key, default)
-    fun stringSet(key: String, default: Set<String>? = null) = StringSetPreference(key, default)
+    fun string(key: String, default: String) = StringPreference(key, default)
+    fun stringSet(key: String, default: Set<String>) = StringSetPreference(key, default)
 
     // ================== 一次性布尔值 ================== //
     fun disposableBoolean(key: String, defaultValue: Boolean) = object : ReadOnlyProperty<Any, Boolean> {
@@ -101,24 +101,24 @@ object PrefV2 {
         }
     }
 
-    class StringPreference(key: String, defaultValue: String?)
-        : BasePreference<String?>(key, defaultValue), ReadWriteProperty<Any, String?> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): String? {
-            return prefs.getString(key, defaultValue)
+    class StringPreference(key: String, defaultValue: String)
+        : BasePreference<String>(key, defaultValue), ReadWriteProperty<Any, String> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): String {
+            return prefs.getString(key, defaultValue) ?: defaultValue
         }
 
-        override fun setValue(thisRef: Any, property: KProperty<*>, value: String?) {
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: String) {
             prefs.edit { putString(key, value) }
         }
     }
 
-    class StringSetPreference(key: String, defaultValue: Set<String>?)
-        : BasePreference<Set<String>?>(key, defaultValue), ReadWriteProperty<Any, Set<String>?> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): Set<String>? {
-            return prefs.getStringSet(key, defaultValue)
+    class StringSetPreference(key: String, defaultValue: Set<String>)
+        : BasePreference<Set<String>>(key, defaultValue), ReadWriteProperty<Any, Set<String>> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): Set<String> {
+            return prefs.getStringSet(key, defaultValue) ?: defaultValue
         }
 
-        override fun setValue(thisRef: Any, property: KProperty<*>, value: Set<String>?) {
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: Set<String>) {
             prefs.edit { putStringSet(key, value) }
         }
     }
