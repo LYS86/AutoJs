@@ -16,7 +16,7 @@ import com.stardust.view.accessibility.NodeInfo;
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
 import org.autojs.autojs.tool.AccessibilityServiceTool3;
-import org.autojs.autojs.ui.floating.FloatyWindowManagerV2;
+import org.autojs.autojs.ui.floating.FloatyWindowManager;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 
 import timber.log.Timber;
@@ -87,7 +87,7 @@ public abstract class LayoutInspectTileService extends TileService implements La
         mCapturing = false;
         GlobalAppContext.post(() -> {
             FullScreenFloatyWindow window = onCreateWindow(capture);
-            if (!FloatyWindowManagerV2.INSTANCE.addWindow(getApplicationContext(), window)) {
+            if (!FloatyWindowManager.INSTANCE.addWindow(getApplicationContext(), window)) {
                 inactive();
             }
         });

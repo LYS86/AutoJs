@@ -14,7 +14,7 @@ import com.stardust.view.accessibility.NodeInfo;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.ui.codegeneration.CodeGenerateDialog;
-import org.autojs.autojs.ui.floating.FloatyWindowManagerV2;
+import org.autojs.autojs.ui.floating.FloatyWindowManager;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 import org.autojs.autojs.ui.widget.BubblePopupMenu;
 
@@ -123,7 +123,7 @@ public class LayoutHierarchyFloatyWindow extends FullScreenFloatyWindow {
                     .theme(Theme.LIGHT)
                     .build();
             if (mNodeInfoDialog.getWindow() != null)
-                mNodeInfoDialog.getWindow().setType(FloatyWindowManagerV2.INSTANCE.getWindowType());
+                mNodeInfoDialog.getWindow().setType(FloatyWindowManager.INSTANCE.getWindowType());
         }
     }
 

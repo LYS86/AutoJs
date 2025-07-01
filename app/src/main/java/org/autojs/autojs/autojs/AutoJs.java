@@ -25,7 +25,7 @@ import org.autojs.autojs.R;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
 import org.autojs.autojs.pluginclient.DevPluginService;
 import org.autojs.autojs.tool.AccessibilityServiceTool3;
-import org.autojs.autojs.ui.floating.FloatyWindowManagerV2;
+import org.autojs.autojs.ui.floating.FloatyWindowManager;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutHierarchyFloatyWindow;
@@ -92,7 +92,7 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
             public void onCaptureAvailable(NodeInfo capture) {
                 inspector.removeCaptureAvailableListener(this);
                 getUiHandler().post(() ->
-                        FloatyWindowManagerV2.INSTANCE.addWindow(getApplication().getApplicationContext(), window.create(capture))
+                        FloatyWindowManager.INSTANCE.addWindow(getApplication().getApplicationContext(), window.create(capture))
                 );
             }
         };

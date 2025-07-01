@@ -15,7 +15,7 @@ import com.stardust.view.accessibility.NodeInfo;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.ui.codegeneration.CodeGenerateDialog;
-import org.autojs.autojs.ui.floating.FloatyWindowManagerV2;
+import org.autojs.autojs.ui.floating.FloatyWindowManager;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 import org.autojs.autojs.ui.widget.BubblePopupMenu;
 
@@ -45,7 +45,7 @@ public class LayoutBoundsFloatyWindow extends FullScreenFloatyWindow {
             public void onCaptureAvailable(NodeInfo capture) {
                 inspector.removeCaptureAvailableListener(this);
                 LayoutBoundsFloatyWindow window = new LayoutBoundsFloatyWindow(capture);
-                FloatyWindowManagerV2.INSTANCE.addWindow(context, window);
+                FloatyWindowManager.INSTANCE.addWindow(context, window);
             }
         };
         inspector.addCaptureAvailableListener(listener);
@@ -131,7 +131,7 @@ public class LayoutBoundsFloatyWindow extends FullScreenFloatyWindow {
                     .customView(mNodeInfoView, false)
                     .theme(Theme.LIGHT)
                     .build();
-            mNodeInfoDialog.getWindow().setType(FloatyWindowManagerV2.INSTANCE.getWindowType());
+            mNodeInfoDialog.getWindow().setType(FloatyWindowManager.INSTANCE.getWindowType());
         }
     }
 

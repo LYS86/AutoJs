@@ -105,7 +105,7 @@ public class CircularMenuWindow extends FloatyWindow {
     private WindowManager.LayoutParams createWindowLayoutParams() {
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
-                FloatyWindowManagerV2.INSTANCE.getWindowType(), 520, -3);
+                FloatyWindowManager.INSTANCE.getWindowType(), 520, -3);
         layoutParams.gravity = Gravity.LEFT | Gravity.TOP;
         return layoutParams;
     }

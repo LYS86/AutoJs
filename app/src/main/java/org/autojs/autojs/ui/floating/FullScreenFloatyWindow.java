@@ -1,10 +1,8 @@
 package org.autojs.autojs.ui.floating;
 
 import android.graphics.PixelFormat;
-import android.view.View;
 import android.view.WindowManager;
 
-import com.stardust.enhancedfloaty.FloatyService;
 import com.stardust.enhancedfloaty.FloatyWindow;
 
 /**
@@ -18,7 +16,7 @@ public abstract class FullScreenFloatyWindow extends FloatyWindow {
         return new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
-                FloatyWindowManagerV2.INSTANCE.getWindowType(),
+                FloatyWindowManager.INSTANCE.getWindowType(),
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
     }

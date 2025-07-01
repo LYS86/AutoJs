@@ -20,7 +20,7 @@ import java.lang.ref.WeakReference
  * 悬浮窗管理器
  * @author Stardust (2017/9/30),Lin
  */
-object FloatyWindowManagerV2 {
+object FloatyWindowManager {
     const val KEY_MENU_SHOWN = "key_floating_menu_shown"
 
     var isMenuShown: Boolean by PrefV2.boolean(KEY_MENU_SHOWN, false)

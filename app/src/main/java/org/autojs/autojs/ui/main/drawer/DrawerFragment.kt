@@ -36,7 +36,7 @@ import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.common.DialogUtils
 import org.autojs.autojs.ui.common.MessageUtils
 import org.autojs.autojs.ui.floating.CircularMenu
-import org.autojs.autojs.ui.floating.FloatyWindowManagerV2
+import org.autojs.autojs.ui.floating.FloatyWindowManager
 import org.autojs.autojs.ui.main.MainActivity
 import org.autojs.autojs.ui.settings.SettingsActivity
 import org.greenrobot.eventbus.EventBus
@@ -144,7 +144,7 @@ class DrawerFragment : Fragment() {
      * @see DrawerMenuItem
      */
     private fun setupStates() {
-        setChecked(mFloatingWindowItem, FloatyWindowManagerV2.restore())
+        setChecked(mFloatingWindowItem, FloatyWindowManager.restore())
         setChecked(mConnectionItem, DevPluginService.getInstance().isConnected)
         if (Pref.isForegroundServiceEnabled()) {
             ForegroundService.start(GlobalAppContext.get())
@@ -341,12 +341,12 @@ class DrawerFragment : Fragment() {
         val activity = requireActivity()
 
         if (!isChecked) {
-            FloatyWindowManagerV2.switchMenu(false)
+            FloatyWindowManager.switchMenu(false)
             return
         }
 
-        FloatyWindowManagerV2.requestPermission(activity = activity, onSuccess = {
-            FloatyWindowManagerV2.switchMenu()
+        FloatyWindowManager.requestPermission(activity = activity, onSuccess = {
+            FloatyWindowManager.switchMenu()
             startActivity(Intent(requireContext(), MainActivity::class.java))
         }, onError = {
             setChecked(mFloatingWindowItem, false)
