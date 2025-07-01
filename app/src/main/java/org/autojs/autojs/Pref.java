@@ -15,7 +15,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Stardust on 2017/1/31.
+ * @deprecated Use {@link PrefV2} instead.
  */
+
+@Deprecated
 public class Pref {
 
     private static final SharedPreferences DISPOSABLE_BOOLEAN = GlobalAppContext.get().getSharedPreferences("DISPOSABLE_BOOLEAN", Context.MODE_PRIVATE);
