@@ -9,7 +9,7 @@ import com.stardust.autojs.runtime.api.AbstractShell
 import com.stardust.view.accessibility.AccessibilityServiceUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.autojs.autojs.Pref
+import org.autojs.autojs.PrefV2
 import org.autojs.autojs.R
 import timber.log.Timber
 import java.util.Locale
@@ -19,6 +19,12 @@ import com.stardust.view.accessibility.AccessibilityService as AccessibilityServ
 object AccessibilityServiceTool3 {
 
     private val sAccessibilityServiceClass = AccessibilityService1::class.java
+
+    private const val KEY_FIRST_GO_TO_ACCESSIBILITY_SETTING = "isFirstGoToSetting"
+    private val isFirstGoToSetting by PrefV2.disposableBoolean(
+        KEY_FIRST_GO_TO_ACCESSIBILITY_SETTING,
+        true
+    )
 
     private sealed class Shell {
         abstract suspend fun exec(cmd: String): AbstractShell.Result
@@ -116,7 +122,7 @@ object AccessibilityServiceTool3 {
 
     fun toSetting() {
         val context = GlobalAppContext.get()
-        Pref.isFirstGoToAccessibilitySetting().takeIf { it }?.let {
+        if (isFirstGoToSetting) {
             GlobalAppContext.toast(
                 "${context.getString(R.string.text_please_choose)} ${context.getString(R.string.app_name)}"
             )
