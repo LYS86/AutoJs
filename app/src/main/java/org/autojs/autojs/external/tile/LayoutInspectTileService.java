@@ -1,12 +1,12 @@
 package org.autojs.autojs.external.tile;
 
-import android.content.Intent;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
-import androidx.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 import com.stardust.app.GlobalAppContext;
 import com.stardust.view.accessibility.AccessibilityService;
@@ -15,9 +15,11 @@ import com.stardust.view.accessibility.NodeInfo;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
-import org.autojs.autojs.tool.AccessibilityServiceTool;
+import org.autojs.autojs.tool.AccessibilityServiceTool3;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
+
+import timber.log.Timber;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public abstract class LayoutInspectTileService extends TileService implements LayoutInspector.CaptureAvailableListener {
@@ -48,13 +50,19 @@ public abstract class LayoutInspectTileService extends TileService implements La
     @Override
     public void onClick() {
         super.onClick();
-        Log.d(getClass().getName(), "onClick");
-        sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
-        if (AccessibilityService.Companion.getInstance() == null) {
+        Timber.d("onClick");
+//        sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+        boolean isRunning = AccessibilityService.Companion.isRunning();
+        if (!isRunning) {
             Toast.makeText(this, R.string.text_no_accessibility_permission_to_capture, Toast.LENGTH_SHORT).show();
-            AccessibilityServiceTool.goToAccessibilitySetting();
+            AccessibilityServiceTool3.INSTANCE.toSetting();
             inactive();
             return;
+        }
+
+        AccessibilityService service = AccessibilityService.Companion.getInstance();
+        if (service != null) {
+            service.performGlobalAction(android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_BACK);
         }
         mCapturing = true;
         GlobalAppContext.postDelayed(() ->
