@@ -8,6 +8,7 @@ import com.stardust.autojs.core.util.ProcessShell
 import com.stardust.autojs.runtime.api.AbstractShell
 import com.stardust.view.accessibility.AccessibilityServiceUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.autojs.autojs.PrefV2
 import org.autojs.autojs.R
@@ -22,9 +23,12 @@ object AccessibilityServiceTool3 {
 
     private const val KEY_FIRST_GO_TO_ACCESSIBILITY_SETTING = "isFirstGoToSetting"
     private val isFirstGoToSetting by PrefV2.disposableBoolean(
-        KEY_FIRST_GO_TO_ACCESSIBILITY_SETTING,
-        true
+        KEY_FIRST_GO_TO_ACCESSIBILITY_SETTING, true
     )
+
+    private const val KEY_USE_ROOT = "use_root"
+
+    private val useRoot by PrefV2.boolean(KEY_USE_ROOT, false)
 
     private sealed class Shell {
         abstract suspend fun exec(cmd: String): AbstractShell.Result
@@ -110,13 +114,17 @@ object AccessibilityServiceTool3 {
     }
 
     suspend fun byRoot(enable: Boolean? = null): Boolean {
-        return when (RootTool.isRootAvailable()) {
-            true -> switchService(Shell.Root, enable)
-            false -> false
+        return when {
+            !useRoot -> false
+            !RootTool.isRootAvailable() -> false
+            else -> switchService(Shell.Root, enable)
         }
     }
 
-    suspend fun switch(enable: Boolean? = null): Boolean {
+    fun switchService(enable: Boolean? = null): Boolean =
+        runBlocking { switchServiceSuspend(enable) }
+
+    suspend fun switchServiceSuspend(enable: Boolean? = null): Boolean {
         return byShizuku(enable) || byRoot(enable)
     }
 

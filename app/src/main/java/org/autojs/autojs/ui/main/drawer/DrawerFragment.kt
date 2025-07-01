@@ -329,7 +329,7 @@ class DrawerFragment : Fragment() {
     private fun switchAccessibilityService(holder: DrawerMenuItemViewHolder) {
         val checked = holder.switchCompat.isChecked
         lifecycleScope.launch {
-            AccessibilityServiceTool3.switch(checked).also {
+            AccessibilityServiceTool3.switchServiceSuspend(checked).also {
                 setChecked(mAccessibilityServiceItem, it)
                 if (!it == checked) AccessibilityServiceTool3.toSetting()
             }
