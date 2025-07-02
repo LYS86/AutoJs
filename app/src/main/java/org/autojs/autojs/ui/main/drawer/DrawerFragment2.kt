@@ -14,19 +14,22 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.MaterialDialog
 import com.shizuku.Utils
 import com.stardust.app.GlobalAppContext
 import com.stardust.app.hasPermission
 import com.stardust.app.isOpPermissionGranted
 import com.stardust.notification.NotificationListenerService
 import com.stardust.util.IntentUtil2
-
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.launch
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentDrawerBinding
 import org.autojs.autojs.external.foreground.ForegroundService
-import org.autojs.autojs.pluginclient.DevPluginService2
+import org.autojs.autojs.pluginclient.DevPluginService
 import org.autojs.autojs.tool.AccessibilityServiceTool3
 import org.autojs.autojs.tool.PermissionTool
 import org.autojs.autojs.tool.WifiTool
@@ -42,7 +45,7 @@ import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import kotlin.system.exitProcess
 
-class DrawerFragment : Fragment() {
+class DrawerFragment2 : Fragment() {
     private val lifecycleScope: LifecycleCoroutineScope
         get() = lifecycle.coroutineScope
 
@@ -106,17 +109,22 @@ class DrawerFragment : Fragment() {
             requestShizukuPermission()
         }
 
-
+    private val compositeDisposable = CompositeDisposable()
+    private var mConnectionStateDisposable: Disposable? = null
     private var _binding: FragmentDrawerBinding? = null
     private val binding get() = _binding!!
+    private var remoteHostDialog: MaterialDialog? = null
     private lateinit var mDrawerMenuAdapter: DrawerMenuAdapter
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     private fun inputRemoteHost() {
-        val host= DevPluginService2.getInstance().serverAddress
+        val host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(activity))
         DialogUtils.custom(requireActivity()).title(R.string.text_server_address)
             .input("", host) { _, input ->
-                DevPluginService2.getInstance().connectToServer(input.toString())
+                Pref.saveServerAddress(input.toString())
+                val disposable = DevPluginService.getInstance().connectToServer(input.toString())
+                    .subscribe({}, this::onConnectException)
+                compositeDisposable.add(disposable)
             }.neutralText(R.string.text_help).onNeutral { _, _ ->
                 setChecked(mConnectionItem, false)
                 IntentUtil2.browse(requireContext(), URL_DEV_PLUGIN)
@@ -138,30 +146,17 @@ class DrawerFragment : Fragment() {
      */
     private fun setupStates() {
         setChecked(mFloatingWindowItem, FloatyWindowManager.restore())
+        setChecked(mConnectionItem, DevPluginService.getInstance().isConnected)
         if (Pref.isForegroundServiceEnabled()) {
             ForegroundService.start(GlobalAppContext.get())
             setChecked(mForegroundServiceItem, true)
         }
-        lifecycleScope.launch {
-            DevPluginService2.getInstance().connectionState.collect { state ->
-                mConnectionItem.let {
-                    val isConnected = state is DevPluginService2.State.Connected
-                    val inProgress = state is DevPluginService2.State.Connecting
-                    it.let {
-                        if (isConnected!=it.isChecked ) {
-                            setChecked(it, isConnected)
-                        }
-                        if (inProgress!=it.isProgress) {
-                            setProgress(it, inProgress)
-                        }
-                    }
-                }
-                if (state is DevPluginService2.State.Error) {
-                    showMessage(state.exception.message ?: "")
-                }
-            }
+        if (Pref.isConnected() && !DevPluginService.getInstance().isConnected) {
+            val host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(activity))
+            val disposable = DevPluginService.getInstance().connectToServer(host)
+                .subscribe({}, this::onConnectException)
+            compositeDisposable.add(disposable)
         }
-        DevPluginService2.getInstance().restore()
     }
 
     private fun initButton() {
@@ -202,7 +197,17 @@ class DrawerFragment : Fragment() {
                     setChecked(mForegroundServiceItem, false)
                 }
             }
-        
+        mConnectionStateDisposable = DevPluginService.getInstance().connectionState()
+            .observeOn(AndroidSchedulers.mainThread()).subscribe { state ->
+                mConnectionItem.let {
+                    setChecked(it, state.state == DevPluginService.State.CONNECTED)
+                    setProgress(it, state.state == DevPluginService.State.CONNECTING)
+                }
+                if (state.exception != null) {
+                    Pref.setConnected(false)
+                    showMessage(state.exception.message ?: "")
+                }
+            }
         EventBus.getDefault().register(this)
     }
 
@@ -239,13 +244,22 @@ class DrawerFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        remoteHostDialog?.let {
+            if (it.isShowing) it.dismiss()
+        }
         _binding = null
     }
 
-
+    private fun onConnectException(e: Throwable) {
+        Pref.setConnected(false)
+        setChecked(mConnectionItem, false)
+        showMessage(getString(R.string.error_connect_to_remote, e.message ?: ""))
+    }
 
     override fun onDestroy() {
         super.onDestroy()
+        mConnectionStateDisposable?.dispose()
+        compositeDisposable.clear()
         EventBus.getDefault().unregister(this)
     }
 
@@ -352,11 +366,11 @@ class DrawerFragment : Fragment() {
 
     private fun connectOrDisconnectToRemote(holder: DrawerMenuItemViewHolder) {
         val checked = holder.switchCompat.isChecked
-        val connected = DevPluginService2.getInstance().isConnected
+        val connected = DevPluginService.getInstance().isConnected
         if (checked && !connected) {
             inputRemoteHost()
         } else if (!checked && connected) {
-            DevPluginService2.getInstance().disconnect()
+            DevPluginService.getInstance().disconnectIfNeeded()
         }
     }
 
@@ -406,8 +420,6 @@ class DrawerFragment : Fragment() {
             mUsageStatsPermissionItem,
             context?.isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS) == true
         )
-
-
     }
 
     @Subscribe
