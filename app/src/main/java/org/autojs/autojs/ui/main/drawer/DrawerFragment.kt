@@ -20,7 +20,6 @@ import com.stardust.app.hasPermission
 import com.stardust.app.isOpPermissionGranted
 import com.stardust.notification.NotificationListenerService
 import com.stardust.util.IntentUtil2
-
 import kotlinx.coroutines.launch
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
@@ -29,7 +28,6 @@ import org.autojs.autojs.external.foreground.ForegroundService
 import org.autojs.autojs.pluginclient.DevPluginService2
 import org.autojs.autojs.tool.AccessibilityServiceTool3
 import org.autojs.autojs.tool.PermissionTool
-import org.autojs.autojs.tool.WifiTool
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.common.DialogUtils
 import org.autojs.autojs.ui.common.MessageUtils
@@ -45,11 +43,10 @@ import kotlin.system.exitProcess
 class DrawerFragment : Fragment() {
     private val lifecycleScope: LifecycleCoroutineScope
         get() = lifecycle.coroutineScope
-
-    companion object {
-        private const val URL_DEV_PLUGIN = "https://www.autojs.org/topic/968/"
-    }
-
+    private var _binding: FragmentDrawerBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var mDrawerMenuAdapter: DrawerMenuAdapter
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private val mStableModeItem = DrawerMenuItem(
         R.drawable.ic_stable,
         R.string.text_stable_mode,
@@ -107,19 +104,12 @@ class DrawerFragment : Fragment() {
         }
 
 
-    private var _binding: FragmentDrawerBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var mDrawerMenuAdapter: DrawerMenuAdapter
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-
     private fun inputRemoteHost() {
-        val host= DevPluginService2.getInstance().serverAddress
-        DialogUtils.custom(requireActivity()).title(R.string.text_server_address)
+        val host = DevPluginService2.getInstance().serverAddress
+        DialogUtils.custom(requireActivity())
+            .title(R.string.text_server_address)
             .input("", host) { _, input ->
                 DevPluginService2.getInstance().connectToServer(input.toString())
-            }.neutralText(R.string.text_help).onNeutral { _, _ ->
-                setChecked(mConnectionItem, false)
-                IntentUtil2.browse(requireContext(), URL_DEV_PLUGIN)
             }.cancelListener {
                 setChecked(mConnectionItem, false)
             }.show()
@@ -148,10 +138,10 @@ class DrawerFragment : Fragment() {
                     val isConnected = state is DevPluginService2.State.Connected
                     val inProgress = state is DevPluginService2.State.Connecting
                     it.let {
-                        if (isConnected!=it.isChecked ) {
+                        if (isConnected != it.isChecked) {
                             setChecked(it, isConnected)
                         }
-                        if (inProgress!=it.isProgress) {
+                        if (inProgress != it.isProgress) {
                             setProgress(it, inProgress)
                         }
                     }
@@ -202,7 +192,7 @@ class DrawerFragment : Fragment() {
                     setChecked(mForegroundServiceItem, false)
                 }
             }
-        
+
         EventBus.getDefault().register(this)
     }
 
@@ -241,7 +231,6 @@ class DrawerFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 
 
     override fun onDestroy() {
@@ -421,7 +410,10 @@ class DrawerFragment : Fragment() {
 
     private fun showMessage(text: CharSequence, forceToast: Boolean = false) {
         MessageUtils.show(
-            context = context, view = view, message = text.toString(), forceToast = forceToast
+            context = requireContext(),
+            view = view,
+            message = text.toString(),
+            forceToast = forceToast
         )
     }
 

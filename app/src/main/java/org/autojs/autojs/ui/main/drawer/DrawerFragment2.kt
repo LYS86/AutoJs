@@ -433,7 +433,7 @@ class DrawerFragment2 : Fragment() {
 
     private fun showMessage(text: CharSequence, forceToast: Boolean = false) {
         MessageUtils.show(
-            context = context, view = view, message = text.toString(), forceToast = forceToast
+            context = requireContext(), view = view, message = text.toString(), forceToast = forceToast
         )
     }
 

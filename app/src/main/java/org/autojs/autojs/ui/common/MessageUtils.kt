@@ -9,33 +9,33 @@ import com.google.android.material.snackbar.Snackbar
 object MessageUtils {
 
     fun show(
-        context: Context?,
-        view: View?,
+        context: Context,
+        view: View? = null,
         message: String,
         duration: Int = Snackbar.LENGTH_SHORT,
         forceToast: Boolean = false
     ) {
         when {
-            !forceToast && view != null -> Snackbar.make(view, message, duration).show()
-            context != null -> Toast.makeText(context, message, duration.toToastDuration()).show()
+            forceToast -> Toast.makeText(context, message, duration.toToastDuration()).show()
+            view != null -> Snackbar.make(context,view, message, duration).show()
+            else -> Toast.makeText(context, message, duration.toToastDuration()).show()
         }
     }
 
+
+
     fun show(
-        context: Context?,
+        context: Context,
         view: View?,
         @StringRes resId: Int,
         duration: Int = Snackbar.LENGTH_SHORT,
         forceToast: Boolean = false
     ) {
-        when {
-            !forceToast && view != null -> Snackbar.make(view, resId, duration).show()
-            context != null -> Toast.makeText(context, resId, duration.toToastDuration()).show()
-        }
+        show(context, view, context.getString(resId), duration, forceToast)
     }
 
     fun showWithAction(
-        context: Context?,
+        context: Context,
         view: View?,
         message: String,
         actionText: String,
@@ -44,12 +44,10 @@ object MessageUtils {
     ) {
         when {
             view != null -> {
-                Snackbar.make(view, message, duration).setAction(actionText, action).show()
+                Snackbar.make(context,view, message, duration).setAction(actionText, action).show()
             }
+            else -> Toast.makeText(context, message, duration.toToastDuration()).show()
 
-            context != null -> {
-                Toast.makeText(context, message, duration.toToastDuration()).show()
-            }
         }
     }
 
