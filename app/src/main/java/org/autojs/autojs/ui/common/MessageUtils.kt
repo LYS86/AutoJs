@@ -17,7 +17,7 @@ object MessageUtils {
     ) {
         when {
             forceToast -> Toast.makeText(context, message, duration.toToastDuration()).show()
-            view != null -> Snackbar.make(context,view, message, duration).show()
+            view != null &&view.isAttachedToWindow-> Snackbar.make(context,view, message, duration).show()
             else -> Toast.makeText(context, message, duration.toToastDuration()).show()
         }
     }
@@ -43,7 +43,7 @@ object MessageUtils {
         action: (View) -> Unit = {}
     ) {
         when {
-            view != null -> {
+            view != null && view.isAttachedToWindow-> {
                 Snackbar.make(context,view, message, duration).setAction(actionText, action).show()
             }
             else -> Toast.makeText(context, message, duration.toToastDuration()).show()
