@@ -3,9 +3,7 @@ plugins {
     kotlin("android")
 }
 kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
+    jvmToolchain(21)
 }
 android {
     val versions = rootProject.extra["versions"] as Map<*, *>

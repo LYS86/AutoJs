@@ -28,7 +28,7 @@ allprojects {
 }
 
 tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+    delete(layout.buildDirectory)
 }
 
 extra["versions"] = JsonSlurper().parse(file("./project-versions.json"))

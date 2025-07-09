@@ -3,9 +3,7 @@ plugins {
     kotlin("android")
 }
 kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
+    jvmToolchain(21)
 }
 android {
     val versions = rootProject.extra["versions"] as Map<*, *>
@@ -14,7 +12,6 @@ android {
 
     defaultConfig {
         minSdk = versions["mini"].toString().toInt()
-        targetSdk = versions["target"].toString().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

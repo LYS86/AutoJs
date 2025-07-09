@@ -3,13 +3,11 @@ plugins {
     kotlin("android")
 }
 kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
+    jvmToolchain(21)
 }
 android {
     val versions = rootProject.extra["versions"] as Map<*, *>
-    
+
     compileSdk = versions["compile"].toString().toInt()
 
     defaultConfig {
@@ -43,7 +41,7 @@ android {
     }
 
     namespace = "com.stardust.auojs.inrt"
-    
+
     lint {
         abortOnError = false
         disable.add("MissingTranslation")
@@ -56,7 +54,7 @@ android {
 
 fun buildApkPluginForAbi(pluginProjectDir: File, abi: String) {
     val versions = rootProject.extra["versions"] as Map<*, *>
-    
+
     copy {
         from(file("..\\app\\release\\"))
         into(File(pluginProjectDir, "app\\src\\main\\assets"))
@@ -64,7 +62,8 @@ fun buildApkPluginForAbi(pluginProjectDir: File, abi: String) {
         include(fileName)
         rename(fileName, "template.apk")
     }
-    exec {
+    val execOps = project.extensions.getByType(ExecOperations::class.java)
+    execOps.exec {
         workingDir = pluginProjectDir
         commandLine("gradlew.bat", "assembleRelease")
     }

@@ -3,18 +3,15 @@ plugins {
     kotlin("android")
 }
 kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
+    jvmToolchain(21)
 }
 android {
     val versions = rootProject.extra["versions"] as Map<*, *>
-    
+
     compileSdk = versions["compile"].toString().toInt()
 
     defaultConfig {
         minSdk = versions["mini"].toString().toInt()
-        targetSdk = versions["target"].toString().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "VERSION_NAME", "\"${versions["appVersionName"]}\"")
         buildConfigField("int", "VERSION_CODE", versions["appVersionCode"].toString())
@@ -71,7 +68,7 @@ dependencies {
     implementation(libs.bundles.shizuku)
     implementation(libs.bundles.litert.all)
 
-    implementation (libs.androidx.core.ktx)
+    implementation(libs.androidx.core.ktx)
 
     // https://mvnrepository.com/artifact/com.jakewharton.timber/timber
     api(libs.timber)
