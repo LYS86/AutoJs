@@ -116,8 +116,6 @@ public class SettingsActivity extends BaseActivity {
             super.onStart();
             ACTION_MAP = new MapBuilder<String, Runnable>()
                     .put(getString(R.string.text_theme_color), () -> selectThemeColor(getActivity()))
-                    .put(getString(R.string.text_check_for_updates), () -> new UpdateCheckDialog(getActivity())
-                            .show())
                     .put(getString(R.string.text_issue_report), () -> startActivity(new Intent(getActivity(), IssueReporterActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
                     .put(getString(R.string.text_about_me_and_repo), () -> startActivity(new Intent(getActivity(), AboutActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
                     .put(getString(R.string.text_licenses), () -> showLicenseDialog())

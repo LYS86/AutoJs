@@ -35,6 +35,7 @@ import org.autojs.autojs.ui.floating.CircularMenu
 import org.autojs.autojs.ui.floating.FloatyWindowManager
 import org.autojs.autojs.ui.main.MainActivity
 import org.autojs.autojs.ui.settings.SettingsActivity
+import org.autojs.autojs.ui.update.VersionService
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
@@ -176,8 +177,10 @@ class DrawerFragment : Fragment() {
 
     private fun checkForUpdates(holder: DrawerMenuItemViewHolder) {
         setProgress(mCheckForUpdatesItem, true)
-        showMessage("功能维护中")
-        setProgress(mCheckForUpdatesItem, false)
+        lifecycleScope.launch {
+            VersionService.checkForUpdate(requireContext())
+            setProgress(mCheckForUpdatesItem, false)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

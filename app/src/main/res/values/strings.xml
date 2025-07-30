@@ -116,12 +116,17 @@
     <string name="text_check_update_error">检查更新失败Orz</string>
     <string name="text_check_for_updates">检查更新</string>
     <string name="text_is_latest_version">已经是最新版本</string>
+    <string name="error_api_limit">已到达GitHub的API请求限制，请稍后再试。\n重置时间: %1$s</string>
+    <string name="text_no_suitable_apk">找不到合适的安装包，请手动下载</string>
     <string name="text_version_too_old">版本过低</string>
     <string name="warning_version_too_old">当然版本为公测版，显现和潜在的问题很多，不再适合继续使用，</string>
     <string name="text_update">更新</string>
     <string name="text_release_notes">更新日志</string>
     <string name="text_download_url">下载地址</string>
     <string name="text_directly_download">直接下载</string>
+    <string name="text_open_in_browser">浏览器打开</string>
+    <string name="text_downloading_file">正在下载: %s</string>
+
     <string name="text_download_failed">下载失败</string>
     <string name="text_do_not_ask_again_for_this_version">此版本不再提示</string>
     <string name="text_code_beautify">格式化代码</string>
