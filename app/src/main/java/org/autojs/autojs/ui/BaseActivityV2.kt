@@ -2,16 +2,21 @@ package org.autojs.autojs.ui
 
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
+import android.view.WindowInsetsController
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import com.google.android.material.appbar.MaterialToolbar
+import androidx.core.view.WindowCompat
 import com.google.android.material.snackbar.Snackbar
+import com.stardust.theme.ThemeColorManager
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 
@@ -22,7 +27,7 @@ abstract class BaseActivityV2 : AppCompatActivity() {
 
         @JvmStatic
         fun setToolbarAsBack(activity: AppCompatActivity, id: Int, title: String) {
-            val toolbar = activity.findViewById<MaterialToolbar>(id)
+            val toolbar = activity.findViewById<Toolbar>(id)
             toolbar.title = title
             activity.setSupportActionBar(toolbar)
             activity.supportActionBar?.apply {
@@ -48,6 +53,26 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         permissionRequestCallbacks[PERMISSION_REQUEST_CODE]?.invoke(allGranted)
     }
 
+    override fun onStart() {
+        super.onStart()
+        applyStatusBarTheme()
+    }
+
+    private fun applyStatusBarTheme() {
+        if (!isFullScreenLayout()) {
+            ThemeColorManager.addActivityStatusBar(this)
+        }
+    }
+
+    private fun isFullScreenLayout(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            controller.systemBarsBehavior == WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        } else {
+            @Suppress("DEPRECATION")
+            (window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) != 0
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         applyDayNightMode()
@@ -174,7 +199,10 @@ abstract class BaseActivityV2 : AppCompatActivity() {
                     val icon: Drawable? = menuItem.icon
                     icon?.let { drawable ->
                         val wrapped = DrawableCompat.wrap(drawable.mutate())
-                        DrawableCompat.setTint(wrapped, ContextCompat.getColor(this, R.color.toolbar))
+                        DrawableCompat.setTint(
+                            wrapped,
+                            ContextCompat.getColor(this, R.color.toolbar)
+                        )
                         menuItem.icon = wrapped
                     }
                 }
