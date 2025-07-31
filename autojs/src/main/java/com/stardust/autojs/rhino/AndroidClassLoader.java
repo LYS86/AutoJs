@@ -6,7 +6,7 @@ import com.android.dx.command.dexer.Main;
 import com.stardust.pio.PFiles;
 import com.stardust.util.MD5;
 
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.model.ZipParameters;
@@ -63,10 +63,9 @@ public class AndroidClassLoader extends ClassLoader implements GeneratedClassLoa
             final ZipFile zipFile = new ZipFile(classFile);
             final ZipParameters parameters = new ZipParameters();
             parameters.setFileNameInZip(name.replace('.', '/') + ".class");
-            parameters.setSourceExternalStream(true);
             zipFile.addStream(new ByteArrayInputStream(data), parameters);
             return dexJar(classFile, null).loadClass(name);
-        } catch (IOException | ZipException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new FatalLoadingException(e);
         } finally {
             if (classFile != null) {
@@ -102,11 +101,10 @@ public class AndroidClassLoader extends ClassLoader implements GeneratedClassLoa
             final ZipFile zipFile = new ZipFile(classFile);
             final ZipFile jarFile = new ZipFile(jar);
             //noinspection unchecked
-            for (FileHeader header : (List<FileHeader>) jarFile.getFileHeaders()) {
+            for (FileHeader header : jarFile.getFileHeaders()) {
                 if (!header.isDirectory()) {
                     final ZipParameters parameters = new ZipParameters();
                     parameters.setFileNameInZip(header.getFileName());
-                    parameters.setSourceExternalStream(true);
                     zipFile.addStream(jarFile.getInputStream(header), parameters);
                 }
             }
