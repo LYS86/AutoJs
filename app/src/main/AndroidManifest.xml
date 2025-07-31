@@ -97,7 +97,7 @@
             android:taskAffinity="org.autojs.autojs.edit"
             android:theme="@style/EditorTheme">
         </activity>
-        <activity android:name="org.autojs.autojs.ui.settings.AboutActivity"/>
+        <activity android:name=".ui.settings.AboutActivity" />
         <activity
             android:name="org.autojs.autojs.ui.settings.SettingsActivity"
             android:theme="@style/AppTheme.Settings"/>
