@@ -8,12 +8,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.shizuku.Utils
 import com.stardust.app.GlobalAppContext
 import com.stardust.app.hasPermission
@@ -107,13 +109,22 @@ class DrawerFragment : Fragment() {
 
     private fun inputRemoteHost() {
         val host = DevPluginService2.getInstance().serverAddress
-        DialogUtils.custom(requireActivity())
-            .title(R.string.text_server_address)
-            .input("", host) { _, input ->
-                DevPluginService2.getInstance().connectToServer(input.toString())
-            }.cancelListener {
+        val input = EditText(requireActivity()).apply {
+            setText(host)
+        }
+
+        MaterialAlertDialogBuilder(requireActivity(), R.style.DialogTheme)
+            .setTitle(R.string.text_server_address)
+            .setView(input)
+            .setCancelable(false)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                DevPluginService2.getInstance().connectToServer(input.text.toString())
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .setOnCancelListener {
                 setChecked(mConnectionItem, false)
-            }.show()
+            }
+            .show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -373,12 +384,12 @@ class DrawerFragment : Fragment() {
     }
 
     private fun showStableModePromptIfNeeded() {
-        DialogUtils.showBasic(
-            context = requireContext(),
-            title = getString(R.string.text_stable_mode),
-            content = getString(R.string.description_stable_mode),
-            positiveText = getString(R.string.ok)
-        )
+        MaterialAlertDialogBuilder(requireContext(), R.style.DialogTheme)
+            .setTitle(R.string.text_stable_mode)
+            .setMessage(R.string.description_stable_mode)
+            .setCancelable(false)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
 
     override fun onResume() {
@@ -437,11 +448,13 @@ class DrawerFragment : Fragment() {
             }
 
             !Utils.isReady() -> {
-                DialogUtils.showConfirm(
-                    context = requireContext(),
-                    title = getString(R.string.text_shizuku_service_not_ready),
-                    content = getString(R.string.text_to_shizuku),
-                    onPositive = { Utils.launchApp() })
+                MaterialAlertDialogBuilder(requireContext(),R.style.DialogTheme)
+                    .setTitle(R.string.text_shizuku_service_not_ready)
+                    .setMessage(R.string.text_to_shizuku)
+                    .setCancelable(false)
+                    .setPositiveButton(android.R.string.ok) { _, _ -> Utils.launchApp() }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
             }
 
             else -> {
