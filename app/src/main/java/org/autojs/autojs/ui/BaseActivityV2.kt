@@ -1,192 +1,186 @@
 package org.autojs.autojs.ui
 
-import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.BlendMode
-import android.graphics.BlendModeColorFilter
-import android.graphics.PorterDuff
-import android.os.Build
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.StringRes
+import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
-import androidx.core.view.get
-import androidx.core.view.size
-import androidx.viewbinding.ViewBinding
+import androidx.core.graphics.drawable.DrawableCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
-import com.stardust.app.GlobalAppContext
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
-import org.autojs.autojs.ui.common.DialogUtils
-import org.autojs.autojs.ui.common.MessageUtils
 
-abstract class BaseActivityV2<VB : ViewBinding> : AppCompatActivity() {
+abstract class BaseActivityV2 : AppCompatActivity() {
+
+    companion object {
+        const val PERMISSION_REQUEST_CODE = 11186
+
+        @JvmStatic
+        fun setToolbarAsBack(activity: AppCompatActivity, id: Int, title: String) {
+            val toolbar = activity.findViewById<MaterialToolbar>(id)
+            toolbar.title = title
+            activity.setSupportActionBar(toolbar)
+            activity.supportActionBar?.apply {
+                setDisplayHomeAsUpEnabled(true)
+                toolbar.setNavigationOnClickListener { activity.finish() }
+            }
+        }
+    }
 
     private var mShouldApplyDayNightModeForOptionsMenu = true
-    protected lateinit var binding: VB
+    private val permissionRequestCallbacks = mutableMapOf<Int, (Boolean) -> Unit>()
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        onPermissionResult(isGranted)
+        permissionRequestCallbacks[PERMISSION_REQUEST_CODE]?.invoke(isGranted)
     }
 
     private val requestMultiplePermissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        permissions.entries.forEach { (permission, isGranted) ->
-            onPermissionResult(isGranted, permission)
-        }
+        val allGranted = permissions.values.all { it }
+        permissionRequestCallbacks[PERMISSION_REQUEST_CODE]?.invoke(allGranted)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = initView()
-        setContentView(binding.root)
-    }
-
-    abstract fun initView(): VB
-
-    protected fun Context.hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    protected fun requestPermission(permission: String) {
-        requestPermissionLauncher.launch(permission)
-    }
-
-    protected fun requestPermissions(vararg permissions: String) {
-        requestMultiplePermissionsLauncher.launch(permissions.toList().toTypedArray())
-    }
-
-    protected open fun onPermissionResult(isGranted: Boolean, permission: String? = null) {
-        // 子类可重写
-    }
-
-    fun setupToolbar(
-        toolbar: MaterialToolbar,
-        title: String? = null,
-        showBackButton: Boolean = true,
-        backAction: (() -> Unit)? = { finish() }
-    ) {
-        setSupportActionBar(toolbar)
-        title?.let { toolbar.title = it }
-
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(showBackButton)
-            setDisplayShowHomeEnabled(showBackButton)
-        }
-
-        if (showBackButton) {
-            toolbar.setNavigationOnClickListener { backAction?.invoke() }
-        }
+        applyDayNightMode()
     }
 
     protected fun applyDayNightMode() {
-        GlobalAppContext.post {
-            if (Pref.isNightModeEnabled()) {
-                setNightMode(Pref.isNightModeEnabled())
-            }
+        if (Pref.isNightModeEnabled()) {
+            setNightModeEnabled(true)
         }
     }
 
-    fun setNightMode(enabled: Boolean) {
+    fun setNightModeEnabled(enabled: Boolean) {
         delegate.localNightMode = if (enabled) {
             AppCompatDelegate.MODE_NIGHT_YES
         } else {
             AppCompatDelegate.MODE_NIGHT_NO
         }
+
         if (delegate.applyDayNight()) {
             recreate()
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        if (mShouldApplyDayNightModeForOptionsMenu && Pref.isNightModeEnabled()) {
-            for (i in 0 until menu.size) {
-                val menuItem = menu[i]
-                menuItem.icon?.let { icon ->
-                    icon.mutate()
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        icon.colorFilter = BlendModeColorFilter(
-                            ContextCompat.getColor(this, R.color.toolbar),
-                            BlendMode.SRC_ATOP
-                        )
-                    } else {
-                        @Suppress("DEPRECATION")
-                        icon.setColorFilter(
-                            ContextCompat.getColor(this, R.color.toolbar),
-                            PorterDuff.Mode.SRC_ATOP
-                        )
+    fun setToolbarAsBack(title: String) {
+        setToolbarAsBack(this, R.id.toolbar, title)
+    }
+
+    /**
+     * 现代权限请求方法
+     * @param permission 请求的权限
+     * @param rationale 当需要解释权限时的说明文本
+     * @param callback 权限请求结果回调 (true=已授权)
+     */
+    protected fun requestPermission(
+        permission: String,
+        rationale: String? = null,
+        callback: (Boolean) -> Unit
+    ) {
+        // 检查是否已有权限
+        if (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
+            callback(true)
+            return
+        }
+
+        // 存储回调
+        permissionRequestCallbacks[PERMISSION_REQUEST_CODE] = callback
+
+        // 检查是否需要显示解释
+        if (shouldShowRequestPermissionRationale(permission) && !rationale.isNullOrBlank()) {
+            Snackbar.make(
+                findViewById(android.R.id.content),
+                rationale,
+                Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction(android.R.string.ok) {
+                    requestPermissionLauncher.launch(permission)
+                }
+                .show()
+        } else {
+            requestPermissionLauncher.launch(permission)
+        }
+    }
+
+    /**
+     * 请求多个权限
+     * @param permissions 权限数组
+     * @param rationale 当需要解释权限时的说明文本
+     * @param callback 权限请求结果回调 (true=所有权限都已授权)
+     */
+    protected fun requestPermissions(
+        permissions: Array<String>,
+        rationale: String? = null,
+        callback: (Boolean) -> Unit
+    ) {
+        // 检查是否已有所有权限
+        val hasAllPermissions = permissions.all {
+            checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
+        }
+
+        if (hasAllPermissions) {
+            callback(true)
+            return
+        }
+
+        // 存储回调
+        permissionRequestCallbacks[PERMISSION_REQUEST_CODE] = callback
+
+        // 检查是否需要显示解释
+        val shouldShowRationale = permissions.any { shouldShowRequestPermissionRationale(it) }
+        if (shouldShowRationale && !rationale.isNullOrBlank()) {
+            Snackbar.make(
+                findViewById(android.R.id.content),
+                rationale,
+                Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction(android.R.string.ok) {
+                    requestMultiplePermissionsLauncher.launch(permissions)
+                }
+                .show()
+        } else {
+            requestMultiplePermissionsLauncher.launch(permissions)
+        }
+    }
+
+    @CallSuper
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            val allGranted = grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            permissionRequestCallbacks[requestCode]?.invoke(allGranted)
+            permissionRequestCallbacks.remove(requestCode)
+        }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.let {
+            if (mShouldApplyDayNightModeForOptionsMenu && Pref.isNightModeEnabled()) {
+                for (i in 0 until it.size()) {
+                    val menuItem = it.getItem(i)
+                    val icon: Drawable? = menuItem.icon
+                    icon?.let { drawable ->
+                        val wrapped = DrawableCompat.wrap(drawable.mutate())
+                        DrawableCompat.setTint(wrapped, ContextCompat.getColor(this, R.color.toolbar))
+                        menuItem.icon = wrapped
                     }
                 }
+                mShouldApplyDayNightModeForOptionsMenu = false
             }
-            mShouldApplyDayNightModeForOptionsMenu = false
         }
         return super.onPrepareOptionsMenu(menu)
-    }
-
-    fun showDialog(
-        title: String? = null,
-        content: String,
-        positiveText: String = getString(android.R.string.ok),
-        negativeText: String = getString(android.R.string.cancel),
-        onPositive: (() -> Unit)? = null,
-        onNegative: (() -> Unit)? = null
-    ) = DialogUtils.showConfirm(
-        this,
-        title,
-        content,
-        positiveText,
-        negativeText,
-        onPositive,
-        onNegative
-    )
-
-    fun customDialog() = DialogUtils.custom(this)
-
-    fun showMessage(
-        message: String,
-        duration: Int = Snackbar.LENGTH_SHORT,
-        forceToast: Boolean = false
-    ) {
-        if (forceToast) {
-            MessageUtils.show(this, null, message, duration)
-        } else {
-            MessageUtils.show(this, binding.root, message, duration)
-        }
-    }
-
-    fun showMessage(
-        @StringRes resId: Int,
-        duration: Int = Snackbar.LENGTH_SHORT,
-        forceToast: Boolean = false
-    ) {
-        MessageUtils.show(this, null, resId, duration, forceToast)
-
-    }
-
-    fun showMessageWithAction(
-        message: String,
-        actionText: String,
-        duration: Int = Snackbar.LENGTH_LONG,
-        action: (View) -> Unit = {}
-    ) {
-        MessageUtils.showWithAction(
-            this,
-            binding.root,
-            message,
-            actionText,
-            duration,
-            action
-        )
     }
 }
