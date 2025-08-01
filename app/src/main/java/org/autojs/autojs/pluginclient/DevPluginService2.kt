@@ -1,4 +1,3 @@
-// DevPluginService2.kt
 package org.autojs.autojs.pluginclient
 
 import android.os.Build
@@ -65,6 +64,7 @@ class DevPluginService2 private constructor() {
         @Volatile
         private var instance: DevPluginService2? = null
 
+        @JvmStatic
         fun getInstance(): DevPluginService2 {
             return instance ?: synchronized(this) {
                 instance ?: DevPluginService2().also {

@@ -31,7 +31,6 @@ import org.autojs.autojs.pluginclient.DevPluginService2
 import org.autojs.autojs.tool.AccessibilityServiceTool3
 import org.autojs.autojs.tool.PermissionTool
 import org.autojs.autojs.ui.BaseActivity
-import org.autojs.autojs.ui.common.DialogUtils
 import org.autojs.autojs.ui.common.MessageUtils
 import org.autojs.autojs.ui.floating.CircularMenu
 import org.autojs.autojs.ui.floating.FloatyWindowManager

@@ -18,7 +18,6 @@ import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.ActivitySettingsBinding;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.error.IssueReporterActivity;
-import org.autojs.autojs.ui.update.UpdateCheckDialog;
 
 import java.util.ArrayList;
 import java.util.List;
