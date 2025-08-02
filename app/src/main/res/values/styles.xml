@@ -40,8 +40,6 @@
     <style name="AppTheme.Settings" parent="AppTheme">
         <item name="android:dividerHeight">6dp</item>
         <item name="android:listDivider">@drawable/pref_divider</item>
-        <item name="android:textColorPrimary">@color/prefTextColorPrimary</item>
-        <item name="android:textColorSecondary">@color/prefTextColorSecondary</item>
     </style>
 
 
