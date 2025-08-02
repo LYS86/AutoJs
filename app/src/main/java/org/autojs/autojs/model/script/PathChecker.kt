@@ -1,61 +1,63 @@
-package org.autojs.autojs.model.script;
+package org.autojs.autojs.model.script
 
-import android.app.Activity;
-import android.content.Context;
-import android.os.Build;
-import android.text.TextUtils;
-import android.widget.Toast;
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Environment
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import org.autojs.autojs.R
+import java.io.File
 
-import java.io.File;
+class PathChecker(private val context: Context) {
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+    companion object {
+        const val CHECK_RESULT_OK = 0
 
-/**
- * Created by Stardust on 2017/4/1.
- */
-
-public class PathChecker {
-    public static final int CHECK_RESULT_OK = 0;
-
-    private Context mContext;
-
-    public PathChecker(Context context) {
-        mContext = context;
-    }
-
-
-    public static int check(final String path) {
-        if (TextUtils.isEmpty(path))
-            return com.stardust.autojs.R.string.text_path_is_empty;
-        if (!new File(path).exists())
-            return com.stardust.autojs.R.string.text_file_not_exists;
-        return CHECK_RESULT_OK;
-    }
-
-    public boolean checkAndToastError(String path) {
-        int result = checkWithStoragePermission(path);
-        if (result != CHECK_RESULT_OK) {
-            Toast.makeText(mContext, mContext.getString(result) + ":" + path, Toast.LENGTH_SHORT).show();
-            return false;
+        @JvmStatic
+        fun check(path: String?): Int {
+            if (path.isNullOrEmpty()) {
+                return R.string.text_path_is_empty
+            }
+            if (!File(path).exists()) {
+                return R.string.text_file_not_exists
+            }
+            return CHECK_RESULT_OK
         }
-        return true;
-    }
 
-    private int checkWithStoragePermission(String path) {
-        if (mContext instanceof Activity && !hasStorageReadPermission((Activity) mContext)) {
-            return com.stardust.autojs.R.string.text_no_file_rw_permission;
+        @JvmStatic
+        fun hasStorageReadPermission(context: Context): Boolean {
+            return when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                    Environment.isExternalStorageManager()
+                }
+
+                else -> {
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                }
+            }
         }
-        return check(path);
     }
 
-    private static boolean hasStorageReadPermission(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-                    activity.checkSelfPermission(READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED;
+    fun checkAndToastError(path: String?): Boolean {
+        val result = checkWithStoragePermission(path)
+        return if (result != CHECK_RESULT_OK) {
+            Toast.makeText(context, context.getString(result) + ": $path", Toast.LENGTH_SHORT)
+                .show()
+            false
+        } else {
+            true
         }
-        return true;
     }
 
-
+    private fun checkWithStoragePermission(path: String?): Int {
+        if (context is Activity && !hasStorageReadPermission(context)) {
+            return R.string.text_no_file_rw_permission
+        }
+        return check(path)
+    }
 }

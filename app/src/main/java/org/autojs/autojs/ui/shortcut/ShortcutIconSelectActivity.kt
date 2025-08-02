@@ -1,164 +1,154 @@
-package org.autojs.autojs.ui.shortcut;
+package org.autojs.autojs.ui.shortcut
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import org.autojs.autojs.R
+import org.autojs.autojs.databinding.ActivityShortcutIconSelectBinding
+import org.autojs.autojs.tool.BitmapTool
+import org.autojs.autojs.ui.BaseActivityV2
+import org.autojs.autojs.workground.WrapContentGridLayoutManger
+import timber.log.Timber
 
-import androidx.recyclerview.widget.RecyclerView;
+class ShortcutIconSelectActivity : BaseActivityV2() {
 
-import org.autojs.autojs.R;
-import org.autojs.autojs.databinding.ActivityShortcutIconSelectBinding;
-import org.autojs.autojs.tool.BitmapTool;
-import org.autojs.autojs.ui.BaseActivity;
-import org.autojs.autojs.workground.WrapContentGridLayoutManger;
+    companion object {
+        const val EXTRA_PACKAGE_NAME = "extra_package_name"
 
-import java.util.ArrayList;
-import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
-public class ShortcutIconSelectActivity extends BaseActivity {
-
-    public static final String EXTRA_PACKAGE_NAME = "extra_package_name";
-    private ActivityShortcutIconSelectBinding binding;
-    private PackageManager mPackageManager;
-    private final List<AppItem> mAppList = new ArrayList<>();
-
-    @Override
-    protected void onCreate(android.os.Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityShortcutIconSelectBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        setupViews();
+        @JvmStatic
+        fun getBitmapFromIntent(context: Context, data: Intent): Observable<Bitmap> {
+            val packageName = data.getStringExtra(EXTRA_PACKAGE_NAME)
+            return if (packageName != null) {
+                Observable.fromCallable {
+                    val drawable = context.packageManager.getApplicationIcon(packageName)
+                    BitmapTool.drawableToBitmapIfNeeded(drawable)
+                }
+            } else {
+                val uri =
+                    data.data ?: return Observable.error(IllegalArgumentException("invalid intent"))
+                Observable.fromCallable {
+                    context.contentResolver.openInputStream(uri).use { inputStream ->
+                        BitmapFactory.decodeStream(inputStream)
+                    }
+                }
+            }
+        }
     }
 
-    void setupViews() {
-        mPackageManager = getPackageManager();
-        setToolbarAsBack(getString(R.string.text_select_icon));
-        setupApps();
+    private lateinit var binding: ActivityShortcutIconSelectBinding
+    private lateinit var mPackageManager: PackageManager
+    private val mAppList = mutableListOf<AppItem>()
+
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            setResult(RESULT_OK, Intent().setData(it))
+            finish()
+        }
     }
 
-    private void setupApps() {
-        binding.apps.setAdapter(new AppsAdapter());
-        WrapContentGridLayoutManger manager = new WrapContentGridLayoutManger(this, 5);
-        manager.setDebugInfo("IconSelectView");
-        binding.apps.setLayoutManager(manager);
-        loadApps();
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityShortcutIconSelectBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setupViews()
+    }
+
+    private fun setupViews() {
+        mPackageManager = packageManager
+        setToolbarAsBack(getString(R.string.text_select_icon))
+        setupApps()
+    }
+
+    private fun setupApps() {
+        binding.apps.adapter = AppsAdapter()
+        val manager = WrapContentGridLayoutManger(this, 5).apply {
+            setDebugInfo("IconSelectView")
+        }
+        binding.apps.layoutManager = manager
+        loadApps()
     }
 
     @SuppressLint("CheckResult")
-    private void loadApps() {
-        List<ApplicationInfo> packages = mPackageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+    private fun loadApps() {
+        val intent = Intent(Intent.ACTION_MAIN, null).apply {
+            addCategory(Intent.CATEGORY_LAUNCHER)
+        }
+        val packages = mPackageManager.queryIntentActivities(intent, 0)
+            .map { it.activityInfo.applicationInfo }
+
         Observable.fromIterable(packages)
-                .observeOn(Schedulers.computation())
-                .filter(appInfo -> appInfo.icon != 0)
-                .map(AppItem::new)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(icon -> {
-                    mAppList.add(icon);
-                    binding.apps.getAdapter().notifyItemInserted(mAppList.size() - 1);
-                });
+            .observeOn(Schedulers.computation())
+            .filter { it.icon != 0 }
+            .map { AppItem(it) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ appItem ->
+                           mAppList.add(appItem)
+                           binding.apps.adapter?.notifyItemInserted(mAppList.size - 1)
+                       }, { error ->
+                           Timber.e(error, "加载应用图标失败")
+                       })
     }
 
-    private void selectApp(AppItem appItem) {
-        setResult(RESULT_OK, new Intent()
-                .putExtra(EXTRA_PACKAGE_NAME, appItem.info.packageName));
-        finish();
+    private fun selectApp(appItem: AppItem) {
+        setResult(RESULT_OK, Intent().putExtra(EXTRA_PACKAGE_NAME, appItem.info.packageName))
+        finish()
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_shortcut_icon_select, menu);
-        return true;
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_shortcut_icon_select, menu)
+        return true
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT)
-                .setType("image/*"), 11234);
-        return true;
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        imagePickerLauncher.launch("image/*")
+        return true
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            setResult(RESULT_OK, data);
-            finish();
+    private inner class AppItem(val info: ApplicationInfo) {
+        val icon: Drawable = info.loadIcon(mPackageManager)
+    }
+
+    private inner class AppIconViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val icon: ImageView = view as ImageView
+
+        init {
+            icon.setOnClickListener {
+                selectApp(mAppList[adapterPosition])
+            }
         }
     }
 
-    public static Observable<Bitmap> getBitmapFromIntent(Context context, Intent data) {
-        String packageName = data.getStringExtra(EXTRA_PACKAGE_NAME);
-        if (packageName != null) {
-            return Observable.fromCallable(() -> {
-                Drawable drawable = context.getPackageManager().getApplicationIcon(packageName);
-                return BitmapTool.drawableToBitmap(drawable);
-            });
-        }
-        Uri uri = data.getData();
-        if (uri == null) {
-            return Observable.error(new IllegalArgumentException("invalid intent"));
-        }
-        return Observable.fromCallable(() ->
-                BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri))
-        );
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding = null;
-    }
-
-    private class AppItem {
-        Drawable icon;
-        ApplicationInfo info;
-
-        public AppItem(ApplicationInfo info) {
-            this.info = info;
-            icon = info.loadIcon(mPackageManager);
-        }
-    }
-
-    private class AppIconViewHolder extends RecyclerView.ViewHolder {
-        ImageView icon;
-
-        public AppIconViewHolder(View itemView) {
-            super(itemView);
-            icon = (ImageView) itemView;
-            icon.setOnClickListener(v -> selectApp(mAppList.get(getAdapterPosition())));
-        }
-    }
-
-    private class AppsAdapter extends RecyclerView.Adapter<AppIconViewHolder> {
-        @Override
-        public AppIconViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new AppIconViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.app_icon_list_item, parent, false));
+    private inner class AppsAdapter : RecyclerView.Adapter<AppIconViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppIconViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.app_icon_list_item, parent, false)
+            return AppIconViewHolder(view)
         }
 
-        @Override
-        public void onBindViewHolder(AppIconViewHolder holder, int position) {
-            holder.icon.setImageDrawable(mAppList.get(position).icon);
+        override fun onBindViewHolder(holder: AppIconViewHolder, position: Int) {
+            (holder.itemView as ImageView).setImageDrawable(mAppList[position].icon)
         }
 
-        @Override
-        public int getItemCount() {
-            return mAppList.size();
-        }
+        override fun getItemCount(): Int = mAppList.size
     }
 }

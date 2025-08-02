@@ -68,13 +68,12 @@
             android:theme="@style/AppTheme.FullScreen">
         </activity>
         <activity
-            android:name="org.autojs.autojs.external.shortcut.ShortcutActivity"
-            android:taskAffinity="org.autojs.autojs.external.shortcut.ShortcutActivity"
+            android:name=".external.shortcut.ShortcutActivity"
+            android:taskAffinity=".external.shortcut.ShortcutActivity"
             android:exported="false"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>

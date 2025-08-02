@@ -225,7 +225,7 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                 .setVersionCode(versionCode)
                 .setVersionName(versionName)
                 .setIcon(mIsDefaultIcon ? null : () ->
-                        BitmapTool.drawableToBitmap(binding.icon.getDrawable())
+                        BitmapTool.drawableToBitmapIfNeeded(binding.icon.getDrawable())
                 );
     }
 

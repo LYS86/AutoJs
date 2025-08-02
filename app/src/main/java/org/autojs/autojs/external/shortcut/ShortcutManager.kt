@@ -1,92 +1,100 @@
-package org.autojs.autojs.external.shortcut;
+package org.autojs.autojs.external.shortcut
 
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ShortcutInfo;
-import android.graphics.drawable.Icon;
-import android.os.Build;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import android.content.Context
+import android.content.Intent
+import android.graphics.drawable.Icon
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
+import org.autojs.autojs.external.ScriptIntents
 
-import java.util.Collections;
-import java.util.List;
+object ShortcutManager {
 
-/**
- * Created by Stardust on 2017/10/25.
- */
-
-@RequiresApi(api = Build.VERSION_CODES.N_MR1)
-public class ShortcutManager {
-
-
-    private static ShortcutManager sInstance;
-    private Context mContext;
-    private android.content.pm.ShortcutManager mShortcutManager;
-
-
-    public ShortcutManager(Context context) {
-        mContext = context;
-        mShortcutManager = (android.content.pm.ShortcutManager) context.getSystemService(Context.SHORTCUT_SERVICE);
-    }
-
-    public static ShortcutManager getInstance(Context context) {
-        if (sInstance == null) {
-            sInstance = new ShortcutManager(context);
+    /**
+     * 创建固定快捷方式
+     * @param context 上下文
+     * @param name 快捷方式名称
+     * @param id 快捷方式ID
+     * @param icon 快捷方式图标
+     * @param targetActivity 目标活动
+     * @param scriptPath 脚本路径
+     */
+    @JvmStatic
+    fun createPinnedShortcut(
+        context: Context,
+        name: CharSequence,
+        id: String,
+        icon: Icon,
+        targetActivity: Class<*>,
+        scriptPath: String?
+    ): Boolean {
+        val isSupport = ShortcutManagerCompat.isRequestPinShortcutSupported(context)
+        if (!isSupport) {
+            return false
         }
-        return sInstance;
-    }
+        val shortcuts =
+            ShortcutManagerCompat.getShortcuts(context, ShortcutManagerCompat.FLAG_MATCH_PINNED)
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void addPinnedShortcut(CharSequence label, String id, Icon icon, Intent intent) {
-        if (!mShortcutManager.isRequestPinShortcutSupported()) {
-            return;
+        val launchIntent = Intent(context, targetActivity).apply {
+            action = Intent.ACTION_VIEW
+            scriptPath?.let { putExtra(ScriptIntents.EXTRA_KEY_PATH, it) }
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
-        ShortcutInfo shortcut = buildShortcutInfo(label, id, icon, intent);
-        int req = getRequestCode(id);
-        PendingIntent successCallback = PendingIntent.getBroadcast(
-                mContext,
-                req,
-                mShortcutManager.createShortcutResultIntent(shortcut),
-                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
-        );
-        mShortcutManager.requestPinShortcut(shortcut, successCallback.getIntentSender());
+
+        val shortcut =
+            ShortcutInfoCompat.Builder(context, id).setShortLabel(name).setLongLabel(name)
+                .setIntent(launchIntent).setIcon(IconCompat.createFromIcon(context, icon)).build()
+
+        if (shortcuts.any { it.id == id }) {
+            return ShortcutManagerCompat.updateShortcuts(context, listOf(shortcut))
+        }
+
+        return ShortcutManagerCompat.requestPinShortcut(context, shortcut, null)
+
     }
 
-    private ShortcutInfo buildShortcutInfo(CharSequence label, String id, Icon icon, Intent intent) {
-        return new ShortcutInfo.Builder(mContext, id)
-                .setIntent(intent)
-                .setShortLabel(label)
-                .setLongLabel(label)
-                .setIcon(icon)
-                .build();
-    }
+    /**
+     * 创建动态快捷方式
+     * @param context 上下文
+     * @param name 快捷方式名称
+     * @param id 快捷方式ID
+     * @param icon 快捷方式图标
+     * @param targetActivity 目标活动
+     * @param scriptPath 脚本路径
+     */
+    @JvmStatic
+    fun createDynamicShortcut(
+        context: Context,
+        name: CharSequence,
+        id: String,
+        icon: Icon,
+        targetActivity: Class<*>,
+        scriptPath: String?
+    ): Boolean {
+        val launchIntent = Intent(context, targetActivity).apply {
+            action = Intent.ACTION_VIEW
+            scriptPath?.let { putExtra(ScriptIntents.EXTRA_KEY_PATH, it) }
+        }
 
-    private int getRequestCode(String id) {
-        return id.hashCode() >>> 16;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
-    public void addDynamicShortcut(CharSequence label, String id, Icon icon, Intent intent) {
-        ShortcutInfo shortcut = buildShortcutInfo(label, id, icon, intent);
-        try {
-            addDynamicShortcutUnchecked(shortcut);
-        } catch (IllegalArgumentException shortcutsExceeded) {
-            removeTheFirstShortcut();
-            addDynamicShortcutUnchecked(shortcut);
+        val shortcut =
+            ShortcutInfoCompat.Builder(context, id).setShortLabel(name).setLongLabel(name)
+                .setIntent(launchIntent).setIcon(IconCompat.createFromIcon(context, icon)).build()
+        return try {
+            ShortcutManagerCompat.pushDynamicShortcut(context, shortcut)
+        } catch (_: Exception) {
+            false
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
-    private void removeTheFirstShortcut() {
-        List<ShortcutInfo> dynamicShortcuts = mShortcutManager.getDynamicShortcuts();
-        mShortcutManager.removeDynamicShortcuts(Collections.singletonList(dynamicShortcuts.get(0).getId()));
-    }
 
-    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
-    private void addDynamicShortcutUnchecked(ShortcutInfo shortcut) {
-        mShortcutManager.addDynamicShortcuts(Collections.singletonList(shortcut));
+    /**
+     * 移除所有动态快捷方式
+     */
+    @JvmStatic
+    fun removeAllShortcuts(context: Context) {
+        val shortcuts = ShortcutManagerCompat.getDynamicShortcuts(context)
+        if (shortcuts.isNotEmpty()) {
+            ShortcutManagerCompat.removeDynamicShortcuts(context, shortcuts.map { it.id })
+        }
     }
-
 }
