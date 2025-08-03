@@ -18,7 +18,6 @@ public class LogActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        applyDayNightMode();
         initBinding();
         setupViews();
     }

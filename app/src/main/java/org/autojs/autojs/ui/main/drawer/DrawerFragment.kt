@@ -28,9 +28,9 @@ import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentDrawerBinding
 import org.autojs.autojs.external.foreground.ForegroundService
 import org.autojs.autojs.pluginclient.DevPluginService2
+import org.autojs.autojs.theme.ThemeUtils
 import org.autojs.autojs.tool.AccessibilityServiceTool3
 import org.autojs.autojs.tool.PermissionTool
-import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.common.MessageUtils
 import org.autojs.autojs.ui.floating.CircularMenu
 import org.autojs.autojs.ui.floating.FloatyWindowManager
@@ -233,8 +233,8 @@ class DrawerFragment : Fragment() {
                     R.drawable.ic_personalize, R.string.text_theme_color
                 ) { holder -> openThemeColorSettings() },
                 DrawerMenuItem(
-                    R.drawable.ic_night_mode, R.string.text_night_mode, R.string.key_night_mode
-                ) { holder -> toggleNightMode(holder) },
+                    R.drawable.ic_night_mode, R.string.theme_setting
+                ) { holder -> toggleNightMode() },
                 mCheckForUpdatesItem
             )
         )
@@ -348,8 +348,8 @@ class DrawerFragment : Fragment() {
         SettingsActivity.selectThemeColor(activity)
     }
 
-    private fun toggleNightMode(holder: DrawerMenuItemViewHolder) {
-        (activity as? BaseActivity)?.setNightModeEnabled(holder.switchCompat.isChecked)
+    private fun toggleNightMode() {
+        ThemeUtils.settingDialog(requireContext())
     }
 
     private fun connectOrDisconnectToRemote(holder: DrawerMenuItemViewHolder) {
@@ -447,7 +447,7 @@ class DrawerFragment : Fragment() {
             }
 
             !Utils.isReady() -> {
-                MaterialAlertDialogBuilder(requireContext(),R.style.DialogTheme)
+                MaterialAlertDialogBuilder(requireContext(), R.style.DialogTheme)
                     .setTitle(R.string.text_shizuku_service_not_ready)
                     .setMessage(R.string.text_to_shizuku)
                     .setCancelable(false)

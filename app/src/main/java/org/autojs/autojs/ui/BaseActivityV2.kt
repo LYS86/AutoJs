@@ -1,24 +1,19 @@
 package org.autojs.autojs.ui
 
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.view.Menu
 import android.view.View
 import android.view.WindowInsetsController
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.WindowCompat
 import com.google.android.material.snackbar.Snackbar
 import com.stardust.theme.ThemeColorManager
-import org.autojs.autojs.Pref
 import org.autojs.autojs.R
+import org.autojs.autojs.theme.ThemeUtils
 
 abstract class BaseActivityV2 : AppCompatActivity() {
 
@@ -37,7 +32,6 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         }
     }
 
-    private var mShouldApplyDayNightModeForOptionsMenu = true
     private val permissionRequestCallbacks = mutableMapOf<Int, (Boolean) -> Unit>()
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -73,28 +67,12 @@ abstract class BaseActivityV2 : AppCompatActivity() {
             (window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) != 0
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        applyDayNightMode()
+        ThemeUtils.applyDayNightMode()
     }
 
-    protected fun applyDayNightMode() {
-        if (Pref.isNightModeEnabled()) {
-            setNightModeEnabled(true)
-        }
-    }
-
-    fun setNightModeEnabled(enabled: Boolean) {
-        delegate.localNightMode = if (enabled) {
-            AppCompatDelegate.MODE_NIGHT_YES
-        } else {
-            AppCompatDelegate.MODE_NIGHT_NO
-        }
-
-        if (delegate.applyDayNight()) {
-            recreate()
-        }
-    }
 
     fun setToolbarAsBack(title: String) {
         setToolbarAsBack(this, R.id.toolbar, title)
@@ -111,16 +89,12 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         rationale: String? = null,
         callback: (Boolean) -> Unit
     ) {
-        // 检查是否已有权限
         if (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
             callback(true)
             return
         }
 
-        // 存储回调
         permissionRequestCallbacks[PERMISSION_REQUEST_CODE] = callback
-
-        // 检查是否需要显示解释
         if (shouldShowRequestPermissionRationale(permission) && !rationale.isNullOrBlank()) {
             Snackbar.make(
                 findViewById(android.R.id.content),
@@ -147,7 +121,6 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         rationale: String? = null,
         callback: (Boolean) -> Unit
     ) {
-        // 检查是否已有所有权限
         val hasAllPermissions = permissions.all {
             checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
         }
@@ -157,10 +130,8 @@ abstract class BaseActivityV2 : AppCompatActivity() {
             return
         }
 
-        // 存储回调
         permissionRequestCallbacks[PERMISSION_REQUEST_CODE] = callback
 
-        // 检查是否需要显示解释
         val shouldShowRationale = permissions.any { shouldShowRequestPermissionRationale(it) }
         if (shouldShowRationale && !rationale.isNullOrBlank()) {
             Snackbar.make(
@@ -191,24 +162,4 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.let {
-            if (mShouldApplyDayNightModeForOptionsMenu && Pref.isNightModeEnabled()) {
-                for (i in 0 until it.size()) {
-                    val menuItem = it.getItem(i)
-                    val icon: Drawable? = menuItem.icon
-                    icon?.let { drawable ->
-                        val wrapped = DrawableCompat.wrap(drawable.mutate())
-                        DrawableCompat.setTint(
-                            wrapped,
-                            ContextCompat.getColor(this, R.color.toolbar)
-                        )
-                        menuItem.icon = wrapped
-                    }
-                }
-                mShouldApplyDayNightModeForOptionsMenu = false
-            }
-        }
-        return super.onPrepareOptionsMenu(menu)
-    }
 }

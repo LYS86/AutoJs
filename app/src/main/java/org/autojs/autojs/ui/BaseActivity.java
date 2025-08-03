@@ -20,6 +20,7 @@ import com.stardust.theme.ThemeColorManager;
 
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
+import org.autojs.autojs.theme.ThemeUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ThemeUtils.applyDayNightMode();
     }
 
     protected void applyDayNightMode() {
