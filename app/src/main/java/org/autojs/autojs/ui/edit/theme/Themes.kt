@@ -1,99 +1,102 @@
-package org.autojs.autojs.ui.edit.theme;
+package org.autojs.autojs.ui.edit.theme
 
-import android.content.Context;
+import android.annotation.SuppressLint
+import android.content.Context
+import com.stardust.pio.UncheckedIOException
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
+import org.autojs.autojs.PrefV2
+import org.autojs.autojs.theme.ThemeUtils
+import timber.log.Timber
+import java.io.IOException
+import java.io.InputStreamReader
+import java.util.Collections
 
-import com.stardust.pio.UncheckedIOException;
-import org.autojs.autojs.Pref;
+object Themes {
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+    private const val ASSETS_THEMES_PATH = "editor/theme"
+    private const val DEFAULT_THEME = "Quiet Light"
+    private const val DARK_THEME = "Dark (Visual Studio)"
+    private var themesList: List<Theme>? = null
+    private var defaultTheme: Theme? = null
 
-import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
+    var editorTheme by PrefV2.string("editorTheme", DEFAULT_THEME)
 
-/**
- * Created by Stardust on 2018/2/22.
- */
+    /**
+     * 获取全部主题列表
+     */
+    @JvmStatic
+    @SuppressLint("CheckResult")
+    fun getAllThemes(context: Context): Observable<List<Theme>> {
+        themesList?.let { return Observable.just(it) }
+        val subject = PublishSubject.create<List<Theme>>()
+        getAllThemesInner(context).subscribeOn(Schedulers.io()).subscribe(
+            { themes ->
+                setThemes(themes)
+                subject.onNext(
+                    themesList!!
+                )
+                subject.onComplete()
+            },
+            { e ->
+                Timber.e(e, "加载主题失败")
+            })
 
-public class Themes {
+        return subject
+    }
 
+    /**
+     * 获取默认主题
+     */
+    fun getDefault(context: Context): Observable<Theme> {
+        defaultTheme?.let { return Observable.just(it) }
 
-    private static final String ASSETS_THEMES_PATH = "editor/theme";
-    private static final String DEFAULT_THEME = "Quiet Light";
-    private static final String DARK_THEME = "Dark (Visual Studio)";
+        return getAllThemes(context).map { defaultTheme!! }
+    }
 
-    private static List<Theme> sThemes;
-    private static Theme sDefaultTheme;
+    @Synchronized
+    private fun setThemes(themes: List<Theme>) {
+        if (themesList != null) return
+        themesList = Collections.unmodifiableList(themes)
+        defaultTheme = themes.find { it.name == DEFAULT_THEME } ?: themes.first()
+    }
 
-    public static Observable<List<Theme>> getAllThemes(Context context) {
-        if (sThemes != null) {
-            return Observable.just(sThemes);
+    private fun getAllThemesInner(context: Context): Observable<List<Theme>> {
+        themesList?.let { return Observable.just(it) }
+
+        return try {
+            val files = context.assets.list(ASSETS_THEMES_PATH) ?: emptyArray()
+            Observable.fromIterable(files.asList()).map { file ->
+                context.assets.open("$ASSETS_THEMES_PATH/$file").use {
+                    Theme.fromJson(InputStreamReader(it))
+                }
+            }.collect({ ArrayList<Theme>() }, { list, theme -> list.add(theme) })
+                .map { it.toList() }.toObservable()
+        } catch (e: IOException) {
+            throw UncheckedIOException(e)
         }
-        PublishSubject<List<Theme>> subject = PublishSubject.create();
-        getAllThemesInner(context)
-                .subscribeOn(Schedulers.io())
-                .subscribe(themes -> {
-                    setThemes(themes);
-                    subject.onNext(sThemes);
-                    subject.onComplete();
-                }, Throwable::printStackTrace);
-        return subject;
     }
 
-    public static Observable<Theme> getDefault(Context context) {
-        if (sDefaultTheme != null)
-            return Observable.just(sDefaultTheme);
-        return getAllThemes(context)
-                .map(themes -> sDefaultTheme);
-    }
-
-    private synchronized static void setThemes(List<Theme> themes) {
-        if (sThemes != null)
-            return;
-        sThemes = Collections.unmodifiableList(themes);
-        for (Theme theme : sThemes) {
-            if (DEFAULT_THEME.equals(theme.getName())) {
-                sDefaultTheme = theme;
-                return;
-            }
+    /**
+     * 获取当前主题，按夜间模式或用户偏好设置
+     */
+    @JvmStatic
+    fun getCurrent(context: Context): Observable<Theme> {
+        val currentThemeName = when (ThemeUtils.isDarkMode(context)) {
+            true -> DARK_THEME
+            else -> editorTheme
         }
-        sDefaultTheme = sThemes.get(0);
-    }
-
-    private static Observable<List<Theme>> getAllThemesInner(Context context) {
-        if (sThemes != null) {
-            return Observable.just(sThemes);
-        }
-        try {
-            return Observable.fromArray(context.getAssets().list(ASSETS_THEMES_PATH))
-                    .map(file -> context.getAssets().open(ASSETS_THEMES_PATH + "/" + file))
-                    .map(stream -> Theme.fromJson(new InputStreamReader(stream)))
-                    .collectInto((List<Theme>) new ArrayList<Theme>(), List::add)
-                    .toObservable();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        return getAllThemes(context).map { themes ->
+            themes.find { it.name == currentThemeName } ?: themes.first()
         }
     }
 
-    public static Observable<Theme> getCurrent(Context context) {
-        String currentTheme = Pref.isNightModeEnabled() ? DARK_THEME : Pref.getCurrentTheme();
-        if (currentTheme == null)
-            return getDefault(context);
-        return getAllThemes(context)
-                .map(themes -> {
-                    for (Theme theme : themes) {
-                        if (currentTheme.equals(theme.getName()))
-                            return theme;
-                    }
-                    return themes.get(0);
-                });
-    }
-
-    public static void setCurrent(String name) {
-        Pref.setCurrentTheme(name);
+    /**
+     * 设置主题
+     */
+    @JvmStatic
+    fun setCurrent(name: String) {
+        editorTheme = name
     }
 }

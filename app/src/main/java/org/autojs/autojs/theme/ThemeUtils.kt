@@ -1,11 +1,12 @@
 package org.autojs.autojs.theme
 
 import android.content.Context
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.autojs.autojs.PrefV2
 import org.autojs.autojs.R
-
+import timber.log.Timber
 
 object ThemeUtils {
 
@@ -46,5 +47,18 @@ object ThemeUtils {
                 applyDayNightMode()
             }.setNegativeButton(android.R.string.cancel, null).show()
     }
-}
 
+    /**
+     * 检查设备当前是否处于深色模式（实时系统状态）
+     * @param context 上下文对象
+     * @return 如果设备当前处于深色模式返回 true，否则返回 false
+     */
+    @JvmStatic
+    fun isDarkMode(context: Context): Boolean {
+        val currentNightMode = context.resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK
+        return currentNightMode == Configuration.UI_MODE_NIGHT_YES.also {
+            Timber.d("isDarkMode: $it")
+        }
+    }
+}
