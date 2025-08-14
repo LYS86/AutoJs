@@ -20,27 +20,28 @@ abstract class BaseActivityV2 : AppCompatActivity() {
     private var isActivityVisible = false
 
     companion object {
-        const val PERMISSION_REQUEST_CODE = 11186
-
         @JvmStatic
         fun setToolbarAsBack(activity: AppCompatActivity, id: Int, title: String) {
             val toolbar = activity.findViewById<Toolbar>(id)
             toolbar.title = title
             activity.setSupportActionBar(toolbar)
+            val isRoot = activity.isTaskRoot
             activity.supportActionBar?.apply {
-                setDisplayHomeAsUpEnabled(true)
-                toolbar.setNavigationOnClickListener { activity.finish() }
+                setDisplayHomeAsUpEnabled(!isRoot)
+                if (!isRoot) {
+                    toolbar.setNavigationOnClickListener { activity.onBackPressedDispatcher.onBackPressed() }
+                }
             }
         }
     }
 
-    private val permissionRequestCallbacks = mutableMapOf<Int, (Boolean) -> Unit>()
+    private var permissionRequestCallback: ((Map<String, Boolean>) -> Unit)? = null
 
     private val requestPermissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.values.all { it }
-        permissionRequestCallbacks[PERMISSION_REQUEST_CODE]?.invoke(allGranted)
+    ) { result ->
+        permissionRequestCallback?.invoke(result)
+        permissionRequestCallback = null
     }
 
     override fun onStart() {
@@ -79,47 +80,31 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         setToolbarAsBack(this, R.id.toolbar, title)
     }
 
-    /**
-     * 现代权限请求方法（统一使用多权限请求）
-     * @param permission 请求的权限
-     * @param rationale 当需要解释权限时的说明文本
-     * @param callback 权限请求结果回调 (true=已授权)
-     */
     fun requestPermission(
         permission: String,
         rationale: String? = null,
         callback: (Boolean) -> Unit
     ) {
-        requestPermissions(arrayOf(permission), rationale, callback)
+        requestPermissions(arrayOf(permission), rationale) { result ->
+            callback(result[permission] == true)
+        }
     }
 
-    /**
-     * 请求多个权限
-     * @param permissions 权限数组
-     * @param rationale 当需要解释权限时的说明文本
-     * @param callback 权限请求结果回调 (true=所有权限都已授权)
-     */
     fun requestPermissions(
         permissions: Array<String>,
         rationale: String? = null,
-        callback: (Boolean) -> Unit
+        callback: (Map<String, Boolean>) -> Unit
     ) {
-        val hasAllPermissions = permissions.all { hasPermission(it) }
-
-        if (hasAllPermissions) {
-            callback(true)
+        val currentStatus = permissions.associateWith { hasPermission(it) }
+        if (currentStatus.values.all { it }) {
+            callback(currentStatus)
             return
         }
 
-        permissionRequestCallbacks[PERMISSION_REQUEST_CODE] = callback
+        permissionRequestCallback = callback
 
-        val shouldShowRationale = permissions.any { shouldShowRequestPermissionRationale(it) }
-        if (shouldShowRationale && !rationale.isNullOrBlank()) {
-            Snackbar.make(
-                findViewById(android.R.id.content),
-                rationale,
-                Snackbar.LENGTH_INDEFINITE
-            )
+        if (!rationale.isNullOrBlank()) {
+            Snackbar.make(findViewById(android.R.id.content), rationale, Snackbar.LENGTH_INDEFINITE)
                 .setAction(android.R.string.ok) {
                     requestPermissionsLauncher.launch(permissions)
                 }
@@ -131,9 +116,7 @@ abstract class BaseActivityV2 : AppCompatActivity() {
 
     fun showMessage(message: String) {
         if (isActivityVisible) {
-            Snackbar.make(
-                findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT
-            ).show()
+            Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
