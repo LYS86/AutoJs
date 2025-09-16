@@ -30,6 +30,7 @@ import org.autojs.autojs.ui.viewmodel.ExplorerItemList
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import com.stardust.util.BackPressedHandler
+import org.autojs.autojs.ui.permission.PermissionManager.requestStoragePermission
 
 class MyScriptListFragment : BaseFragment(), BackPressedHandler {
 
@@ -147,9 +148,7 @@ class MyScriptListFragment : BaseFragment(), BackPressedHandler {
                     }
                 }
             } else {
-                requestManageStorage.launch(
-                    Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                )
+                requestStoragePermission(requireActivity())
             }
         }
     }
