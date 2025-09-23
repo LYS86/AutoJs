@@ -2,12 +2,15 @@ package com.stardust.autojs.core.accessibility
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Build
 import android.os.Handler
+import android.view.Display
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.annotation.RequiresApi
 import com.stardust.autojs.annotation.ScriptInterface
+import com.stardust.autojs.core.image.ImageWrapper
 import com.stardust.autojs.runtime.ScriptRuntime
 import com.stardust.autojs.runtime.accessibility.AccessibilityConfig
 import com.stardust.automator.GlobalActionAutomator
@@ -18,6 +21,8 @@ import com.stardust.automator.simple_action.SimpleAction
 import com.stardust.util.DeveloperUtils
 import com.stardust.util.ScreenMetrics
 import org.opencv.core.Point
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by Stardust on 2017/4/2.
@@ -284,4 +289,34 @@ class SimpleActionAutomator(private val mAccessibilityBridge: AccessibilityBridg
         mScreenMetrics = metrics
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    @ScriptInterface
+    fun takeScreenshot(): ImageWrapper? {
+        ensureAccessibilityServiceEnabled()
+        val service = mAccessibilityBridge.service ?: return null
+
+        val latch = CountDownLatch(1)
+        var wrapper: ImageWrapper? = null
+        val context = mScriptRuntime.uiHandler.context
+        service.takeScreenshot(
+            Display.DEFAULT_DISPLAY,
+            context.mainExecutor,
+            object : AccessibilityService.TakeScreenshotCallback {
+                override fun onSuccess(result: AccessibilityService.ScreenshotResult) {
+                    val hw = result.hardwareBuffer
+                    wrapper = Bitmap.wrapHardwareBuffer(hw, result.colorSpace)
+                        ?.let { ImageWrapper.ofBitmap(it) }
+                    hw.close()
+                    latch.countDown()
+                }
+
+                override fun onFailure(errorCode: Int) {
+                    latch.countDown()
+                }
+            }
+        )
+
+        latch.await(10, TimeUnit.SECONDS)
+        return wrapper
+    }
 }

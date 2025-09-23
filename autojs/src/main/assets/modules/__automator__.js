@@ -23,6 +23,7 @@ module.exports = function (runtime, global) {
 
     }
 
+    automator.takeScreenshot = runtime.automator.takeScreenshot.bind(runtime.automator);
     automator.click = function () { return performAction(runtime.automator.click.bind(runtime.automator), arguments); }
     automator.longClick = function () { return performAction(runtime.automator.longClick.bind(runtime.automator), arguments); }
     automator.press = function () { return runtime.automator.press.apply(runtime.automator, arguments); }
