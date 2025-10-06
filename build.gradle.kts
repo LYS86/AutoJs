@@ -1,5 +1,3 @@
-import groovy.json.JsonSlurper
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
@@ -30,5 +28,3 @@ allprojects {
 tasks.register("clean", Delete::class) {
     delete(layout.buildDirectory)
 }
-
-extra["versions"] = JsonSlurper().parse(file("./project-versions.json"))

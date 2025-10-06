@@ -6,15 +6,14 @@ kotlin {
     jvmToolchain(21)
 }
 android {
-    val versions = rootProject.extra["versions"] as Map<*, *>
-
-    compileSdk = versions["compile"].toString().toInt()
+    // 使用 buildSrc 中的 Versions 对象
+    compileSdk = Versions.compileSdk
 
     defaultConfig {
-        minSdk = versions["mini"].toString().toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "VERSION_NAME", "\"${versions["appVersionName"]}\"")
-        buildConfigField("int", "VERSION_CODE", versions["appVersionCode"].toString())
+    minSdk = Versions.minSdk
+    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    buildConfigField("String", "VERSION_NAME", "\"${Versions.appVersionName}\"")
+    buildConfigField("int", "VERSION_CODE", "${Versions.appVersionCode}")
     }
 
     buildTypes {

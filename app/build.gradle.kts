@@ -6,16 +6,15 @@ kotlin {
     jvmToolchain(21)
 }
 android {
-    val versions = rootProject.extra["versions"] as Map<*, *>
-
-    compileSdk = versions["compile"].toString().toInt()
+    // 使用 buildSrc 中的 Versions 对象
+    compileSdk = Versions.compileSdk
 
     defaultConfig {
         applicationId = "org.autojs.autojs"
-        minSdk = versions["mini"].toString().toInt()
-        targetSdk = versions["target"].toString().toInt()
-        versionCode = versions["appVersionCode"].toString().toInt()
-        versionName = versions["appVersionName"].toString()
+    minSdk = Versions.minSdk
+    targetSdk = Versions.targetSdk
+    versionCode = Versions.appVersionCode
+    versionName = Versions.appVersionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
