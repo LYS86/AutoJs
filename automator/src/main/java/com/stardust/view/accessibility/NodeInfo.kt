@@ -4,13 +4,10 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Rect
-import androidx.annotation.Keep
 import android.view.accessibility.AccessibilityNodeInfo
-
+import androidx.annotation.Keep
 import com.stardust.automator.UiObject
-
-import java.util.ArrayList
-import java.util.HashMap
+import timber.log.Timber
 
 /**
  * Created by Stardust on 2017/3/10.
@@ -160,7 +157,9 @@ class NodeInfo(resources: Resources?, node: UiObject, var parent: NodeInfo?) {
                         resources = context.packageManager.getResourcesForApplication(pkg)
                         resourcesCache[pkg] = resources
                     } catch (e: PackageManager.NameNotFoundException) {
-                        e.printStackTrace()
+                        //fixme 点击悬浮窗后，循环抛出异常，需要评估风险
+                        Timber.w(e)
+//                        e.printStackTrace()
                     }
 
                 }
