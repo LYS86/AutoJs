@@ -93,10 +93,6 @@ tasks.whenTaskAdded {
     }
 }
 
-repositories {
-    google()
-}
-
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     androidTestImplementation(libs.espresso.core) {

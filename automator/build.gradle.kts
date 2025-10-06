@@ -32,10 +32,6 @@ android {
     }
 }
 
-repositories {
-    google()
-}
-
 dependencies {
     androidTestImplementation(libs.espresso.core) {
         exclude(group = "com.android.support", module = "support-annotations")
