@@ -1,20 +1,20 @@
 package com.stardust.autojs.core.activity
 
+import android.Manifest
 import android.accessibilityservice.AccessibilityService
-import android.app.AppOpsManager
+import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.SystemClock
-import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import androidx.annotation.RequiresApi
-import com.stardust.app.isOpPermissionGranted
 import com.stardust.autojs.core.util.Shell
+import com.stardust.autojs.permission.PermissionManager
 import com.stardust.view.accessibility.AccessibilityDelegate
+import timber.log.Timber
 import java.util.regex.Pattern
 
 /**
@@ -76,6 +76,7 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
     override val eventTypes: Set<Int>?
         get() = AccessibilityDelegate.ALL_EVENT_TYPES
 
+    //FIXME: Android 13 无法获取准确Activity
     override fun onAccessibilityEvent(service: AccessibilityService, event: AccessibilityEvent): Boolean {
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -90,16 +91,19 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
     }
 
     fun getLatestPackageByUsageStatsIfGranted(): String {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 && context.isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS)) {
-            return getLatestPackageByUsageStats()
+        val hasPermission =
+            PermissionManager.hasPermission(context, Manifest.permission.PACKAGE_USAGE_STATS)
+        return when {
+            hasPermission -> getForegroundPackage()
+                ?: mLatestPackage.also { Timber.d("getForegroundPackage: $it") }
+
+            else -> mLatestPackage
         }
-        return mLatestPackage
     }
 
     private fun setLatestComponentFromShellOutput(output: String) {
         val matcher = WINDOW_PATTERN.matcher(output)
         if (!matcher.find() || matcher.groupCount() < 1) {
-            Log.w(LOG_TAG, "invalid format: $output")
             return
         }
         val latestPackage = matcher.group(1)
@@ -111,7 +115,6 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
         } else {
             ""
         }
-        Log.d(LOG_TAG, "setLatestComponent: output = $output, comp = $latestPackage/$latestActivity")
         mLatestComponentFromShell = ComponentName(latestPackage, latestActivity)
     }
 
@@ -137,7 +140,27 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
         return shell
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+    fun getForegroundPackage(): String? {
+        val usm = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        val now = System.currentTimeMillis()
+        val events = usm.queryEvents(now - 30_000L, now)
+        val e = UsageEvents.Event()
+        var pkg: String? = null
+        while (events.hasNextEvent()) {
+            events.getNextEvent(e)
+            val isForeground = when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ->
+                    e.eventType == UsageEvents.Event.ACTIVITY_RESUMED
+
+                else ->
+                    @Suppress("Deprecation")
+                    e.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND
+            }
+            if (isForeground) pkg = e.packageName
+        }
+        return pkg
+    }
+
     fun getLatestPackageByUsageStats(): String {
         val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val current = System.currentTimeMillis()
@@ -162,7 +185,6 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
             mLatestPackage = latestPackage.toString()
             mLatestActivity = latestClassStr
         }
-        Log.d(LOG_TAG, "setLatestComponent: $latestPackage/$latestClassStr $mLatestPackage/$mLatestActivity")
     }
 
     private fun isPackageExists(packageName: String): Boolean {

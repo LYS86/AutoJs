@@ -1,5 +1,6 @@
 package org.autojs.autojs.ui.floating
 
+import android.Manifest.permission.SYSTEM_ALERT_WINDOW
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -7,7 +8,7 @@ import android.os.Build
 import android.view.WindowManager
 import android.widget.Toast
 import com.stardust.app.GlobalAppContext
-import com.stardust.autojs.util.FloatingPermissionV2
+import com.stardust.autojs.permission.PermissionManager
 import com.stardust.enhancedfloaty.FloatyService
 import com.stardust.enhancedfloaty.FloatyWindow
 import org.autojs.autojs.PrefV2
@@ -112,7 +113,7 @@ object FloatyWindowManager {
      * 检查是否有悬浮窗权限
      */
     fun hasPermission(context: Context): Boolean {
-        return FloatingPermissionV2.hasPermission(context)
+        return PermissionManager.hasPermission(context, SYSTEM_ALERT_WINDOW)
     }
 
     /**
@@ -129,7 +130,7 @@ object FloatyWindowManager {
         PermissionTool().apply {
             add(task = {
                 activity.showToast(R.string.text_no_floating_window_permission)
-                FloatingPermissionV2.toSettings(activity)
+                PermissionManager.requestPermission(activity, SYSTEM_ALERT_WINDOW)
             }, onError = { error ->
                 onError?.invoke(error)
             })

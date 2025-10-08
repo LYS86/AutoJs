@@ -196,19 +196,4 @@ object IntentUtil2 {
         }
     }
 
-    fun requestAppUsagePermission(context: Context) {
-        val packageName = context.packageName
-        Intent().apply {
-            action = Settings.ACTION_USAGE_ACCESS_SETTINGS
-            data = "package:$packageName".toUri()
-        }.also { intent ->
-            try {
-                context.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                Timber.e(e)
-                context.startActivity(Intent(Settings.ACTION_SETTINGS))
-                Toast.makeText(context, "请手动找到「使用情况访问」权限", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
 }

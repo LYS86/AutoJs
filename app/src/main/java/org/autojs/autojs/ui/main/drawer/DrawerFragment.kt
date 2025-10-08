@@ -1,7 +1,7 @@
 package org.autojs.autojs.ui.main.drawer
 
 import android.Manifest
-import android.app.AppOpsManager
+import android.Manifest.permission.PACKAGE_USAGE_STATS
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -18,10 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.shizuku.Utils
 import com.stardust.app.GlobalAppContext
-import com.stardust.app.hasPermission
-import com.stardust.app.isOpPermissionGranted
+import com.stardust.autojs.permission.PermissionManager
 import com.stardust.notification.NotificationListenerService
-import com.stardust.util.IntentUtil2
 import kotlinx.coroutines.launch
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
@@ -284,13 +282,19 @@ class DrawerFragment : Fragment() {
     }
 
     private fun goToUsageStatsSettings(holder: DrawerMenuItemViewHolder) {
-        val enabled = requireContext().hasPermission(AppOpsManager.OPSTR_GET_USAGE_STATS)
+        val hasPermission = PermissionManager.hasPermission(
+            requireContext(),
+            PACKAGE_USAGE_STATS
+        )
         val checked = holder.switchCompat.isChecked
-        if (enabled == checked) return
-        Timber.d("使用情况访问权限状态: $enabled, 开关状态: $checked")
+        if (hasPermission == checked) return
+        Timber.d("使用情况访问权限状态: $hasPermission, 开关状态: $checked")
         PermissionTool().apply {
             add(task = {
-                IntentUtil2.requestAppUsagePermission(requireContext()).also {
+                PermissionManager.requestPermission(
+                    requireContext(),
+                    PACKAGE_USAGE_STATS
+                ).also {
                     Timber.d("跳转使用情况访问权限设置")
                 }
             }, onError = { error ->
@@ -299,8 +303,10 @@ class DrawerFragment : Fragment() {
             })
 
             check(task = {
-                val hasProgression =
-                    requireContext().isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS)
+                val hasProgression = PermissionManager.hasPermission(
+                    requireContext(),
+                    PACKAGE_USAGE_STATS
+                )
                 Timber.d("检查使用情况访问权限: 当前状态=$hasProgression, 目标状态=$checked")
                 hasProgression == checked
             }, timeout = 30_000L, onSuccess = {
@@ -405,8 +411,9 @@ class DrawerFragment : Fragment() {
         )
         setChecked(mNotificationPermissionItem, NotificationListenerService.instance != null)
         setChecked(
-            mUsageStatsPermissionItem,
-            context?.isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS) == true
+            mUsageStatsPermissionItem, PermissionManager.hasPermission(
+                requireContext(), PACKAGE_USAGE_STATS
+            )
         )
 
 
