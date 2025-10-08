@@ -1,11 +1,8 @@
 package com.stardust.notification
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
 import android.os.Build
-import android.provider.Settings
 import android.service.notification.StatusBarNotification
+import androidx.annotation.RequiresApi
 import com.stardust.view.accessibility.NotificationListener
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -13,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * Created by Stardust on 2017/10/30.
  */
 
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 class NotificationListenerService : android.service.notification.NotificationListenerService() {
 
     private val mNotificationListeners = CopyOnWriteArrayList<NotificationListener>()
@@ -54,29 +52,5 @@ class NotificationListenerService : android.service.notification.NotificationLis
     companion object {
         var instance: NotificationListenerService? = null
             private set
-
-        fun hasNotificationAccess(context: Context): Boolean {
-            val cn = ComponentName(context, NotificationListenerService::class.java)
-            val flat = Settings.Secure.getString(
-                context.contentResolver,
-                "enabled_notification_listeners"
-            ) ?: return false
-            return flat.contains(cn.flattenToString())
-        }
-
-        fun toSettings(context: Context) {
-            val intent = when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ->
-                    Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS).apply {
-                        putExtra(
-                            Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
-                            ComponentName(context, NotificationListenerService::class.java).flattenToString()
-                        )
-                    }
-                else -> Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-            }
-
-            context.startActivity(intent)
-        }
     }
 }

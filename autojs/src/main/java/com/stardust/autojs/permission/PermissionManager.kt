@@ -8,6 +8,7 @@ import android.Manifest.permission.WRITE_SETTINGS
 import android.app.AppOpsManager
 import android.app.AppOpsManager.MODE_ALLOWED
 import android.app.AppOpsManager.OPSTR_GET_USAGE_STATS
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,7 +16,9 @@ import android.os.Build
 import android.os.Environment
 import android.os.Process
 import android.provider.Settings
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
+import com.stardust.notification.NotificationListenerService
 
 object PermissionManager {
 
@@ -173,6 +176,46 @@ object PermissionManager {
             context.startActivity(this)
         }
     }
+
+    /**
+     * 检查应用是否拥有通知访问权限
+     */
+    @JvmStatic
+    fun hasNotificationListenerAccess(context: Context): Boolean {
+        return NotificationManagerCompat.getEnabledListenerPackages(context)
+            .contains(context.packageName)
+    }
+
+    /**
+     * 通知读取权限设置
+     */
+    @JvmStatic
+    fun openNotificationListenerSettings(context: Context) {
+        val intent = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                val intent1 = Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS).apply {
+                    putExtra(
+                        Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
+                        ComponentName(
+                            context,
+                            NotificationListenerService::class.java
+                        ).flattenToString()
+                    )
+                }
+                val componentName = intent1.resolveActivity(context.packageManager)
+                if (componentName != null) {
+                    intent1
+                } else {
+                    Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                }
+            }
+
+            else -> Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+        }
+        context.startActivity(intent)
+    }
+
+
 
     //    小米自启动intent
     fun xiaomiAutoStart(context: Context): Boolean {

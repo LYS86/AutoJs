@@ -250,15 +250,13 @@ class DrawerFragment : Fragment() {
     }
 
     private fun goToNotificationServiceSettings(holder: DrawerMenuItemViewHolder) {
-        val enabled = NotificationListenerService.hasNotificationAccess(requireContext())
+        val hasPermission = PermissionManager.hasNotificationListenerAccess(requireContext())
+        Timber.d("通知权限状态: $hasPermission")
         val checked = holder.switchCompat.isChecked
-        if (enabled == checked) return
-        Timber.d("通知权限状态: $enabled, 开关状态: $checked")
+        if (hasPermission == checked) return
         PermissionTool().apply {
             add(task = {
-                NotificationListenerService.toSettings(requireContext()).also {
-                    Timber.d("跳转通知设置")
-                }
+                PermissionManager.openNotificationListenerSettings(requireContext())
             }, onError = { error ->
                 Timber.e(error, "跳转通知设置失败")
                 setChecked(mNotificationPermissionItem, !checked)
@@ -266,7 +264,7 @@ class DrawerFragment : Fragment() {
 
             check(task = {
                 val hasPermission =
-                    NotificationListenerService.hasNotificationAccess(requireContext())
+                    PermissionManager.hasNotificationListenerAccess(requireContext())
                 Timber.d("检查通知权限: 当前状态=$hasPermission, 目标状态=$checked")
                 hasPermission == checked
             }, timeout = 30_000L, onSuccess = {
