@@ -1,85 +1,34 @@
 package org.autojs.autojs.ui.base
 
-import android.content.pm.PackageManager
-import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.google.android.material.snackbar.Snackbar
-import org.autojs.autojs.ui.common.MessageUtils
+import org.autojs.autojs.ui.BaseActivityV2
 
 abstract class BaseFragment : Fragment() {
 
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        onPermissionResult(isGranted, requestedPermission)
+    private fun getBaseActivity(): BaseActivityV2? {
+        return activity as? BaseActivityV2
     }
 
-    private val requestMultiplePermissionsLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        permissions.forEach { (permission, isGranted) ->
-            onPermissionResult(isGranted, permission)
-        }
-    }
-
-    private var requestedPermission: String? = null
-    private var permissionCallback: ((Boolean) -> Unit)? = null
-
-    protected fun hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(
-            requireContext(),
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    protected fun requestPermission(
+    fun requestPermission(
         permission: String,
-        callback: ((Boolean) -> Unit)? = null
+        rationale: String? = null,
+        callback: (Boolean) -> Unit
     ) {
-        requestedPermission = permission
-        permissionCallback = callback
-        requestPermissionLauncher.launch(permission)
+        getBaseActivity()?.requestPermission(permission, rationale, callback)
+            ?: callback(false) // 或者抛出异常
     }
 
-    protected fun requestPermissions(
-        vararg permissions: String,
-        callback: ((Map<String, Boolean>) -> Unit)? = null
+    fun requestPermissions(
+        permissions: Array<String>,
+        rationale: String? = null,
+        callback: (Map<String, Boolean>) -> Unit
     ) {
-        requestMultiplePermissionsLauncher.launch(permissions.toList().toTypedArray())
+        getBaseActivity()?.requestPermissions(permissions, rationale, callback)
+            ?: callback(emptyMap())
     }
 
-    protected open fun onPermissionResult(isGranted: Boolean, permission: String?) {
-        permissionCallback?.invoke(isGranted)
-    }
-
-    protected fun showMessage(
-        message: String,
-        duration: Int = Snackbar.LENGTH_SHORT,
-        forceToast: Boolean = false
-    ) {
-        val rootView = view
-        MessageUtils.show(requireContext(), rootView, message, duration, forceToast)
-    }
-
-    protected fun showMessage(
-        @StringRes resId: Int,
-        duration: Int = Snackbar.LENGTH_SHORT,
-        forceToast: Boolean = false
-    ) {
-        val rootView = view
-        MessageUtils.show(requireContext(), rootView, resId, duration, forceToast)
-    }
-
-    protected fun showMessageWithAction(
-        message: String,
-        actionText: String,
-        duration: Int = Snackbar.LENGTH_LONG,
-        action: (View) -> Unit = {}
-    ) {
-        val rootView = view
-        MessageUtils.showWithAction(requireContext(), rootView, message, actionText, duration, action)
+    fun showMessage(message: String) {
+        getBaseActivity()?.showMessage(message)
     }
 }

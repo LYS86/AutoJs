@@ -29,6 +29,7 @@ import org.autojs.autojs.pluginclient.DevPluginService2
 import org.autojs.autojs.theme.ThemeUtils
 import org.autojs.autojs.tool.AccessibilityServiceTool3
 import org.autojs.autojs.tool.PermissionTool
+import org.autojs.autojs.ui.base.BaseFragment
 import org.autojs.autojs.ui.common.MessageUtils
 import org.autojs.autojs.ui.floating.CircularMenu
 import org.autojs.autojs.ui.floating.FloatyWindowManager
@@ -40,7 +41,7 @@ import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import kotlin.system.exitProcess
 
-class DrawerFragment : Fragment() {
+class DrawerFragment : BaseFragment() {
     private val lifecycleScope: LifecycleCoroutineScope
         get() = lifecycle.coroutineScope
     private var _binding: FragmentDrawerBinding? = null
@@ -251,27 +252,22 @@ class DrawerFragment : Fragment() {
 
     private fun goToNotificationServiceSettings(holder: DrawerMenuItemViewHolder) {
         val hasPermission = PermissionManager.hasNotificationListenerAccess(requireContext())
-        Timber.d("通知权限状态: $hasPermission")
         val checked = holder.switchCompat.isChecked
         if (hasPermission == checked) return
         PermissionTool().apply {
             add(task = {
                 PermissionManager.openNotificationListenerSettings(requireContext())
             }, onError = { error ->
-                Timber.e(error, "跳转通知设置失败")
                 setChecked(mNotificationPermissionItem, !checked)
             })
 
             check(task = {
                 val hasPermission =
                     PermissionManager.hasNotificationListenerAccess(requireContext())
-                Timber.d("检查通知权限: 当前状态=$hasPermission, 目标状态=$checked")
                 hasPermission == checked
             }, timeout = 30_000L, onSuccess = {
-                Timber.d("通知权限状态切换成功")
                 startActivity(Intent(requireContext(), MainActivity::class.java))
             }, onError = { error ->
-                Timber.e(error, "检查通知权限失败")
                 setChecked(mNotificationPermissionItem, !checked)
             })
 

@@ -2,6 +2,7 @@ package com.stardust.autojs.permission
 
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
 import android.Manifest.permission.PACKAGE_USAGE_STATS
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission.REQUEST_INSTALL_PACKAGES
 import android.Manifest.permission.SYSTEM_ALERT_WINDOW
 import android.Manifest.permission.WRITE_SETTINGS
@@ -35,6 +36,8 @@ object PermissionManager {
             PACKAGE_USAGE_STATS -> hasUsageStatsPermission(context)
             REQUEST_INSTALL_PACKAGES -> hasInstallPermission(context)
             WRITE_SETTINGS -> hasWriteSettingsPermission(context)
+            //通知权限
+            POST_NOTIFICATIONS -> hasNotificationPermission(context)
             else -> context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
         }
     }
@@ -66,6 +69,14 @@ object PermissionManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.revokeSelfPermissionOnKill(permission)
         }
+    }
+
+
+    /**
+     * 检查通知权限
+     */
+    fun hasNotificationPermission(context: Context): Boolean {
+        return NotificationManagerCompat.from(context).areNotificationsEnabled()
     }
 
     /**

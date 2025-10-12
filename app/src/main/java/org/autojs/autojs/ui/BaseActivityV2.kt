@@ -55,6 +55,10 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         isActivityVisible = false
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        permissionRequestCallback = null
+    }
     private fun applyStatusBarTheme() {
         if (!isFullScreenLayout()) {
             ThemeColorManager.addActivityStatusBar(this)
@@ -71,10 +75,6 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        ThemeUtils.applyDayNightMode()
-    }
 
     fun setToolbarAsBack(title: String) {
         setToolbarAsBack(this, R.id.toolbar, title)
