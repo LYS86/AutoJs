@@ -1,34 +1,60 @@
+// BaseFragment.kt
 package org.autojs.autojs.ui.base
 
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import org.autojs.autojs.ui.BaseActivityV2
+import com.google.android.material.snackbar.Snackbar
+import com.stardust.autojs.permission.PermissionManager
+import org.autojs.autojs.ui.common.MessageUtils
+import org.autojs.autojs.ui.permission.PermissionHub
 
 abstract class BaseFragment : Fragment() {
 
-    private fun getBaseActivity(): BaseActivityV2? {
-        return activity as? BaseActivityV2
+     fun hasPermission(permission: String): Boolean {
+        return PermissionManager.hasPermission(requireContext(), permission)
     }
 
-    fun requestPermission(
+     fun requestPermission(
         permission: String,
         rationale: String? = null,
-        callback: (Boolean) -> Unit
+        callback: ((Boolean) -> Unit)? = null
     ) {
-        getBaseActivity()?.requestPermission(permission, rationale, callback)
-            ?: callback(false) // 或者抛出异常
+        PermissionHub.request(this, permission, rationale = rationale) { result ->
+            callback?.invoke(result[permission] == true)
+        }
     }
 
-    fun requestPermissions(
-        permissions: Array<String>,
+     fun requestPermissions(
+        vararg permissions: String,
         rationale: String? = null,
-        callback: (Map<String, Boolean>) -> Unit
+        callback: ((Map<String, Boolean>) -> Unit)? = null
     ) {
-        getBaseActivity()?.requestPermissions(permissions, rationale, callback)
-            ?: callback(emptyMap())
+        PermissionHub.request(this, *permissions, rationale = rationale, callback = callback ?: {})
     }
 
-    fun showMessage(message: String) {
-        getBaseActivity()?.showMessage(message)
+    fun showSnackbar(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
+        Snackbar.make(requireView(), message, duration).show()
+    }
+    fun showSnackbar(resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {
+       Snackbar.make(requireView(), resId, duration).show()
+    }
+
+    fun showToast(resId: Int, duration: Int = Toast.LENGTH_SHORT) {
+        Toast.makeText(requireContext(), resId, duration).show()
+    }
+    fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
+        Toast.makeText(requireContext(), message, duration).show()
+    }
+
+     fun showMessage(
+        message: String,
+        duration: Int = Snackbar.LENGTH_SHORT,
+        forceToast: Boolean = false
+    ) {
+        val rootView = view
+        MessageUtils.show(requireContext(), rootView, message, duration, forceToast)
+    }
+    fun showMessage(resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {
+        showMessage(getString(resId), duration)
     }
 }

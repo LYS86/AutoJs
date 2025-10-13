@@ -9,6 +9,7 @@ import android.Manifest.permission.WRITE_SETTINGS
 import android.app.AppOpsManager
 import android.app.AppOpsManager.MODE_ALLOWED
 import android.app.AppOpsManager.OPSTR_GET_USAGE_STATS
+import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -56,7 +57,7 @@ object PermissionManager {
             PACKAGE_USAGE_STATS -> requestUsageStatsPermission(context)
             REQUEST_INSTALL_PACKAGES -> requestInstallPermission(context)
             WRITE_SETTINGS -> requestWriteSettingsPermission(context)
-            else -> false
+            else -> TODO("未实现 $permission 权限的申请方法")
         }
     }
 
@@ -73,10 +74,20 @@ object PermissionManager {
 
 
     /**
-     * 检查通知权限
+     * 统一检查通知权限
+     * @param context  Context
+     * @param channelId 要检查的渠道 ID；空字符串时仅检查应用总开关
+     * @return true 表示可以弹出通知（总开关 & 渠道开关均通过）
      */
-    fun hasNotificationPermission(context: Context): Boolean {
-        return NotificationManagerCompat.from(context).areNotificationsEnabled()
+    fun hasNotificationPermission(context: Context, channelId: String = ""): Boolean {
+        if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) return false
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && channelId.isNotBlank()) {
+            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channel = nm.getNotificationChannel(channelId)
+            if (channel?.importance == NotificationManager.IMPORTANCE_NONE) return false
+        }
+        return true
     }
 
     /**

@@ -14,6 +14,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.stardust.theme.ThemeColorManager
 import org.autojs.autojs.R
 import org.autojs.autojs.theme.ThemeUtils
+import org.autojs.autojs.ui.permission.PermissionHub
+import timber.log.Timber
 
 abstract class BaseActivityV2 : AppCompatActivity() {
 
@@ -35,15 +37,6 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         }
     }
 
-    private var permissionRequestCallback: ((Map<String, Boolean>) -> Unit)? = null
-
-    private val requestPermissionsLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { result ->
-        permissionRequestCallback?.invoke(result)
-        permissionRequestCallback = null
-    }
-
     override fun onStart() {
         super.onStart()
         isActivityVisible = true
@@ -55,10 +48,6 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         isActivityVisible = false
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        permissionRequestCallback = null
-    }
     private fun applyStatusBarTheme() {
         if (!isFullScreenLayout()) {
             ThemeColorManager.addActivityStatusBar(this)
@@ -80,6 +69,9 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         setToolbarAsBack(this, R.id.toolbar, title)
     }
 
+    /**
+     * 单权限
+     */
     fun requestPermission(
         permission: String,
         rationale: String? = null,
@@ -90,36 +82,43 @@ abstract class BaseActivityV2 : AppCompatActivity() {
         }
     }
 
+    /**
+     * 多权限
+     */
     fun requestPermissions(
         permissions: Array<String>,
         rationale: String? = null,
         callback: (Map<String, Boolean>) -> Unit
     ) {
-        val currentStatus = permissions.associateWith { hasPermission(it) }
-        if (currentStatus.values.all { it }) {
-            callback(currentStatus)
+        val current = permissions.associateWith { hasPermission(it) }
+        if (current.values.all { it }) {
+            callback(current)
             return
         }
 
-        permissionRequestCallback = callback
-
-        if (!rationale.isNullOrBlank()) {
-            Snackbar.make(findViewById(android.R.id.content), rationale, Snackbar.LENGTH_INDEFINITE)
-                .setAction(android.R.string.ok) {
-                    requestPermissionsLauncher.launch(permissions)
-                }
-                .show()
-        } else {
-            requestPermissionsLauncher.launch(permissions)
-        }
+        PermissionHub.request(
+            host = this,
+            perms = permissions,
+            rationale = rationale
+        ) { callback(it) }
     }
 
     fun showMessage(message: String) {
+        Timber.d(message)
         if (isActivityVisible) {
             Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun  showMessage(resId: Int) {
+        if (isActivityVisible) {
+            Snackbar.make(findViewById(android.R.id.content), resId, Snackbar.LENGTH_SHORT).show()
+        }else {
+            Toast.makeText(this, resId, Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     fun hasPermission(permission: String): Boolean {
