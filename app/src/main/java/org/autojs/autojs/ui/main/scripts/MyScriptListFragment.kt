@@ -1,20 +1,21 @@
 package org.autojs.autojs.ui.main.scripts
 
-import android.Manifest
+import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.preference.PreferenceManager
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import com.stardust.autojs.permission.PermissionManager
+import com.stardust.util.BackPressedHandler
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentMyScriptListBinding
@@ -29,21 +30,11 @@ import org.autojs.autojs.ui.project.ProjectConfigActivity
 import org.autojs.autojs.ui.viewmodel.ExplorerItemList
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import com.stardust.util.BackPressedHandler
-import org.autojs.autojs.ui.permission.PermissionManager.requestStoragePermission
 
 class MyScriptListFragment : BaseFragment(), BackPressedHandler {
 
     private var _binding: FragmentMyScriptListBinding? = null
     private val binding get() = _binding!!
-
-    private val requestManageStorage = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (hasStoragePermission()) {
-            Explorers.workspace().refreshAll()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,27 +129,28 @@ class MyScriptListFragment : BaseFragment(), BackPressedHandler {
     }
 
     private fun checkPermissions() {
-        if (!hasStoragePermission()) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                requestPermission(
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) { isGranted ->
-                    if (isGranted) {
-                        Explorers.workspace().refreshAll()
-                    }
-                }
-            } else {
-                requestStoragePermission(requireActivity())
+        if (hasStoragePermission()) return
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            requestPermission(
+                READ_EXTERNAL_STORAGE
+            ) { isGranted ->
+                if (isGranted) Explorers.workspace().refreshAll()
             }
+            return
         }
+        PermissionManager.requestPermission(
+            requireActivity(),
+            MANAGE_EXTERNAL_STORAGE
+        )
+
     }
 
     private fun hasStoragePermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.isExternalStorageManager()
-        } else {
-            hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+        val permission = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> MANAGE_EXTERNAL_STORAGE
+            else -> READ_EXTERNAL_STORAGE
         }
+        return hasPermission(permission)
     }
 
     @Subscribe
