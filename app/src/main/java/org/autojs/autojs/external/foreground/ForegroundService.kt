@@ -12,6 +12,7 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.PendingIntentCompat
+import androidx.core.content.ContextCompat
 import org.autojs.autojs.R
 import org.autojs.autojs.ui.main.MainActivity
 import timber.log.Timber
@@ -24,11 +25,7 @@ class ForegroundService : Service() {
 
         fun start(context: Context) {
             val intent = Intent(context, ForegroundService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
-            }
+            ContextCompat. startForegroundService(context, intent)
         }
 
         fun stop(context: Context) {
