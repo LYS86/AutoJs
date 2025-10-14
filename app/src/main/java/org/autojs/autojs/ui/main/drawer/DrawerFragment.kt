@@ -200,7 +200,7 @@ class DrawerFragment : BaseFragment() {
                     ForegroundService.start(requireContext())
                     setChecked(mForegroundServiceItem, true)
                 } else {
-                    showMessage(R.string.foreground_service_need_notification_permission)
+                    showSnackbar(R.string.foreground_service_need_notification_permission)
                     setChecked(mForegroundServiceItem, false)
                 }
             }
@@ -369,12 +369,12 @@ class DrawerFragment : BaseFragment() {
             return
         }
 
-        val hasPermission = ForegroundService.hasNotificationPermission(requireContext())
+        val hasPermission = PermissionManager.hasNotificationPermission(requireContext())
         if (!hasPermission) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             } else {
-                showMessage(R.string.foreground_service_need_notification_permission)
+                showSnackbar(R.string.foreground_service_need_notification_permission)
             }
             setChecked(mForegroundServiceItem, false)
             return
@@ -444,7 +444,7 @@ class DrawerFragment : BaseFragment() {
     private fun requestShizukuPermission() {
         when {
             !Utils.hasApp() -> {
-                showMessage(R.string.text_shizuku_app_not_installed)
+                showSnackbar(R.string.text_shizuku_app_not_installed)
             }
 
             !Utils.isReady() -> {
@@ -461,9 +461,9 @@ class DrawerFragment : BaseFragment() {
                 lifecycleScope.launch {
                     val granted = Utils.requestPermissionSuspend()
                     if (granted) {
-                        showMessage(R.string.text_shizuku_hasPermission)
+                        showSnackbar(R.string.text_shizuku_hasPermission)
                     } else {
-                        showMessage(R.string.text_shizuku_permission_denied)
+                        showSnackbar(R.string.text_shizuku_permission_denied)
                     }
                 }
             }
