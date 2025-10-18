@@ -237,7 +237,18 @@ object PermissionManager {
         context.startActivity(intent)
     }
 
-
+    /**
+     * 跳转到应用详情页（兜底方案）
+     */
+    @JvmStatic
+    fun goToAppDetailSettings(context: Context) {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = "package:${context.packageName}".toUri()
+            addCategory(Intent.CATEGORY_DEFAULT)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(intent)
+    }
 
     //    小米自启动intent
     fun xiaomiAutoStart(context: Context): Boolean {

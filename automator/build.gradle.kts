@@ -1,12 +1,11 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 kotlin {
     jvmToolchain(21)
 }
 android {
-    // 使用 buildSrc 中的 Versions 对象
     compileSdk = Versions.compileSdk
 
     defaultConfig {
@@ -37,6 +36,8 @@ dependencies {
         exclude(group = "com.android.support", module = "support-annotations")
     }
     testImplementation(libs.junit)
-    api(libs.appcompat)
+    implementation(libs.appcompat)
+    implementation(libs.timber)
+
     api(project(":common"))
 }

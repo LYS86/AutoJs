@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.application")
-    kotlin("android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 kotlin {
     jvmToolchain(21)
@@ -144,5 +144,10 @@ dependencies {
 
     // https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-runtime-ktx
     implementation(libs.androidx.lifecycle.runtime.ktx)
-
+    implementation(libs.timber)
+    implementation(libs.eventbus)
+    implementation(libs.enhancedfloaty)
+    implementation(libs.roundedimageview)
+    implementation(libs.jdeferred.android)
+    implementation(libs.rootshell)
 }

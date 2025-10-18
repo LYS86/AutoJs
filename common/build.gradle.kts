@@ -1,12 +1,11 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 kotlin {
     jvmToolchain(21)
 }
 android {
-    // 使用 buildSrc 中的 Versions 对象
     compileSdk = Versions.compileSdk
 
     defaultConfig {
@@ -53,15 +52,12 @@ dependencies {
         exclude(group = "com.android.support", module = "support-annotations")
     }
     testImplementation(libs.junit)
-    api(libs.kotlin.stdlib)
-    api(libs.androidx.annotation)
-    api(libs.settingscompat)
-    api(libs.opencv)
-    // https://mvnrepository.com/artifact/androidx.core/core-ktx
-    api(libs.androidx.core.ktx)
-
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.androidx.drawerlayout)
+    implementation(libs.androidx.fragment)
+    implementation(libs.androidx.fragment.ktx)
     // https://mvnrepository.com/artifact/com.jakewharton.timber/timber
-    api(libs.timber)
+    implementation(libs.timber)
 
     api(project(":common:libs:emulatorview"))
     api(project(":common:libs:libtermexec"))

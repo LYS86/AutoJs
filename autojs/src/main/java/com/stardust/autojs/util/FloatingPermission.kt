@@ -1,107 +1,106 @@
-package com.stardust.autojs.util;
+package com.stardust.autojs.util
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.Settings;
-import androidx.annotation.RequiresApi;
-import android.text.TextUtils;
-import android.widget.Toast;
-
-import com.stardust.autojs.R;
-import com.stardust.enhancedfloaty.util.FloatingWindowPermissionUtil;
-
-import java.lang.reflect.Method;
-
-import ezy.assist.compat.RomUtil;
-import ezy.assist.compat.SettingsCompat;
+import android.Manifest.permission.SYSTEM_ALERT_WINDOW
+import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
+import com.stardust.autojs.R
+import com.stardust.autojs.permission.PermissionManager
+import timber.log.Timber
 
 /**
- * Created by Stardust on 2018/1/30.
+ * 悬浮窗权限工具类
+ * 用于检查、申请和管理悬浮窗（SYSTEM_ALERT_WINDOW）权限
  */
+object FloatingPermission {
 
-public class FloatingPermission {
-
-
-    private static final int OP_SYSTEM_ALERT_WINDOW = 24;
-    private static Method sCheckOp;
-
-    static {
-        try {
-            sCheckOp = SettingsCompat.class.getDeclaredMethod("checkOp", Context.class, int.class);
-            sCheckOp.setAccessible(true);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static boolean ensurePermissionGranted(Context context) {
+    /**
+     * 确保悬浮窗权限已授予
+     * 如果未授予，将弹出提示并尝试引导用户前往设置页面
+     *
+     * @param context 上下文
+     * @return 是否已拥有悬浮窗权限
+     */
+    @JvmStatic
+    fun ensurePermissionGranted(context: Context): Boolean {
         if (!canDrawOverlays(context)) {
-            Toast.makeText(context, R.string.text_no_floating_window_permission, Toast.LENGTH_SHORT).show();
-            manageDrawOverlays(context);
-            return false;
+            Toast.makeText(context, R.string.text_no_floating_window_permission, Toast.LENGTH_SHORT)
+                .show()
+            manageDrawOverlays(context)
+            return false
         }
-        return true;
+        return true
     }
 
-    public static void waitForPermissionGranted(Context context) throws InterruptedException {
-        if (canDrawOverlays(context)) {
-            return;
+    /**
+     * 阻塞当前线程，直到用户授予悬浮窗权限或中断
+     * 注意：此方法会阻塞线程，建议在子线程中使用
+     *
+     * @param context 上下文
+     * @throws InterruptedException 如果线程被中断
+     */
+    @JvmStatic
+    @Throws(InterruptedException::class)
+    fun waitForPermissionGranted(context: Context) {
+        if (canDrawOverlays(context)) return
+
+        val r = Runnable {
+            manageDrawOverlays(context)
+            Toast.makeText(context, R.string.text_no_floating_window_permission, Toast.LENGTH_SHORT)
+                .show()
         }
-        Runnable r = () -> {
-            manageDrawOverlays(context);
-            Toast.makeText(context, R.string.text_no_floating_window_permission, Toast.LENGTH_SHORT).show();
-        };
+
         if (Looper.myLooper() != Looper.getMainLooper()) {
-            new Handler(Looper.getMainLooper()).post(r);
+            Handler(Looper.getMainLooper()).post(r)
         } else {
-            r.run();
+            r.run()
         }
+
         while (true) {
-            if (canDrawOverlays(context))
-                return;
-            Thread.sleep(200);
+            if (canDrawOverlays(context)) return
+            Thread.sleep(200)
         }
-
     }
 
-
-    public static void manageDrawOverlays(Context context) {
+    /**
+     * 尝试申请悬浮窗权限
+     * 如果申请失败（如异常），将引导用户进入应用详情页手动开启权限
+     *
+     * @param context 上下文
+     */
+    @JvmStatic
+    fun manageDrawOverlays(context: Context) {
         try {
-            if (RomUtil.isMiui() && TextUtils.equals("V10", RomUtil.getVersion())
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                manageDrawOverlaysForAndroidM(context);
-            } else {
-                SettingsCompat.manageDrawOverlays(context);
-            }
-        } catch (Exception ex) {
-            FloatingWindowPermissionUtil.goToAppDetailSettings(context, context.getPackageName());
+            PermissionManager.requestPermission(
+                context,
+                SYSTEM_ALERT_WINDOW
+            )
+        } catch (ex: Exception) {
+            Timber.e(ex)
+            goToAppDetailSettings(context)
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public static void manageDrawOverlaysForAndroidM(Context context) {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-        intent.setData(Uri.parse("package:" + context.getPackageName()));
-        context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-    }
-
-    public static boolean canDrawOverlays(Context context) {
-        return SettingsCompat.canDrawOverlays(context);
-    }
-
-    private static boolean checkOp(Context context, int op) {
-        if (sCheckOp == null) {
-            return SettingsCompat.canDrawOverlays(context);
-        }
+    private fun goToAppDetailSettings(context: Context) {
         try {
-            return (boolean) sCheckOp.invoke(null, context, op);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            return PermissionManager.goToAppDetailSettings(context)
+        } catch (ex: Exception) {
+            Timber.e(ex)
         }
+    }
+
+    /**
+     * 检查当前是否拥有悬浮窗权限
+     *
+     * @param context 上下文
+     * @return 是否拥有悬浮窗权限
+     */
+    @JvmStatic
+    fun canDrawOverlays(context: Context): Boolean {
+        return PermissionManager.hasPermission(
+            context,
+            SYSTEM_ALERT_WINDOW
+        )
     }
 }

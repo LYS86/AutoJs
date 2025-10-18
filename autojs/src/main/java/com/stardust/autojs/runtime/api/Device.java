@@ -6,7 +6,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -15,11 +14,13 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.telephony.TelephonyManager;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.stardust.autojs.R;
+import com.stardust.autojs.permission.PermissionManager;
 import com.stardust.autojs.runtime.exception.ScriptException;
 import com.stardust.pio.PFiles;
 import com.stardust.pio.UncheckedIOException;
@@ -29,8 +30,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
 import java.util.List;
-
-import ezy.assist.compat.SettingsCompat;
 
 /**
  * Created by Stardust on 2017/12/2.
@@ -281,20 +280,19 @@ public class Device {
 
 
     private void checkWriteSettingsPermission() {
-        if (SettingsCompat.canWriteSettings(mContext)) {
+        if (PermissionManager.hasPermission(mContext, Manifest.permission.WRITE_SETTINGS)) {
             return;
         }
-        SettingsCompat.manageWriteSettings(mContext);
+        PermissionManager.requestPermission(mContext, Manifest.permission.WRITE_SETTINGS);
         throw new SecurityException(mContext.getString(R.string.no_write_settings_permissin));
     }
 
 
     private void checkReadPhoneStatePermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mContext.checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                throw new SecurityException(mContext.getString(R.string.no_read_phone_state_permissin));
-            }
+        if (!PermissionManager.hasPermission(mContext, Manifest.permission.READ_PHONE_STATE)) {
+            throw new SecurityException(
+                    mContext.getString(R.string.no_read_phone_state_permissin)
+            );
         }
     }
 

@@ -7,6 +7,7 @@ commons-io = "2.20.0"
 commons-lang3 = "3.18.0"
 core-ktx = "1.13.1"
 crashreport = "4.1.9.3"
+drawerlayout = "1.2.0"
 expandablerecyclerview = "3.0.0-RC1"
 expandablerecyclerview-version = "1.3"
 glide = "4.16.0"
@@ -20,7 +21,6 @@ lifecycle-runtime-ktx = "2.9.1"
 litert = "1.2.0"
 mlkit = "16.0.1"
 kotlin = "2.2.0"
-annotation = "1.9.1"
 multidex = "2.0.1"
 mutabletheme = "1.0.0"
 opencv = "4.9.0"
@@ -32,7 +32,6 @@ rxandroid = "2.0.1"
 rxandroid-version = "3.0.2"
 rxjava = "2.1.2"
 rxjava-version = "3.1.10"
-settingscompat = "1.1.5"
 espresso = "3.1.1-alpha01"
 junit = "4.12"
 appcompat = "1.6.1"
@@ -52,7 +51,7 @@ gson = "2.13.1"
 android-logging-log4j = "1.0.3"
 log4j = "1.2.17"
 work = "2.8.1"
-
+fragment = "1.8.5"
 
 [libraries]
 android-issue-reporter = { module = "com.heinrichreimersoftware:android-issue-reporter", version.ref = "android-issue-reporter" }
@@ -60,6 +59,7 @@ android-multi-level-listview = { module = "com.github.hyb1996:android-multi-leve
 android-plugin-client-sdk-for1-locale = { module = "com.twofortyfouram:android-plugin-client-sdk-for-locale", version.ref = "android-plugin-client-sdk-for1-locale" }
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
+androidx-drawerlayout = { module = "androidx.drawerlayout:drawerlayout", version.ref = "drawerlayout" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 rxjava3-rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroid-version" }
@@ -93,8 +93,6 @@ rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava" }
 text-recognition-chinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "mlkit" }
 text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "mlkit" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
-androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
-settingscompat = { module = "com.github.hyb1996:settingscompat", version.ref = "settingscompat" }
 opencv = { module = "org.opencv:opencv", version.ref = "opencv" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
@@ -115,6 +113,8 @@ android-logging-log4j = { module = "de.mindpipe.android:android-logging-log4j", 
 log4j = { module = "log4j:log4j", version.ref = "log4j" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "work" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
 
 [bundles]
 shizuku = ["shizuku-api", "shizuku-provider"]
@@ -123,4 +123,5 @@ work = ["work-runtime", "work-runtime-ktx"]
 
 [plugins]
 android-application = { id = "com.android.application", version = "8.13.0" }
+android-library = { id = "com.android.library", version = "8.13.0" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
