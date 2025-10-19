@@ -330,12 +330,12 @@ class DrawerFragment : BaseFragment() {
         val activity = requireActivity()
 
         if (!isChecked) {
-            FloatyWindowManager.switchMenu(false)
+            FloatyWindowManager.hideMenu()
             return
         }
 
         FloatyWindowManager.requestPermission(activity = activity, onSuccess = {
-            FloatyWindowManager.switchMenu()
+            FloatyWindowManager.showMenu()
             startActivity(Intent(requireContext(), MainActivity::class.java))
         }, onError = {
             setChecked(mFloatingWindowItem, false)

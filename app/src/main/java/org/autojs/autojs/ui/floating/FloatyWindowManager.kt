@@ -58,38 +58,12 @@ object FloatyWindowManager {
     }
 
     /**
-     * 切换悬浮菜单显示状态
-     */
-    fun switchMenu(shown: Boolean? = null) {
-        when (shown) {
-            null -> {
-                isMenuShowing().also {
-                    when (it) {
-                        true -> hideMenu()
-                        false -> showMenuIfNeeded()
-                    }
-                }
-            }
-
-            true -> showMenuIfNeeded()
-            false -> hideMenu()
-        }
-
-    }
-
-    /**
      * 恢复显示
      */
     fun restore(): Boolean {
         return isMenuShown && showMenu()
     }
 
-    /**
-     * 显示悬浮菜单（仅在未显示时显示）
-     */
-    private fun showMenuIfNeeded(): Boolean {
-        return isMenuShowing() || showMenu()
-    }
 
     /**
      * 显示悬浮菜单
@@ -100,7 +74,9 @@ object FloatyWindowManager {
             context.showToast(R.string.text_no_floating_window_permission)
             return false
         }
-
+        if (isMenuShowing()) {
+            return true
+        }
         context.startService(Intent(context, FloatyService::class.java))
         CircularMenu(context).also { menu ->
             menuRef = WeakReference(menu)
@@ -150,8 +126,9 @@ object FloatyWindowManager {
      */
     fun hideMenu() {
         menuRef?.get()?.close()
-        isMenuShown = false
+        menuRef?.clear()
         menuRef = null
+        isMenuShown = false
     }
 
     /**
