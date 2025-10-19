@@ -19,12 +19,7 @@ import com.stardust.view.accessibility.AccessibilityService as AccessibilityServ
 
 object AccessibilityServiceTool3 {
 
-    private val sAccessibilityServiceClass = AccessibilityService1::class.java
-
-    private const val KEY_FIRST_GO_TO_ACCESSIBILITY_SETTING = "isFirstGoToSetting"
-    private val isFirstGoToSetting by PrefV2.disposableBoolean(
-        KEY_FIRST_GO_TO_ACCESSIBILITY_SETTING, true
-    )
+    private val serviceClass = AccessibilityService1::class.java
 
     private const val KEY_USE_ROOT = "use_root"
 
@@ -51,7 +46,7 @@ object AccessibilityServiceTool3 {
 
     private suspend fun switchService(shell: Shell, enable: Boolean? = null): Boolean {
         val context = GlobalAppContext.get()
-        val serviceName = "${context.packageName}/${sAccessibilityServiceClass.name}"
+        val serviceName = "${context.packageName}/${serviceClass.name}"
 
         return try {
             shell.exec(CMD_GET).let { result ->
@@ -124,18 +119,19 @@ object AccessibilityServiceTool3 {
     fun switchService(enable: Boolean? = null): Boolean =
         runBlocking { switchServiceSuspend(enable) }
 
+    /**
+     * 切换无障碍服务
+     */
     suspend fun switchServiceSuspend(enable: Boolean? = null): Boolean {
         return byShizuku(enable) || byRoot(enable)
     }
 
+    /**
+     * 跳转到无障碍服务设置界面
+     */
+    @JvmStatic
     fun toSetting() {
         val context = GlobalAppContext.get()
-        if (isFirstGoToSetting) {
-            GlobalAppContext.toast(
-                "${context.getString(R.string.text_please_choose)} ${context.getString(R.string.app_name)}"
-            )
-        }
-
         try {
             AccessibilityServiceUtils.goToAccessibilitySetting(context)
         } catch (e: ActivityNotFoundException) {
@@ -146,9 +142,13 @@ object AccessibilityServiceTool3 {
         }
     }
 
+
+    /**
+     * 无障碍服务是否已启用
+     */
     fun isEnabled(context: Context): Boolean {
         return AccessibilityServiceUtils.isAccessibilityServiceEnabled(
-            context, sAccessibilityServiceClass
+            context, serviceClass
         )
     }
 

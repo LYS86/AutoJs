@@ -30,7 +30,7 @@ import org.autojs.autojs.model.explorer.ExplorerDirPage;
 import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.model.script.Scripts;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
-import org.autojs.autojs.tool.AccessibilityServiceTool;
+import org.autojs.autojs.tool.AccessibilityServiceTool3;
 import org.autojs.autojs.tool.RootTool;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.common.OperationDialogBuilder;
@@ -41,6 +41,8 @@ import org.autojs.autojs.ui.main.MainActivity;
 import org.greenrobot.eventbus.EventBus;
 import org.jdeferred.Deferred;
 import org.jdeferred.impl.DeferredObject;
+
+import timber.log.Timber;
 
 /**
  * Created by Stardust on 2017/10/18.
@@ -198,7 +200,7 @@ public class CircularMenu implements Recorder.OnStateChangedListener,
         }
         if (AccessibilityService.Companion.getInstance() == null) {
             Toast.makeText(mContext, R.string.text_no_accessibility_permission_to_capture, Toast.LENGTH_SHORT).show();
-            AccessibilityServiceTool.goToAccessibilitySetting();
+            AccessibilityServiceTool3.toSetting();
             return;
         }
         MaterialDialog progress = DialogUtils.showDialog(new ThemeColorMaterialDialogBuilder(mContext)
@@ -250,7 +252,7 @@ public class CircularMenu implements Recorder.OnStateChangedListener,
 
     void enableAccessibilityService() {
         dismissSettingsDialog();
-        AccessibilityServiceTool.enableAccessibilityService();
+        AccessibilityServiceTool3.toSetting();
     }
 
     private void dismissSettingsDialog() {
