@@ -51,18 +51,9 @@ class DocsFragmentV2 : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         webView = binding.ewebView.webView
-        val swipeRefresh = binding.ewebView.swipeRefreshLayout
-        swipeRefresh.setOnRefreshListener { handleRefresh() }
         restoreWebViewState(savedInstanceState)
     }
 
-    private fun handleRefresh() {
-        if (TextUtils.equals(webView.url, indexUrl)) {
-            loadUrl()
-        } else {
-            binding.ewebView.onRefresh()
-        }
-    }
 
     private fun restoreWebViewState(state: Bundle?) {
         val savedState = arguments?.getBundle("savedWebViewState")
