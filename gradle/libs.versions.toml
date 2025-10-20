@@ -52,6 +52,7 @@ android-logging-log4j = "1.0.3"
 log4j = "1.2.17"
 work = "2.8.1"
 fragment = "1.8.5"
+appcompat-version = "1.7.1"
 
 [libraries]
 android-issue-reporter = { module = "com.heinrichreimersoftware:android-issue-reporter", version.ref = "android-issue-reporter" }
