@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.stardust.util.IntentUtil2
+import com.stardust.util.IntentUtil
 import com.tencent.bugly.crashreport.CrashReport
 import org.autojs.autojs.BuildConfig
 import org.autojs.autojs.R
@@ -40,11 +40,11 @@ class AboutActivity : BaseActivity() {
     }
 
     private fun openGitHub() {
-        IntentUtil2.browse(this, getString(R.string.my_github))
+        IntentUtil.browse(this, getString(R.string.my_github))
     }
 
     private fun share() {
-        IntentUtil2.shareText(this, getString(R.string.share_app))
+        IntentUtil.shareText(this, getString(R.string.share_app))
     }
 
     private fun lol() {

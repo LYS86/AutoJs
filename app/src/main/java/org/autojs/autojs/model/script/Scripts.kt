@@ -11,7 +11,7 @@ import com.stardust.autojs.execution.ScriptExecution
 import com.stardust.autojs.execution.SimpleScriptExecutionListener
 import com.stardust.autojs.runtime.exception.ScriptInterruptedException
 import com.stardust.autojs.script.ScriptSource
-import com.stardust.util.IntentUtil2
+import com.stardust.util.IntentUtil
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.autojs.AutoJs
@@ -67,7 +67,7 @@ object Scripts {
 
 
     fun openByOtherApps(uri: Uri) {
-        IntentUtil2.viewFile(GlobalAppContext.get(), uri, "text/plain", AppFileProvider.AUTHORITY)
+        IntentUtil.viewFile(GlobalAppContext.get(), uri, "text/plain", AppFileProvider.AUTHORITY)
     }
 
     fun openByOtherApps(file: File) {
@@ -138,7 +138,7 @@ object Scripts {
                 .setType("text/plain")
             .putExtra(
                 Intent.EXTRA_STREAM,
-                IntentUtil2.getUriOfFile(context, file.path, AppFileProvider.AUTHORITY)
+                IntentUtil.getUriOfFile(context, file.path, AppFileProvider.AUTHORITY)
             ),
                 GlobalAppContext.getString(R.string.text_send)
         ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
