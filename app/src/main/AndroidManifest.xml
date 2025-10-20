@@ -291,6 +291,12 @@
                 <data android:mimeType="application/x-javascript"/>
                 <data android:mimeType="text/plain"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+                <data android:mimeType="application/x-javascript"/>
+            </intent-filter>
         </activity>
 
         <!-- 通知读取权限 -->
