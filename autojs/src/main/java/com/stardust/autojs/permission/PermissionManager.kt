@@ -19,6 +19,7 @@ import android.os.Environment
 import android.os.Process
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.stardust.notification.NotificationListenerService
 
@@ -39,7 +40,7 @@ object PermissionManager {
             WRITE_SETTINGS -> hasWriteSettingsPermission(context)
             //通知权限
             POST_NOTIFICATIONS -> hasNotificationPermission(context)
-            else -> context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+            else -> ContextCompat.checkSelfPermission(context,permission) == PackageManager.PERMISSION_GRANTED
         }
     }
 
