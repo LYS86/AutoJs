@@ -111,7 +111,6 @@
             android:name="org.autojs.autojs.external.tasker.TaskerScriptEditActivity"
             android:configChanges="orientation|screenSize"
             />
-        <activity android:name="org.autojs.autojs.ui.edit.ViewSampleActivity"/>
         <activity
             android:name="org.autojs.autojs.ui.project.BuildActivity"
             android:configChanges="orientation|screenSize"/>
