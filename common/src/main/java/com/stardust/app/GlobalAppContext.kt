@@ -1,92 +1,67 @@
-package com.stardust.app;
+package com.stardust.app
 
-import android.annotation.SuppressLint;
-import android.app.Application;
-import android.content.Context;
-import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
-import androidx.annotation.RequiresApi;
-import android.widget.Toast;
+import android.app.Application
+import android.content.Context
+import android.os.Looper
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Created by Stardust on 2018/3/22.
  */
+object GlobalAppContext {
 
-public class GlobalAppContext {
+    private var applicationContext: Context? = null
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
-    @SuppressLint("StaticFieldLeak")
-    private static Context sApplicationContext;
-    private static Handler sHandler;
-
-    public static void set(Application a) {
-        sHandler = new Handler(Looper.getMainLooper());
-        sApplicationContext = a.getApplicationContext();
+    @JvmStatic
+    fun set(application: Application) {
+        applicationContext = application.applicationContext
     }
 
-    public static Context get() {
-        if (sApplicationContext == null)
-            throw new IllegalStateException("Call GlobalAppContext.set() to set a application context");
-        return sApplicationContext;
+    @JvmStatic
+    fun get(): Context {
+        return applicationContext ?: throw IllegalStateException("Call GlobalAppContext.set() to set a application context")
     }
 
-    public static String getString(int resId) {
-        return get().getString(resId);
+    @JvmStatic
+    fun getString(resId: Int): String = get().getString(resId)
+
+    @JvmStatic
+    fun getString(resId: Int, vararg formatArgs: Any): String = get().getString(resId, *formatArgs)
+
+    @JvmStatic
+    fun getColor(id: Int): Int =  ContextCompat.getColor(get(), id)
+
+    @JvmStatic
+    fun toast(message: String) = showToast { Toast.makeText(get(), message, Toast.LENGTH_SHORT).show() }
+
+    @JvmStatic
+    fun toast(resId: Int) = showToast { Toast.makeText(get(), resId, Toast.LENGTH_SHORT).show() }
+
+    @JvmStatic
+    fun toast(resId: Int, vararg args: Any) {
+        val message = getString(resId, *args)
+        showToast { Toast.makeText(get(), message, Toast.LENGTH_SHORT).show() }
     }
 
-    public static String getString(int resId, Object... formatArgs) {
-        return get().getString(resId, formatArgs);
+    @JvmStatic
+    fun post(r: Runnable) = mainScope.launch { r.run() }
+
+    @JvmStatic
+    fun postDelayed(r: Runnable, delayMillis: Long) = mainScope.launch {
+        kotlinx.coroutines.delay(delayMillis)
+        r.run()
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public static int getColor(int id) {
-        return get().getColor(id);
-    }
-
-    public static void toast(final String message) {
+    private fun showToast(showAction: () -> Unit) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            Toast.makeText(get(), message, Toast.LENGTH_SHORT).show();
-            return;
+            showAction()
+        } else {
+            mainScope.launch { showAction() }
         }
-        sHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(get(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void toast(final int resId) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            Toast.makeText(get(), resId, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        sHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(get(), resId, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void toast(final int resId, final Object... args) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            Toast.makeText(get(), getString(resId, args), Toast.LENGTH_SHORT).show();
-            return;
-        }
-        sHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(get(), getString(resId, args), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void post(Runnable r) {
-        sHandler.post(r);
-    }
-
-    public static void postDelayed(Runnable r, long m) {
-        sHandler.postDelayed(r, m);
     }
 }
