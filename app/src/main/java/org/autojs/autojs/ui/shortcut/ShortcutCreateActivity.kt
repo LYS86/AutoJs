@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.IntentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -51,14 +52,8 @@ class ShortcutCreateActivity : BaseActivityV2() {
         showDialog()
     }
 
-    private fun getScriptFileExtra(intent: Intent): ScriptFile? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra(EXTRA_FILE, ScriptFile::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getSerializableExtra(EXTRA_FILE) as? ScriptFile
-        }
-    }
+    private fun getScriptFileExtra(intent: Intent): ScriptFile? =
+        IntentCompat.getSerializableExtra(intent, EXTRA_FILE, ScriptFile::class.java)
 
     private fun showDialog() {
         binding.name.setText(mScriptFile.simplifiedName)
