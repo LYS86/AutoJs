@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stardust.autojs.project.ProjectConfig;
+import com.stardust.autojs.util.Browser;
 import com.stardust.util.IntentUtil;
 
 import org.autojs.autojs.Pref;
@@ -101,8 +102,7 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
     }
 
     private void downloadPlugin() {
-        IntentUtil.browse(this, String.format(Locale.getDefault(),
-                "https://i.autojs.org/autojs/plugin/%d.apk", ApkBuilderPluginHelper.getSuitablePluginVersion()));
+        Browser.openUrl(this, String.format(Locale.getDefault(), "https://i.autojs.org/autojs/plugin/%d.apk", ApkBuilderPluginHelper.getSuitablePluginVersion()));
     }
 
     private void setupWithSourceFile(ScriptFile file) {

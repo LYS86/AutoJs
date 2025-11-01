@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.stardust.autojs.script.JavaScriptSource;
+import com.stardust.autojs.util.Browser;
 import com.stardust.pio.PFiles;
 import com.stardust.util.ClipboardUtil;
 import com.stardust.util.IntentUtil;
@@ -182,7 +183,7 @@ public class EditorMenu {
                         mEditor.insert(0, item.getImportText() + ";\n");
                     }
                 })
-                .onNeutral((ignored, which) -> IntentUtil.browse(mContext, item.getUrl()))
+                .onNeutral((ignored, which) -> Browser.openUrl(mContext, item.getUrl()))
                 .onAny((ignored, which) -> dialog.dismiss())
                 .show();
     }
