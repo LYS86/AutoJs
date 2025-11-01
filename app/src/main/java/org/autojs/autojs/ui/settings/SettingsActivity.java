@@ -9,6 +9,7 @@ import android.preference.PreferenceScreen;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
 
+import com.stardust.autojs.util.Browser;
 import com.stardust.theme.app.ColorSelectActivity;
 import com.stardust.theme.preference.ThemeColorPreferenceFragment;
 import com.stardust.theme.util.ListBuilder;
@@ -17,7 +18,6 @@ import com.stardust.util.MapBuilder;
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.ActivitySettingsBinding;
 import org.autojs.autojs.ui.BaseActivity;
-import org.autojs.autojs.ui.error.IssueReporterActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,10 +115,20 @@ public class SettingsActivity extends BaseActivity {
             super.onStart();
             ACTION_MAP = new MapBuilder<String, Runnable>()
                     .put(getString(R.string.text_theme_color), () -> selectThemeColor(getActivity()))
-                    .put(getString(R.string.text_issue_report), () -> startActivity(new Intent(getActivity(), IssueReporterActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
-                    .put(getString(R.string.text_about_me_and_repo), () -> startActivity(new Intent(getActivity(), AboutActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
+                    .put(getString(R.string.text_issue_report), this::openGithubIssues)
+                    .put(getString(R.string.text_about_me_and_repo), this::openGitHub)
                     .put(getString(R.string.text_licenses), () -> showLicenseDialog())
                     .build();
+        }
+
+
+        /*打开Github issues*/
+        private void openGithubIssues() {
+            Browser.openUrl(getActivity(), getString(R.string.my_github) + "/issues");
+        }
+
+        private void openGitHub() {
+            Browser.openUrl(getActivity(), getString(R.string.my_github));
         }
 
         @Override

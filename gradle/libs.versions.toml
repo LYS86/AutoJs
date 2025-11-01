@@ -2,6 +2,7 @@
 android-issue-reporter = "1.3.1"
 android-multi-level-listview = "1.1"
 android-plugin-client-sdk-for1-locale = "4.0.3"
+browser = "1.8.0"
 commonmark-java = "commonmark-parent-0.9.0"
 commons-io = "2.20.0"
 commons-lang3 = "3.18.0"
@@ -58,6 +59,7 @@ appcompat-version = "1.7.1"
 android-issue-reporter = { module = "com.heinrichreimersoftware:android-issue-reporter", version.ref = "android-issue-reporter" }
 android-multi-level-listview = { module = "com.github.hyb1996:android-multi-level-listview", version.ref = "android-multi-level-listview" }
 android-plugin-client-sdk-for1-locale = { module = "com.twofortyfouram:android-plugin-client-sdk-for-locale", version.ref = "android-plugin-client-sdk-for1-locale" }
+androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 androidx-drawerlayout = { module = "androidx.drawerlayout:drawerlayout", version.ref = "drawerlayout" }

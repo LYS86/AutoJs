@@ -68,6 +68,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.jakewharton.timber/timber
     implementation(libs.timber)
     implementation(libs.opencv)
+    implementation(libs.androidx.browser)
 
 
 }
