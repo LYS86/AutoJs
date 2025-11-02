@@ -1,8 +1,8 @@
 package org.autojs.autojs.ui.main
 
+// BackPressedHandler 已弃用，优先使用 OnBackPressedDispatcher
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
@@ -13,7 +13,6 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.stardust.app.FragmentPagerAdapterBuilder
 import com.stardust.theme.ThemeColorManager
-import com.stardust.util.BackPressedHandler
 import com.stardust.util.DeveloperUtils
 import org.autojs.autojs.BuildConfig
 import org.autojs.autojs.R
@@ -25,7 +24,6 @@ import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
 import org.autojs.autojs.ui.main.task.TaskManagerFragmentV2
 import org.autojs.autojs.ui.widget.SearchViewItem
 import org.greenrobot.eventbus.EventBus
-import timber.log.Timber
 
 class MainActivity : BaseActivity() {
 
@@ -111,35 +109,13 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    // 新的返回按钮处理逻辑
+    /*返回手势处理*/
     private fun handleBackPress() {
-        Timber.d("handleBackPress: 开始处理返回按钮")
-
-        // 1. 先检查当前 Fragment 是否处理返回按钮
-        val currentFragment = pagerAdapter.getStoredFragment(binding.viewpager.currentItem)
-        Timber.d("handleBackPress: 当前Fragment = ${currentFragment?.javaClass?.simpleName}")
-
-        (currentFragment as? BackPressedHandler)?.let { handler ->
-            Timber.d("handleBackPress: 当前Fragment实现了BackPressedHandler接口")
-            val handledByFragment = handler.onBackPressed(this)
-            Timber.d("handleBackPress: Fragment处理返回按钮结果 = $handledByFragment")
-            if (handledByFragment) {
-                Timber.d("handleBackPress: 返回按钮已被当前Fragment处理")
-                return
-            }
-        }
-
-        // 2. 检查抽屉是否打开，如果打开则关闭
         val isDrawerOpen = binding.drawerLayout.isDrawerOpen(GravityCompat.START)
-        Timber.d("handleBackPress: 抽屉状态 = ${if (isDrawerOpen) "打开" else "关闭"}")
-
         if (isDrawerOpen) {
-            Timber.d("handleBackPress: 关闭抽屉并拦截返回按钮")
             binding.drawerLayout.closeDrawer(GravityCompat.START)
             return
         }
-
-        Timber.d("handleBackPress: 没有拦截处理，让系统自然处理返回手势")
         onBackPressedCallback.isEnabled = false
         onBackPressedDispatcher.onBackPressed()
     }

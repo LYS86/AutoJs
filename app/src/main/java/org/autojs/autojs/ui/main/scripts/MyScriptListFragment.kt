@@ -2,7 +2,6 @@ package org.autojs.autojs.ui.main.scripts
 
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -13,9 +12,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
+import androidx.activity.OnBackPressedCallback
 import com.stardust.autojs.permission.PermissionManager
-import com.stardust.util.BackPressedHandler
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentMyScriptListBinding
@@ -31,7 +29,7 @@ import org.autojs.autojs.ui.viewmodel.ExplorerItemList
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-class MyScriptListFragment : BaseFragment(), BackPressedHandler {
+class MyScriptListFragment : BaseFragment() {
 
     private var _binding: FragmentMyScriptListBinding? = null
     private val binding get() = _binding!!
@@ -55,6 +53,19 @@ class MyScriptListFragment : BaseFragment(), BackPressedHandler {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupScriptListView()
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (binding.scriptFileList.canGoBack()) {
+                        binding.scriptFileList.goBack()
+                    } else {
+                        isEnabled = false
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
+                        isEnabled = true
+                    }
+                }
+            })
     }
 
     private fun setupScriptListView() {
@@ -116,15 +127,6 @@ class MyScriptListFragment : BaseFragment(), BackPressedHandler {
             }
 
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onBackPressed(activity: Activity): Boolean {
-        return if (binding.scriptFileList.canGoBack()) {
-            binding.scriptFileList.goBack()
-            true
-        } else {
-            false
         }
     }
 
