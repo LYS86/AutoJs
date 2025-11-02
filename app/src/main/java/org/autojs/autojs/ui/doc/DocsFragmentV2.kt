@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -35,10 +36,6 @@ class DocsFragmentV2 : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EventBus.getDefault().register(this)
-
-        // 启用返回键处理
-        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-
         Timber.d("文档片段已创建")
     }
 
@@ -64,6 +61,15 @@ class DocsFragmentV2 : Fragment() {
         webView.setOnScrollChangeListener { _, _, _, _, _ ->
             updateBackPressCallback()
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                updateBackPressCallback()
+            }
+        }
     }
 
     override fun onResume() {
@@ -72,7 +78,7 @@ class DocsFragmentV2 : Fragment() {
     }
 
     private fun updateBackPressCallback() {
-        onBackPressedCallback.isEnabled = webView.canGoBack()
+        onBackPressedCallback.isEnabled = isAdded && isVisible && webView.canGoBack()
     }
 
     private fun handleRefresh() {
@@ -159,8 +165,8 @@ class DocsFragmentV2 : Fragment() {
         const val ARGUMENT_URL = "url"
         private const val KEY_SAVED_WEBVIEW_STATE = "savedWebViewState"
 
-        fun newInstance(url: String): DocsFragment {
-            return DocsFragment().apply {
+        fun newInstance(url: String): DocsFragmentV2 {
+            return DocsFragmentV2().apply {
                 arguments = Bundle().apply {
                     putString(ARGUMENT_URL, url)
                 }
