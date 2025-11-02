@@ -5,15 +5,16 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.stardust.app.FragmentPagerAdapterBuilder
 import com.stardust.theme.ThemeColorManager
 import com.stardust.util.BackPressedHandler
 import com.stardust.util.DeveloperUtils
-import com.stardust.util.DrawerAutoClose
 import org.autojs.autojs.BuildConfig
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ActivityMainBinding
@@ -24,8 +25,9 @@ import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
 import org.autojs.autojs.ui.main.task.TaskManagerFragmentV2
 import org.autojs.autojs.ui.widget.SearchViewItem
 import org.greenrobot.eventbus.EventBus
+import timber.log.Timber
 
-class MainActivity : BaseActivity(), BackPressedHandler.HostActivity {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var pagerAdapter: FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter
@@ -33,29 +35,24 @@ class MainActivity : BaseActivity(), BackPressedHandler.HostActivity {
     private var logMenuItem: MenuItem? = null
     private var docsSearchItemExpanded = false
 
-    private val backPressObserver = BackPressedHandler.Observer()
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            handleBackPress()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         setUpViews()
     }
 
     private fun setUpViews() {
         setUpToolbar()
         setUpTabViewPager()
-        registerBackPressHandlers()
         ThemeColorManager.addViewBackground(findViewById(R.id.app_bar))
-    }
-
-    private fun registerBackPressHandlers() {
-        backPressObserver.registerHandler(DrawerAutoClose(binding.drawerLayout, Gravity.START))
-        backPressObserver.registerHandler(
-            BackPressedHandler.DoublePressExit(
-                this, R.string.text_press_again_to_exit
-            )
-        )
     }
 
     private fun setUpToolbar() {
@@ -114,18 +111,37 @@ class MainActivity : BaseActivity(), BackPressedHandler.HostActivity {
         }
     }
 
-    override fun onBackPressed() {
-        (pagerAdapter.getStoredFragment(binding.viewpager.currentItem) as? BackPressedHandler)?.let {
-            if (it.onBackPressed(this)) return
+    // 新的返回按钮处理逻辑
+    private fun handleBackPress() {
+        Timber.d("handleBackPress: 开始处理返回按钮")
+
+        // 1. 先检查当前 Fragment 是否处理返回按钮
+        val currentFragment = pagerAdapter.getStoredFragment(binding.viewpager.currentItem)
+        Timber.d("handleBackPress: 当前Fragment = ${currentFragment?.javaClass?.simpleName}")
+
+        (currentFragment as? BackPressedHandler)?.let { handler ->
+            Timber.d("handleBackPress: 当前Fragment实现了BackPressedHandler接口")
+            val handledByFragment = handler.onBackPressed(this)
+            Timber.d("handleBackPress: Fragment处理返回按钮结果 = $handledByFragment")
+            if (handledByFragment) {
+                Timber.d("handleBackPress: 返回按钮已被当前Fragment处理")
+                return
+            }
         }
 
-        if (!backPressObserver.onBackPressed(this)) {
-            super.onBackPressed()
-        }
-    }
+        // 2. 检查抽屉是否打开，如果打开则关闭
+        val isDrawerOpen = binding.drawerLayout.isDrawerOpen(GravityCompat.START)
+        Timber.d("handleBackPress: 抽屉状态 = ${if (isDrawerOpen) "打开" else "关闭"}")
 
-    override fun getBackPressedObserver(): BackPressedHandler.Observer {
-        return backPressObserver
+        if (isDrawerOpen) {
+            Timber.d("handleBackPress: 关闭抽屉并拦截返回按钮")
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            return
+        }
+
+        Timber.d("handleBackPress: 没有拦截处理，让系统自然处理返回手势")
+        onBackPressedCallback.isEnabled = false
+        onBackPressedDispatcher.onBackPressed()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
