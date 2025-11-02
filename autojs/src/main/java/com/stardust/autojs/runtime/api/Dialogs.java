@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
-import android.widget.CompoundButton;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
@@ -13,10 +12,8 @@ import com.stardust.autojs.annotation.ScriptInterface;
 import com.stardust.autojs.annotation.ScriptVariable;
 import com.stardust.autojs.core.ui.dialog.BlockedMaterialDialog;
 import com.stardust.autojs.core.ui.dialog.JsDialogBuilder;
-import com.stardust.autojs.runtime.ScriptBridges;
 import com.stardust.autojs.runtime.ScriptRuntime;
 import com.stardust.util.ArrayUtils;
-import com.stardust.util.UiHandler;
 
 /**
  * Created by Stardust on 2017/5/8.
@@ -47,7 +44,7 @@ public class Dialogs {
         MaterialDialog.Builder builder = dialogBuilder(callback)
                 .alert()
                 .title(title)
-                .positiveText(R.string.ok);
+                .positiveText(android.R.string.ok);
         if (!TextUtils.isEmpty(content)) {
             builder.content(content);
         }
@@ -59,8 +56,8 @@ public class Dialogs {
         MaterialDialog.Builder builder = dialogBuilder(callback)
                 .confirm()
                 .title(title)
-                .positiveText(R.string.ok)
-                .negativeText(R.string.cancel);
+                .positiveText(android.R.string.ok)
+                .negativeText(android.R.string.cancel);
         if (!TextUtils.isEmpty(content)) {
             builder.content(content);
         }
@@ -70,7 +67,7 @@ public class Dialogs {
     private Context getContext() {
         if (mThemeWrapper != null)
             return mThemeWrapper;
-        mThemeWrapper = new ContextThemeWrapper(mRuntime.uiHandler.getContext().getApplicationContext(), R.style.Theme_AppCompat_Light);
+        mThemeWrapper = new ContextThemeWrapper(mRuntime.uiHandler.getContext().getApplicationContext(), androidx.appcompat.R.style.Theme_AppCompat_Light);
         return mThemeWrapper;
     }
 
@@ -104,7 +101,7 @@ public class Dialogs {
         return ((BlockedMaterialDialog.Builder) dialogBuilder(callback)
                 .itemsCallbackSingleChoice(selectedIndex)
                 .title(title)
-                .positiveText(R.string.ok)
+                .positiveText(android.R.string.ok)
                 .items((CharSequence[]) items))
                 .showAndGet();
     }
@@ -114,7 +111,7 @@ public class Dialogs {
         return ((BlockedMaterialDialog.Builder) dialogBuilder(callback)
                 .itemsCallbackMultiChoice(ArrayUtils.box(indices))
                 .title(title)
-                .positiveText(R.string.ok)
+                .positiveText(android.R.string.ok)
                 .items((CharSequence[]) items))
                 .showAndGet();
     }

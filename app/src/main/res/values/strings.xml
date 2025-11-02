@@ -12,6 +12,7 @@
     <string name="text_cancel">取消</string>
     <string name="text_path_is_empty">路径为空</string>
     <string name="text_file_not_exists">文件不存在</string>
+    <string name="mt_color_picker_title">选择主题颜色</string>
     <string name="text_no_file_rw_permission">无文件读写权限</string>
     <string name="text_no_accessibility_permission">无障碍服务未启动</string>
     <string name="text_drawer_close">关闭侧拉菜单</string>

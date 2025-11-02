@@ -81,7 +81,7 @@ public class EditorMenu {
                 new NotAskAgainDialog.Builder(mEditorView.getContext(), "editor.debug.long_click_hint")
                         .title(R.string.text_alert)
                         .content(R.string.hint_long_click_run_to_debug)
-                        .positiveText(R.string.ok)
+                        .positiveText(android.R.string.ok)
                         .show();
                 mEditorView.debug();
                 return true;

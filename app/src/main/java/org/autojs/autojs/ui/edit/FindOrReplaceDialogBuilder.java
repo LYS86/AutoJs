@@ -46,8 +46,8 @@ public class FindOrReplaceDialogBuilder extends ThemeColorMaterialDialogBuilder 
 
     private void setupViews() {
         customView(binding.getRoot(), true);
-        positiveText(R.string.ok);
-        negativeText(R.string.cancel);
+        positiveText(android.R.string.ok);
+        negativeText(android.R.string.cancel);
         title(R.string.text_find_or_replace);
     }
 

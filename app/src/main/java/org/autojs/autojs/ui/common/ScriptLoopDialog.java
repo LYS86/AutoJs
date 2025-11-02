@@ -31,7 +31,7 @@ public class ScriptLoopDialog {
         mDialog = new MaterialDialog.Builder(context)
                 .title(R.string.text_run_repeatedly)
                 .customView(binding.getRoot(), true)
-                .positiveText(R.string.ok)
+                .positiveText(android.R.string.ok)
                 .onPositive((dialog, which) -> startScriptRunningLoop())
                 .build();
     }

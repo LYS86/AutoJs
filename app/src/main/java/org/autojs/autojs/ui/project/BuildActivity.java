@@ -92,8 +92,8 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
     private void showPluginDownloadDialog(int msgRes, boolean finishIfCanceled) {
         new ThemeColorMaterialDialogBuilder(this)
                 .content(msgRes)
-                .positiveText(R.string.ok)
-                .negativeText(R.string.cancel)
+                .positiveText(android.R.string.ok)
+                .negativeText(android.R.string.cancel)
                 .onPositive((dialog, which) -> downloadPlugin())
                 .onNegative((dialog, which) -> {
                     if (finishIfCanceled) finish();
@@ -264,7 +264,7 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                 .title(R.string.text_build_successfully)
                 .content(getString(R.string.format_build_successfully, outApk.getPath()))
                 .positiveText(R.string.text_install)
-                .negativeText(R.string.cancel)
+                .negativeText(android.R.string.cancel)
                 .onPositive((dialog, which) ->
                         IntentUtil.installApkOrToast(BuildActivity.this, outApk.getPath(), AppFileProvider.AUTHORITY)
                 )

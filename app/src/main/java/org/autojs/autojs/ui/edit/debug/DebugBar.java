@@ -119,7 +119,7 @@ public class DebugBar extends FrameLayout {
         new ThemeColorMaterialDialogBuilder(getContext())
                 .title(variable.getDisplayName())
                 .content(variable.getValue())
-                .positiveText(R.string.ok)
+                .positiveText(android.R.string.ok)
                 .negativeText(R.string.text_copy_value)
                 .autoDismiss(true)
                 .onNegative((dialog, which) -> ClipboardUtil.setClip(getContext(), variable.getValue()))

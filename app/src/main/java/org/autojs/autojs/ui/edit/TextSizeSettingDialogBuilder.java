@@ -32,8 +32,8 @@ public class TextSizeSettingDialogBuilder extends ThemeColorMaterialDialogBuilde
         View view = View.inflate(context, R.layout.dialog_text_size_setting, null);
         customView(view, false);
         title(R.string.text_text_size);
-        positiveText(R.string.ok);
-        negativeText(R.string.cancel);
+        positiveText(android.R.string.ok);
+        negativeText(android.R.string.cancel);
 
         mSeekBar = view.findViewById(R.id.seekbar);
         mPreviewText = view.findViewById(R.id.preview_text);
