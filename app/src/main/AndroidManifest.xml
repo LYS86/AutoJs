@@ -279,23 +279,41 @@
             android:label="@string/text_import_script"
             android:exported="true"
             android:theme="@style/AppTheme.Transparent">
+            <!-- ① 打开/编辑：脚本 + 文本 + json + html -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.EDIT"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-
                 <data android:scheme="file"/>
                 <data android:scheme="content"/>
+                <data android:mimeType="application/javascript"/>
                 <data android:mimeType="application/x-javascript"/>
+                <data android:mimeType="application/json"/>
+                <data android:mimeType="text/html"/>
                 <data android:mimeType="text/plain"/>
             </intent-filter>
+
+            <!-- ② 单文件分享：同上 -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/plain"/>
+                <data android:mimeType="application/javascript"/>
                 <data android:mimeType="application/x-javascript"/>
+                <data android:mimeType="application/json"/>
+                <data android:mimeType="text/html"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+
+            <!-- ③ 多文件分享：同上 -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="application/javascript"/>
+                <data android:mimeType="application/x-javascript"/>
+                <data android:mimeType="application/json"/>
+                <data android:mimeType="text/html"/>
+                <data android:mimeType="text/plain"/>
             </intent-filter>
         </activity>
 

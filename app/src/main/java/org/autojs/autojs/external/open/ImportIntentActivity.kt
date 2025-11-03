@@ -1,84 +1,130 @@
 package org.autojs.autojs.external.open
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.OpenableColumns
+import org.autojs.autojs.util.parseContentUri
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import org.autojs.autojs.R
-import org.autojs.autojs.ui.common.ScriptOperations
+import org.autojs.autojs.ui.common.ScriptOperationsV2
 import timber.log.Timber
-import java.io.FileNotFoundException
 
 class ImportIntentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        onNewIntent(intent)
+        handleIntentSafely(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent.let {
-            setIntent(it)
-            try {
-                handleIntent(it)
-            } catch (e: Exception) {
-                Timber.e(e)
-                Toast.makeText(this, R.string.edit_and_run_handle_intent_error, Toast.LENGTH_LONG)
-                    .show()
-                finish()
-            }
+        setIntent(intent)
+        handleIntentSafely(intent)
+    }
+
+    private fun handleIntentSafely(intent: Intent) {
+        try {
+            handleIntent(intent)
+        } catch (exception: Exception) {
+            Timber.e(exception, "处理Intent时发生错误")
+            showErrorMessage()
+            finish()
         }
     }
 
-    @SuppressLint("CheckResult")
+    /*显示信息*/
+    private fun showErrorMessage() {
+        Toast.makeText(this, R.string.edit_and_run_handle_intent_error, Toast.LENGTH_LONG).show()
+    }
+
+    /*处理Intent*/
     private fun handleIntent(intent: Intent) {
-        var uri: Uri? = intent.data
-        if (uri == null && Intent.ACTION_SEND == intent.action) {
-            uri = IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
+        Timber.d("接收Intent: $intent")
+
+        when (intent.action) {
+            Intent.ACTION_VIEW, Intent.ACTION_EDIT -> handleViewOrEditIntent(intent)
+            Intent.ACTION_SEND -> handleSendIntent(intent)
+            Intent.ACTION_SEND_MULTIPLE -> handleSendMultipleIntent(intent)
+            else -> handleUnsupportedIntent(intent)
         }
+    }
+
+    /*处理查看，编辑intent*/
+    private fun handleViewOrEditIntent(intent: Intent) {
+        val uri = intent.data
+        if (uri == null) {
+            Timber.w("ACTION_VIEW/EDIT Intent的data为null")
+            finish()
+            return
+        }
+        processSingleUri(uri)
+    }
+
+    /*处理发送intent*/
+    private fun handleSendIntent(intent: Intent) {
+        val uri = IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
+        Timber.d("uri: $uri")
 
         if (uri == null) {
+            val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+            Timber.w("sharedText: $sharedText")
+            finish()
+            return
+        }
+        processSingleUri(uri)
+    }
+
+    private fun handleSendMultipleIntent(intent: Intent) {
+        val uris =
+            IntentCompat.getParcelableArrayListExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
+        if (uris.isNullOrEmpty()) {
+            Timber.w("ACTION_SEND_MULTIPLE Intent的EXTRA_STREAM列表为空")
             finish()
             return
         }
 
+        Timber.d("处理多文件分享，文件数量: ${uris.size}")
+        // TODO: 待ScriptOperations重构后支持多文件处理
+        // 目前先处理第一个文件
+        processSingleUri(uris.first())
+    }
+
+    private fun handleUnsupportedIntent(intent: Intent) {
+        Timber.w("不支持的intent: $intent")
+        finish()
+    }
+
+    private fun processSingleUri(uri: Uri) {
         when (uri.scheme) {
-            "content" -> {
-                val (name, ext) = parseUri(uri)
-                contentResolver.openInputStream(uri)?.let { inputStream ->
-                    ScriptOperations(this, null).importFile(name, inputStream, ext)
-                        .subscribe { finish() }
-                } ?: throw FileNotFoundException("Cannot open input stream for URI: $uri")
-            }
+            "content" -> processContentUri(uri)
+            "file" -> processFileUri(uri)
+            else -> throw IllegalArgumentException("不支持的URI协议: ${uri.scheme}")
+        }
+    }
 
-            "file" -> {
-                val path = intent.data?.path
-                if (path.isNullOrEmpty()) finish()
-                ScriptOperations(this, null).importFile(path).subscribe { finish() }
-            }
+    private fun processContentUri(uri: Uri) {
+        val (fileName, fileExtension) = parseContentUri(this, uri)
+        Timber.d("解析Content URI: fileName=$fileName, fileExtension=$fileExtension")
+        // TODO: ScriptOperations需要重构以适配新的接口
+        // ScriptOperations(this, null).importFile(fileName, inputStream, fileExtension)
+        ScriptOperationsV2(this).importFile(uri)
+        finishAfterTransition()
+    }
 
-            else -> throw IllegalArgumentException("Unsupported URI scheme: ${uri.scheme}")
+    private fun processFileUri(uri: Uri) {
+        val filePath = uri.path
+        if (filePath.isNullOrEmpty()) {
+            Timber.w("File URI的路径为空")
+            finish()
+            return
         }
 
+        // TODO: ScriptOperations需要重构以适配新的接口
+        // ScriptOperations(this, null).importFile(filePath).subscribe { finish() }
+        Timber.i("File URI处理完成: $filePath")
+        finish()
     }
 
-    /**
-     * 从 content:// URI 中提取文件名（不含后缀）与后缀
-     * - 仅当 URI 为 content:// 时才有效
-     * - 解析失败时返回默认值：名字=""，后缀="js"
-     */
-    private fun parseUri(uri: Uri): Pair<String, String> {
-        val displayName = contentResolver.query(uri, null, null, null, null)?.use { c ->
-            val idx = c.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (c.moveToFirst() && idx >= 0) c.getString(idx) else null
-        } ?: uri.pathSegments.lastOrNull() ?: ""
-        val name = displayName.substringBeforeLast(".")
-        val ext = displayName.substringAfterLast(".").takeIf { it.isNotEmpty() } ?: "js"
-        return name to ext
-    }
 }
