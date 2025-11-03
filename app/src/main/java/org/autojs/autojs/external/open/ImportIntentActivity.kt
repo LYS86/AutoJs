@@ -3,10 +3,11 @@ package org.autojs.autojs.external.open
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import org.autojs.autojs.util.parseContentUri
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import org.autojs.autojs.R
 import org.autojs.autojs.ui.common.ScriptOperationsV2
 import timber.log.Timber
@@ -105,12 +106,21 @@ class ImportIntentActivity : AppCompatActivity() {
     }
 
     private fun processContentUri(uri: Uri) {
-        val (fileName, fileExtension) = parseContentUri(this, uri)
-        Timber.d("解析Content URI: fileName=$fileName, fileExtension=$fileExtension")
-        // TODO: ScriptOperations需要重构以适配新的接口
-        // ScriptOperations(this, null).importFile(fileName, inputStream, fileExtension)
-        ScriptOperationsV2(this).importFile(uri)
-        finishAfterTransition()
+        lifecycleScope.launch {
+            try {
+                val success = ScriptOperationsV2(this@ImportIntentActivity).importFile(uri)
+                if (success) {
+                    Timber.d("Content URI导入成功")
+                } else {
+                    Timber.w("Content URI导入失败")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "处理Content URI时发生错误")
+                showErrorMessage()
+            } finally {
+                finish()
+            }
+        }
     }
 
     private fun processFileUri(uri: Uri) {
@@ -121,10 +131,22 @@ class ImportIntentActivity : AppCompatActivity() {
             return
         }
 
-        // TODO: ScriptOperations需要重构以适配新的接口
-        // ScriptOperations(this, null).importFile(filePath).subscribe { finish() }
-        Timber.i("File URI处理完成: $filePath")
-        finish()
+        lifecycleScope.launch {
+            try {
+                Timber.d("开始处理File URI: $filePath")
+                val success = ScriptOperationsV2(this@ImportIntentActivity).importFile(filePath)
+                if (success) {
+                    Timber.d("File URI导入成功: $filePath")
+                } else {
+                    Timber.w("File URI导入失败: $filePath")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "处理File URI时发生错误")
+                showErrorMessage()
+            } finally {
+                finish()
+            }
+        }
     }
 
 }

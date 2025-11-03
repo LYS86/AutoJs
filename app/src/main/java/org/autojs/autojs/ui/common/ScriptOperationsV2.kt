@@ -6,9 +6,7 @@ import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import com.stardust.pio.PFiles
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
@@ -34,37 +32,76 @@ class ScriptOperationsV2(
     /**
      * 处理uri,将文件复制到指定位置
      */
-    fun importFile(uri: Uri) {
+    suspend fun importFile(uri: Uri): Boolean {
         Timber.d("导入文件开始: uri=%s, 当前目录=%s", uri, currentDirectory.path)
 
         val inputStream = context.contentResolver.openInputStream(uri) ?: run {
             Timber.w("打开输入流失败: %s", uri)
             showMessage(R.string.text_import_fail)
-            return
+            return false
         }
 
         val fileInfo = parseContentUri(context, uri)
+        Timber.d("解析文件名=%s, 扩展名=%s", fileInfo.name, fileInfo.extension)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            importFileInternal(inputStream, fileInfo)
-        }
+        return importFileInternal(inputStream, fileInfo)
     }
 
-    private suspend fun importFileInternal(inputStream: InputStream, fileInfo: FileInfo) {
-        try {
+    /**
+     * 处理文件路径导入
+     */
+    suspend fun importFile(filePath: String): Boolean {
+        Timber.d("导入文件开始: filePath=%s, 当前目录=%s", filePath, currentDirectory.path)
+
+        val sourceFile = ScriptFile(filePath)
+        if (!sourceFile.exists()) {
+            Timber.w("源文件不存在: %s", filePath)
+            showMessage(R.string.text_import_fail)
+            return false
+        }
+
+        val fileName = PFiles.getNameWithoutExtension(filePath)
+        val fileExtension = PFiles.getExtension(filePath)
+        val fileInfo = FileInfo(fileName, fileExtension)
+
+        return importFileInternal(sourceFile, fileInfo)
+    }
+
+    private suspend fun importFileInternal(inputStream: InputStream, fileInfo: FileInfo): Boolean {
+        return try {
             val pathTo = generateTargetPath(fileInfo)
-            Timber.d("复制到: %s", pathTo)
+            Timber.d("复制流到: %s", pathTo)
             val success = PFiles.copyStream(inputStream, pathTo)
             withContext(Dispatchers.Main) {
                 copyResult(success, pathTo)
             }
+            success
         } catch (e: Exception) {
             Timber.e(e, "导入文件异常")
             withContext(Dispatchers.Main) {
                 showMessage(R.string.text_import_fail)
             }
+            false
         } finally {
             inputStream.closeSafely()
+        }
+    }
+
+    private suspend fun importFileInternal(sourceFile: ScriptFile, fileInfo: FileInfo): Boolean {
+        return try {
+            val pathTo = generateTargetPath(fileInfo)
+            Timber.d("复制文件到: %s", pathTo)
+            val success = PFiles.copy(sourceFile.path, pathTo)
+            withContext(Dispatchers.Main) {
+                copyResult(success, pathTo)
+            }
+            success
+        } catch (e: Exception) {
+            Timber.e(e, "导入文件异常")
+            withContext(Dispatchers.Main) {
+                showMessage(R.string.text_import_fail)
+            }
+            false
         }
     }
 
