@@ -67,6 +67,29 @@ class ScriptOperationsV2(
         return importFileInternal(sourceFile, fileInfo)
     }
 
+    /**
+     * 处理sharedText导入
+     */
+    suspend fun importSharedText(sharedText: String, fileName: String = "shared_text", fileExtension: String = "js"): Boolean {
+        Timber.d("导入sharedText开始: 文件名=%s, 扩展名=%s, 内容长度=%d", fileName, fileExtension, sharedText.length)
+
+        return try {
+            val pathTo = generateTargetPath(FileInfo(fileName, fileExtension))
+            Timber.d("写入sharedText到: %s", pathTo)
+            PFiles.write(pathTo, sharedText)
+            withContext(Dispatchers.Main) {
+                copyResult(true, pathTo)
+            }
+            true
+        } catch (e: Exception) {
+            Timber.e(e, "导入sharedText异常")
+            withContext(Dispatchers.Main) {
+                showMessage(R.string.text_import_fail)
+            }
+            false
+        }
+    }
+
     private suspend fun importFileInternal(inputStream: InputStream, fileInfo: FileInfo): Boolean {
         return try {
             val pathTo = generateTargetPath(fileInfo)
@@ -74,8 +97,8 @@ class ScriptOperationsV2(
             val success = PFiles.copyStream(inputStream, pathTo)
             withContext(Dispatchers.Main) {
                 copyResult(success, pathTo)
+                success
             }
-            success
         } catch (e: Exception) {
             Timber.e(e, "导入文件异常")
             withContext(Dispatchers.Main) {
@@ -94,8 +117,8 @@ class ScriptOperationsV2(
             val success = PFiles.copy(sourceFile.path, pathTo)
             withContext(Dispatchers.Main) {
                 copyResult(success, pathTo)
+                success
             }
-            success
         } catch (e: Exception) {
             Timber.e(e, "导入文件异常")
             withContext(Dispatchers.Main) {

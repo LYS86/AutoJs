@@ -70,8 +70,13 @@ class ImportIntentActivity : AppCompatActivity() {
 
         if (uri == null) {
             val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
-            Timber.w("sharedText: $sharedText")
-            finish()
+            if (sharedText.isNullOrEmpty()) {
+                Timber.w("sharedText为空")
+                finish()
+                return
+            }
+            Timber.d("处理sharedText: 长度=${sharedText.length}")
+            processSharedText(sharedText)
             return
         }
         processSingleUri(uri)
@@ -142,6 +147,29 @@ class ImportIntentActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Timber.e(e, "处理File URI时发生错误")
+                showErrorMessage()
+            } finally {
+                finish()
+            }
+        }
+    }
+
+    private fun processSharedText(sharedText: String) {
+        lifecycleScope.launch {
+            try {
+                Timber.d("开始处理sharedText: 长度=${sharedText.length}")
+
+                val success = ScriptOperationsV2(this@ImportIntentActivity).importSharedText(
+                    sharedText = sharedText
+                )
+
+                if (success) {
+                    Timber.d("sharedText导入成功")
+                } else {
+                    Timber.w("sharedText导入失败")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "处理sharedText时发生错误")
                 showErrorMessage()
             } finally {
                 finish()
