@@ -1,70 +1,74 @@
-package org.autojs.autojs.ui.doc;
+package org.autojs.autojs.ui.doc
 
-import android.app.Dialog;
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.view.LayoutInflater
+import android.view.View
+import androidx.core.graphics.drawable.toDrawable
+import com.afollestad.materialdialogs.MaterialDialog
+import org.autojs.autojs.databinding.FloatingManualDialogBinding
 
-import com.afollestad.materialdialogs.MaterialDialog;
 
-import org.autojs.autojs.databinding.FloatingManualDialogBinding;
+class ManualDialog {
 
-public class ManualDialog {
+    private val binding: FloatingManualDialogBinding
+    private val dialog: MaterialDialog
+    private val context: Context
 
-    private final FloatingManualDialogBinding binding;
-    private final Dialog mDialog;
-    private final Context mContext;
+    constructor(context: Context) {
+        this.context = context
+        binding = FloatingManualDialogBinding.inflate(LayoutInflater.from(context))
 
-    public ManualDialog(Context context) {
-        mContext = context;
-        binding = FloatingManualDialogBinding.inflate(LayoutInflater.from(context));
+        dialog = MaterialDialog.Builder(context)
+            .customView(binding.root, false)
+            .build()
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
 
-        mDialog = new MaterialDialog.Builder(context)
-                .customView(binding.getRoot(), false)
-                .build();
-        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        setupClickListeners();
+        setupClickListeners()
     }
 
-    private void setupClickListeners() {
-        binding.close.setOnClickListener(v -> close());
-        binding.fullscreen.setOnClickListener(v -> viewInNewActivity());
+
+    private fun setupClickListeners() {
+        binding.close.setOnClickListener { close() }
+        binding.fullscreen.setOnClickListener { viewInNewActivity() }
     }
 
-    public ManualDialog title(String title) {
-        binding.title.setText(title);
-        return this;
+    fun title(title: String): ManualDialog {
+        binding.title.text = title
+        return this
     }
 
-    public ManualDialog url(String url) {
-        binding.ewebView.getWebView().loadUrl(url);
-        return this;
+    fun url(url: String): ManualDialog {
+        binding.ewebView.webView.loadUrl(url)
+        return this
     }
 
-    public ManualDialog pinToLeft(View.OnClickListener listener) {
-        binding.pinToLeft.setOnClickListener(v -> {
-            mDialog.dismiss();
-            listener.onClick(v);
-        });
-        return this;
+
+    fun pinToLeft(listener: View.OnClickListener): ManualDialog {
+        binding.pinToLeft.setOnClickListener { v ->
+            dialog.dismiss()
+            listener.onClick(v)
+        }
+        return this
     }
 
-    public ManualDialog show() {
-        mDialog.show();
-        return this;
+
+    fun show(): ManualDialog {
+        dialog.show()
+        return this
     }
 
-    private void close() {
-        mDialog.dismiss();
+
+    private fun close() {
+        dialog.dismiss()
     }
 
-    private void viewInNewActivity() {
-        mDialog.dismiss();
-        android.content.Intent intent = new android.content.Intent(mContext, DocumentationActivity.class);
-        intent.putExtra(DocumentationActivity.EXTRA_URL, binding.ewebView.getWebView().getUrl());
-        mContext.startActivity(intent);
+
+    private fun viewInNewActivity() {
+        dialog.dismiss()
+        val intent = Intent(context, DocumentationActivity::class.java)
+        intent.putExtra(DocumentationActivity.EXTRA_URL, binding.ewebView.webView.url)
+        context.startActivity(intent)
     }
 }
