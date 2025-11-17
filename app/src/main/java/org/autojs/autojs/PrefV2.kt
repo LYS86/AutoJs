@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import androidx.core.content.edit
 import com.stardust.app.GlobalAppContext
+import org.autojs.autojs.R
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -36,6 +37,25 @@ object PrefV2 {
     fun float(key: String, default: Float) = FloatPreference(key, default)
     fun string(key: String, default: String) = StringPreference(key, default)
     fun stringSet(key: String, default: Set<String>) = StringSetPreference(key, default)
+
+    // ================== 文档相关偏好设置 ================== //
+    
+    /**
+     * 获取文档URL
+     * 根据用户设置的文档源返回相应的URL
+     * @return 文档基础URL，本地或在线
+     */
+    fun getDocumentationUrl(): String {
+        val docSource = defaultPrefs.getString(
+            context.getString(R.string.key_documentation_source), 
+            null
+        )
+        return if (docSource == null || docSource == "Local") {
+            "file:///android_asset/docs/"
+        } else {
+            "https://www.autojs.org/assets/autojs/docs/"
+        }
+    }
 
     // ================== 一次性布尔值 ================== //
     fun disposableBoolean(key: String, defaultValue: Boolean) = object : ReadOnlyProperty<Any, Boolean> {
