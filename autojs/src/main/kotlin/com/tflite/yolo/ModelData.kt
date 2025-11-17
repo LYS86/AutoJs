@@ -5,29 +5,29 @@ import com.google.gson.annotations.SerializedName
 import timber.log.Timber
 
 data class ModelData(
-    @SerializedName("description") var description: String = "",
-    @SerializedName("author") var author: String = "",
-    @SerializedName("date") var date: String = "",
-    @SerializedName("version") var version: String = "",
-    @SerializedName("license") var license: String = "",
-    @SerializedName("docs") var docs: String = "",
-    @SerializedName("model") val model: String = "yolo8",
-    @SerializedName("stride") var stride: Int = 32,
-    @SerializedName("task") var task: String = "detect",
-    @SerializedName("batch") val batch: Int = 1,
+    var description: String = "",
+    var author: String = "",
+    var date: String = "",
+    var version: String = "",
+    var license: String = "",
+    var docs: String = "",
+    var model: String = "yolo8",
+    var stride: Int = 32,
+    var task: String = "detect",
+    var batch: Int = 1,
     @SerializedName("imgsz") val imageSize: List<Int> = listOf(640, 640),
-    @SerializedName("names") var names: Map<Int, String> = emptyMap(),
+    var names: Map<Int, String> = emptyMap(),
     @SerializedName("num_detections") var numDetections: Int = 0,
     @SerializedName("num_classes") var numClasses: Int = 0,
-    @SerializedName("args") var args: Args = Args()
+    var args: Args = Args()
 ) {
     data class Args(
-        @SerializedName("batch") var batch: Int = 1,
-        @SerializedName("half") var half: Boolean = false,
-        @SerializedName("int8") var int8: Boolean = false,
-        @SerializedName("nms") var nms: Boolean = false,
-        @SerializedName("conf") var conf: Float = 0.25F,
-        @SerializedName("iou") var iou: Float = 0.7F
+        var batch: Int = 1,
+        var half: Boolean = false,
+        var int8: Boolean = false,
+        var nms: Boolean = false,
+        var conf: Float = 0.25F,
+        var iou: Float = 0.7F
     )
 
     companion object {
@@ -48,9 +48,6 @@ data class ModelData(
             names = value.mapIndexed { index, label -> index to label }.toMap()
         }
 
-    fun toJson(): String {
-        return Gson().toJson(this)
-    }
-
+    fun toJson(): String = Gson().toJson(this)
     override fun toString(): String = toJson()
 }

@@ -1,5 +1,6 @@
 package com.tflite.yolo
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import com.google.gson.Gson
 import org.mozilla.javascript.NativeObject
@@ -9,11 +10,13 @@ import org.tensorflow.lite.gpu.CompatibilityList
 import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.support.metadata.MetadataExtractor
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
-import java.io.BufferedReader
-import java.io.InputStreamReader
+import timber.log.Timber
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.MappedByteBuffer
 import java.util.concurrent.locks.ReentrantLock
+import java.util.zip.Inflater
+import java.util.zip.InflaterInputStream
 
 abstract class BaseModel {
 
@@ -50,7 +53,7 @@ abstract class BaseModel {
                 is String -> Gson().fromJson(config, Config::class.java)
                 else -> throw IllegalArgumentException("Unsupported config type")
             }
-            loadModel(this.config.modelPath, this.config.useGpu)
+            loadModel(this.config.modelPath, createOptions(useGpu = this.config.useGpu))
             val labelsPath = this.config.labelsPath
             if (labelsPath.isNotBlank()) {
                 loadLabels(labelsPath)
@@ -73,9 +76,8 @@ abstract class BaseModel {
      * @param path 模型文件路径
      * @param isGPU 是否使用GPU
      */
-    @JvmOverloads
-    fun loadModel(path: String, isGPU: Boolean = true) {
-        options = getOptions(isGPU)
+    fun loadModel(path: String) {
+        options = createOptions()
         loadModel(path, options)
     }
 
@@ -85,21 +87,55 @@ abstract class BaseModel {
     fun loadModel(path: String, options: InterpreterApi.Options) {
         threadLock.lock()
         try {
+            Timber.d("加载模型：$path")
             val modelBuffer: MappedByteBuffer = FileUtil.loadModel(path)
             metadataExtractor = MetadataExtractor(modelBuffer)
-            interpreter = InterpreterApi.create(modelBuffer, options)
+            interpreter = createInterpreterApi(modelBuffer, options)
             initProcessors()
+            Timber.d("模型加载完成")
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
             throw RuntimeException("${e.message}")
         } finally {
             threadLock.unlock()
         }
     }
 
+
+    private fun createInterpreterApi(
+        modelBuffer: MappedByteBuffer,
+        options: InterpreterApi.Options
+    ): InterpreterApi {
+        val strategies = listOf(
+            options,
+            createOptions(useGpu = false),
+            createOptions(useGpu = false, useNNAPI = false),
+            createOptions(useGpu = false, useNNAPI = false, useXNNPACK = false)
+        )
+
+        strategies.forEachIndexed { index, options ->
+            Timber.d(
+                "Interpreter配置[#%d]: numThreads=%d, useNNAPI=%b, useXNNPACK=%b, delegates=%s",
+                index + 1,
+                options.numThreads,
+                options.useNNAPI,
+                options.useXNNPACK,
+                options.getDelegates()
+            )
+
+            runCatching {
+                return InterpreterApi.create(modelBuffer, options)
+            }.onFailure { error ->
+                if (index == strategies.lastIndex) throw error
+                Timber.w(error, "加载失败，降级处理")
+            }
+        }
+
+        throw IllegalStateException("All fallback strategies exhausted")
+    }
+
     val metadata: String
         get() {
-            if (!metadataExtractor.hasMetadata()) return ""
             return metadataExtractor.associatedFileNames.firstOrNull()
                 ?.let { getAssociatedFile(it) } ?: ""
         }
@@ -113,7 +149,7 @@ abstract class BaseModel {
             mLabels = FileUtil.fromFile(path)
             mMetadata.labels = mLabels
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
         }
     }
 
@@ -136,21 +172,25 @@ abstract class BaseModel {
     }
 
 
-    private fun getOptions(isGPU: Boolean): InterpreterApi.Options {
-        val opts = InterpreterApi.Options().apply {
-            useNNAPI = true
+    fun createOptions(
+        useGpu: Boolean = true,
+        useNNAPI: Boolean = true,
+        useXNNPACK: Boolean = true
+    ): InterpreterApi.Options {
+        val options = InterpreterApi.Options().apply {
+            this.useNNAPI = useNNAPI
+            this.useXNNPACK = useXNNPACK
         }
-        if (!isGPU) return opts
-        if (gpuDelegate == null) {
-            return opts
+        if (useGpu && gpuDelegate != null) {
+            options.addDelegate(gpuDelegate)
         }
-        return opts.apply { addDelegate(gpuDelegate) }
+        return options
     }
 
     protected open fun initProcessors() {
         val outputShape = interpreter.getOutputTensor(0).shape()
-        val inputWidth = mMetadata.imageSize.getOrNull(0) ?: 640
-        val inputHeight = mMetadata.imageSize.getOrNull(1) ?: 640
+        val inputWidth = mMetadata.imageSize[0]
+        val inputHeight = mMetadata.imageSize[1]
         Output.setShape(outputShape, mMetadata)
         outputBuffer = TensorBuffer.createFixedSize(outputShape, DataType.FLOAT32)
         imageProcessor = ImageProcessor.create().size(inputWidth, inputHeight).normalize()
@@ -169,11 +209,20 @@ abstract class BaseModel {
 
     private fun getAssociatedFile(fileName: String): String {
         return metadataExtractor.getAssociatedFile(fileName).use { stream ->
-            BufferedReader(InputStreamReader(stream)).use { it.readText() }
+            readMetadataFile(stream)
         }
     }
 
-    companion object {
-        const val TAG = "BaseModel"
+    private fun readMetadataFile(stream: InputStream): String {
+        val data = stream.readBytes()
+        return try {
+            val inflated = InflaterInputStream(data.inputStream(), Inflater(true)).use {
+                it.readBytes()
+            }
+            String(inflated, Charsets.UTF_8)
+        } catch (_: Exception) {
+            String(data, Charsets.UTF_8)
+        }
     }
+
 }
