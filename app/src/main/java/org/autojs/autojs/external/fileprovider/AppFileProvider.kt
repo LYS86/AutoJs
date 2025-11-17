@@ -1,16 +1,17 @@
-package org.autojs.autojs.external.fileprovider;
+package org.autojs.autojs.external.fileprovider
 
-import android.content.Context;
-import android.net.Uri;
-import androidx.core.content.FileProvider;
+import android.content.Context
+import android.net.Uri
+import androidx.core.content.FileProvider
+import java.io.File
 
-import java.io.File;
+class AppFileProvider : FileProvider() {
 
-public class AppFileProvider extends FileProvider {
+    companion object {
+        const val AUTHORITY = "org.autojs.autojs.fileprovider"
 
-    public static final String AUTHORITY = "org.autojs.autojs.fileprovider";
-
-    public static Uri getUriForFile(Context context, File file){
-        return FileProvider.getUriForFile(context, AUTHORITY, file);
+        fun getUriForFile(context: Context, file: File): Uri {
+            return getUriForFile(context, AUTHORITY, file)
+        }
     }
 }
