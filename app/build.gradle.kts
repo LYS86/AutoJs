@@ -139,9 +139,6 @@ dependencies {
     implementation(project(":autojs"))
     implementation(libs.commons.io)
 
-    implementation(libs.rxjava3.rxjava)
-    implementation(libs.rxjava3.rxandroid)
-
     // https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-runtime-ktx
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.timber)
