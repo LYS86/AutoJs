@@ -1,41 +1,37 @@
-package org.autojs.autojs.autojs;
+package org.autojs.autojs.autojs
 
-import com.stardust.app.GlobalAppContext;
-import com.stardust.autojs.engine.JavaScriptEngine;
-import com.stardust.autojs.execution.ScriptExecution;
-import com.stardust.autojs.execution.ScriptExecutionListener;
-import org.autojs.autojs.App;
-import org.autojs.autojs.R;
+import com.stardust.app.GlobalAppContext
+import com.stardust.autojs.execution.ScriptExecution
+import com.stardust.autojs.execution.ScriptExecutionListener
+import org.autojs.autojs.R
 
 /**
  * Created by Stardust on 2017/5/3.
  */
 
-public class ScriptExecutionGlobalListener implements ScriptExecutionListener {
-    private static final String ENGINE_TAG_START_TIME = "org.autojs.autojs.autojs.Goodbye, World";
+class ScriptExecutionGlobalListener : ScriptExecutionListener {
 
-    @Override
-    public void onStart(ScriptExecution execution) {
-        execution.getEngine().setTag(ENGINE_TAG_START_TIME, System.currentTimeMillis());
+    override fun onStart(execution: ScriptExecution) {
+        execution.engine.setTag(ENGINE_TAG_START_TIME, System.currentTimeMillis())
     }
 
-    @Override
-    public void onSuccess(ScriptExecution execution, Object result) {
-        onFinish(execution);
+    override fun onSuccess(execution: ScriptExecution, result: Any?) {
+        onFinish(execution)
     }
 
-    private void onFinish(ScriptExecution execution) {
-        Long millis = (Long) execution.getEngine().getTag(ENGINE_TAG_START_TIME);
-        if (millis == null)
-            return;
-        double seconds = (System.currentTimeMillis() - millis) / 1000.0;
-        AutoJs.getInstance().getScriptEngineService().getGlobalConsole()
-                .verbose(GlobalAppContext.getString(R.string.text_execution_finished), execution.getSource().toString(), seconds);
+    private fun onFinish(execution: ScriptExecution) {
+        val millis = execution.engine.getTag(ENGINE_TAG_START_TIME) as Long? ?: return
+        val seconds = (System.currentTimeMillis() - millis) / 1000.0
+        AutoJs.getInstance().scriptEngineService.globalConsole
+                .verbose(GlobalAppContext.getString(R.string.text_execution_finished), execution.source.toString(), seconds)
     }
 
-    @Override
-    public void onException(ScriptExecution execution, Throwable e) {
-        onFinish(execution);
+    override fun onException(execution: ScriptExecution, e: Throwable) {
+        onFinish(execution)
+    }
+
+    companion object {
+        private const val ENGINE_TAG_START_TIME = "org.autojs.autojs.autojs.Goodbye, World"
     }
 
 }

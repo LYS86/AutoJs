@@ -137,7 +137,7 @@
     <string name="key_guard_mode" translatable="false">key_guard_mode</string>
     <string name="text_layout_inspector_is_dumping">布局分析中</string>
     <string name="text_force_stop">强制停止</string>
-    <string name="text_execution_finished" formatted="false">\n------------\n[%s]运行结束，用时%f秒</string>
+    <string name="text_execution_finished" formatted="false">[%s]运行结束，用时%.3f秒</string>
     <string name="text_again">又</string>
     <string name="text_again_and_again">又双</string>
     <string name="text_again_and_again_again">又双叒</string>
