@@ -6,7 +6,6 @@ kotlin {
     jvmToolchain(21)
 }
 android {
-    // 使用 buildSrc 中的 Versions 对象
     compileSdk = Versions.compileSdk
 
     defaultConfig {
@@ -32,9 +31,6 @@ android {
         }
     }
 
-    configurations.configureEach {
-        resolutionStrategy.force("com.google.code.findbugs:jsr305:3.0.1")
-    }
 
     flavorDimensions += "channel"
 
