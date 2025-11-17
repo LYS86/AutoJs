@@ -140,7 +140,6 @@
 
 
         <service android:name="org.autojs.autojs.external.foreground.ForegroundService"/>
-        <service android:name="org.autojs.autojs.external.ScriptExecutionIntentService"/>
 
         <activity android:name="org.autojs.autojs.external.tasker.TaskPrefEditActivity"/>
 
