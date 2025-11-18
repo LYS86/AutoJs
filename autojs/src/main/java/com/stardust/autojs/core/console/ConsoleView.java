@@ -206,6 +206,12 @@ public class ConsoleView extends FrameLayout implements ConsoleImpl.LogListener 
         });
     }
 
+    public void hideInputContainer() {
+        if (mInputContainer != null) {
+            mInputContainer.setVisibility(View.GONE);
+        }
+    }
+
     private class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView textView;

@@ -1,51 +1,40 @@
-package org.autojs.autojs.ui.log;
+package org.autojs.autojs.ui.log
 
-import android.os.Bundle;
-import android.view.View;
+import android.os.Bundle
+import com.stardust.autojs.core.console.ConsoleImpl
+import org.autojs.autojs.R
+import org.autojs.autojs.autojs.AutoJs
+import org.autojs.autojs.databinding.ActivityLogBinding
+import org.autojs.autojs.ui.BaseActivityV2
 
-import com.stardust.autojs.core.console.ConsoleImpl;
+class LogActivity : BaseActivityV2() {
 
-import org.autojs.autojs.R;
-import org.autojs.autojs.autojs.AutoJs;
-import org.autojs.autojs.databinding.ActivityLogBinding;
-import org.autojs.autojs.ui.BaseActivity;
-
-public class LogActivity extends BaseActivity {
-
-    private ActivityLogBinding binding;
-    private ConsoleImpl mConsoleImpl;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initBinding();
-        setupViews();
+    private lateinit var binding: ActivityLogBinding
+    private val consoleImpl: ConsoleImpl by lazy {
+        AutoJs.getInstance().globalConsole
     }
 
-    private void initBinding() {
-        binding = ActivityLogBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityLogBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setupViews()
     }
 
-    private void setupViews() {
-        setToolbarAsBack(getString(R.string.text_log));
-        initConsole();
-        setupFab();
+    private fun setupViews() {
+        setToolbarAsBack(getString(R.string.text_log))
+        initConsole()
+        setupFab()
     }
 
-    private void initConsole() {
-        mConsoleImpl = AutoJs.getInstance().getGlobalConsole();
-        binding.console.setConsole(mConsoleImpl);
-        binding.console.findViewById(R.id.input_container).setVisibility(View.GONE);
+    private fun initConsole() {
+        binding.console.setConsole(consoleImpl)
+        binding.console.hideInputContainer()
     }
 
-    private void setupFab() {
-        binding.fab.setOnClickListener(v -> mConsoleImpl.clear());
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        this.binding = null;
+    private fun setupFab() {
+        binding.fab.setOnClickListener {
+            consoleImpl.clear()
+        }
     }
 }

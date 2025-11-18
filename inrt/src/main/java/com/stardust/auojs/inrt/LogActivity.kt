@@ -28,7 +28,7 @@ class LogActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val consoleView = findViewById<ConsoleView>(R.id.console)
         consoleView.setConsole(AutoJs.instance.globalConsole as ConsoleImpl)
-        consoleView.findViewById<View>(R.id.input_container).visibility = View.GONE
+        consoleView.hideInputContainer()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
