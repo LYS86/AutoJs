@@ -41,6 +41,10 @@ public class CrashHandler extends CrashReport.CrashHandleCallback implements Unc
 
     public void uncaughtException(Thread thread, Throwable ex) {
         Log.e(TAG, "Uncaught Exception", ex);
+        
+        // 通知 CrashHandlerV2 进行处理
+        CrashHandlerV2.handleCrash(thread, ex);
+        
         if (thread != Looper.getMainLooper().getThread()) {
             if(!(ex instanceof RhinoException)){
                 CrashReport.postCatchedException(ex, thread);

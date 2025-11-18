@@ -25,6 +25,7 @@ import org.autojs.autojs.theme.ThemeColorManagerCompat
 import org.autojs.autojs.timing.TimedTaskManager
 import org.autojs.autojs.timing.TimedTaskScheduler
 import org.autojs.autojs.tool.CrashHandler
+import org.autojs.autojs.tool.CrashHandlerV2
 import org.autojs.autojs.ui.error.ErrorReportActivity
 import timber.log.Timber
 import timber.log.Timber.DebugTree
@@ -48,6 +49,9 @@ class App : MultiDexApplication() {
 
 
     private fun setUpDebugEnvironment() {
+        // 初始化 CrashHandlerV2（仅作为监听器）
+        CrashHandlerV2.init(ErrorReportActivity::class.java)
+
         val crashHandler = CrashHandler(ErrorReportActivity::class.java)
 
         val strategy = CrashReport.UserStrategy(applicationContext)
