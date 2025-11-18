@@ -53,9 +53,7 @@ dependencies {
     implementation(libs.okhttp)
     // Gson
     implementation(libs.gson)
-    // log4j
-    implementation(libs.android.logging.log4j)
-    implementation(libs.log4j)
+
     // Rhino JavaScript Engine
     api(files("libs/rhino-1.7.15.jar"))
     api(project(":common"))
