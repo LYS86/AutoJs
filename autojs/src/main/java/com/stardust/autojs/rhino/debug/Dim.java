@@ -469,7 +469,7 @@ public class Dim {
      */
     private static DebuggableScript[] getAllFunctions
     (DebuggableScript function) {
-        ObjArray functions = new ObjArray();
+        ArrayList<DebuggableScript> functions = new ArrayList<>();
         collectFunctions_r(function, functions);
         DebuggableScript[] result = new DebuggableScript[functions.size()];
         functions.toArray(result);
@@ -480,7 +480,7 @@ public class Dim {
      * Helper function for {@link #getAllFunctions(DebuggableScript)}.
      */
     private static void collectFunctions_r(DebuggableScript function,
-                                           ObjArray array) {
+                                           List<DebuggableScript> array) {
         array.add(function);
         for (int i = 0; i != function.getFunctionCount(); ++i) {
             collectFunctions_r(function.getFunction(i), array);
@@ -683,7 +683,7 @@ public class Dim {
      */
     private Object[] getObjectIdsImpl(Context cx, Object object) {
         if (!(object instanceof Scriptable) || object == Undefined.instance) {
-            return Context.emptyArgs;
+            return ScriptRuntime.emptyArgs;
         }
 
         Object[] ids;
@@ -1074,7 +1074,7 @@ public class Dim {
         /**
          * The stack frames.
          */
-        private ObjArray frameStack = new ObjArray();
+        private ArrayList<StackFrame> frameStack = new ArrayList<>();
 
         /**
          * Whether the debugger should break at the next line in this context.
@@ -1123,14 +1123,14 @@ public class Dim {
          * Pushes a stack frame on to the stack.
          */
         private void pushFrame(StackFrame frame) {
-            frameStack.push(frame);
+            frameStack.add(frame);
         }
 
         /**
          * Pops a stack frame from the stack.
          */
         private void popFrame() {
-            frameStack.pop();
+            frameStack.remove(frameStack.size() - 1);
         }
     }
 

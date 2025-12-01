@@ -7,11 +7,11 @@
 package com.stardust.autojs.rhino;
 
 import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.ObjToIntMap;
 import org.mozilla.javascript.Token;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
 
 
 public  class TokenStream {
@@ -1055,7 +1055,7 @@ public  class TokenStream {
 				if (result != Token.EOF) {
 					return result;
 				}
-				this.string = (String) allStrings.intern(str);
+				this.string = internString(str);
 				return Token.NAME;
 			}
 
@@ -1280,7 +1280,7 @@ public  class TokenStream {
 				}
 
 				String str = getStringFromBuffer();
-				this.string = (String) allStrings.intern(str);
+				this.string = internString(str);
 				return Token.STRING;
 			}
 
@@ -2276,7 +2276,24 @@ public  class TokenStream {
 
 	private char[] stringBuffer = new char[128];
 	private int stringBufferTop;
-	private ObjToIntMap allStrings = new ObjToIntMap(50);
+	private HashMap<String, String> allStrings = new HashMap<>(50);
+
+
+	/**
+	 * Use a HashMap to ensure that we only have one copy -- the original one
+	 * of any particular string. Yes, the {@link String#intern} function also does this,
+	 * but this is how Rhino has worked for years and it's not clear that we
+	 * want to make the JVM-wide intern pool as big as it might happen if we
+	 * used that.
+	 *
+	 * @author SuperMonster003
+	 * @see <a href="https://github.com/SuperMonster003/AutoJs6/blob/fa4790c521db0a0cb952d792f67dc2a44fdb8bb8/app/src/main/java/org/autojs/autojs/rhino/TokenStream.java#L2311">
+	 *      AutoJs6 TokenStream.java#L2311</a>
+	 */
+	private String internString(String s) {
+		String existing = allStrings.putIfAbsent(s, s);
+		return existing == null ? s : existing;
+	}
 
 	// Room to backtrace from to < on failed match of the last - in <!--
 	private final int[] ungetBuffer = new int[3];

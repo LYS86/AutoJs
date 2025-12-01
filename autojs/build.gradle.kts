@@ -53,7 +53,9 @@ dependencies {
     implementation(libs.gson)
 
     // Rhino JavaScript Engine
-    api(files("libs/rhino-1.7.15.jar"))
+    api(libs.rhino)
+    implementation(libs.rhino.tools)
+    implementation(libs.rhino.xml)
     api(project(":common"))
     api(project(":automator"))
     implementation(libs.bundles.shizuku)

@@ -33,6 +33,9 @@ recyclerview-flexibledivider = "1.4.0"
 retrofit = "3.0.0"
 retrofit2-kotlin-coroutines-adapter = "0.9.2"
 retrofit2-rxjava2-adapter = "1.0.0"
+rhino = "1.8.0"
+rhino-tools = "1.8.0"
+rhino-xml = "1.8.0"
 rxandroid = "2.0.1"
 rxjava = "2.1.2"
 espresso = "3.1.1-alpha01"
@@ -65,6 +68,9 @@ androidx-drawerlayout = { module = "androidx.drawerlayout:drawerlayout", version
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 r8 = { module = "com.android.tools:r8", version.ref = "r8" }
+rhino-xml = { module = "org.mozilla:rhino-xml", version.ref = "rhino-xml" }
+rhino-tools = { module = "org.mozilla:rhino-tools", version.ref = "rhino-tools" }
+rhino = { module = "org.mozilla:rhino", version.ref = "rhino" }
 shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
 commonmark-java = { module = "com.github.atlassian:commonmark-java", version.ref = "commonmark-java" }
 commons = { module = "com.afollestad.material-dialogs:commons", version.ref = "dialogs-commons" }
