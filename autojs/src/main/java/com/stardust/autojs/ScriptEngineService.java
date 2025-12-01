@@ -38,7 +38,6 @@ import static com.stardust.autojs.runtime.exception.ScriptInterruptedException.c
 
 public class ScriptEngineService {
 
-    private static final String LOG_TAG = "ScriptEngineService";
     private static final EventBus EVENT_BUS = new EventBus();
     private static final ScriptExecutionListener GLOBAL_LISTENER = new SimpleScriptExecutionListener() {
         @Override
@@ -61,7 +60,6 @@ public class ScriptEngineService {
 
         @Override
         public void onException(ScriptExecution execution, Throwable e) {
-            e.printStackTrace();
             onFinish(execution);
             String message = null;
             if (!causedByInterrupted(e)) {
