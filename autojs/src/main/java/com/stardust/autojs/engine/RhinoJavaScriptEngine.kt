@@ -15,6 +15,7 @@ import com.stardust.pio.UncheckedIOException
 import org.mozilla.javascript.*
 import org.mozilla.javascript.commonjs.module.RequireBuilder
 import org.mozilla.javascript.commonjs.module.provider.SoftCachingModuleScriptProvider
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
@@ -92,7 +93,7 @@ open class RhinoJavaScriptEngine(private val mAndroidContext: android.content.Co
     }
 
     override fun forceStop() {
-        Log.d(LOG_TAG, "forceStop: interrupt Thread: $thread")
+        Timber.d("forceStop: interrupt thread = $thread")
         thread.interrupt()
     }
 
@@ -100,7 +101,7 @@ open class RhinoJavaScriptEngine(private val mAndroidContext: android.content.Co
     @Synchronized
     override fun destroy() {
         super.destroy()
-        Log.d(LOG_TAG, "on destroy")
+        Timber.d("on destroy")
         sContextEngineMap.remove(context)
         Context.exit()
     }
@@ -145,8 +146,8 @@ open class RhinoJavaScriptEngine(private val mAndroidContext: android.content.Co
     }
 
     protected fun setupContext(context: Context) {
-        context.optimizationLevel = -1
-        context.languageVersion = Context.VERSION_ES6
+        context.setInterpretedMode(true)
+        context.languageVersion = Context.VERSION_ECMASCRIPT
         context.locale = Locale.getDefault()
         context.wrapFactory = WrapFactory()
     }
