@@ -28,6 +28,7 @@ kotlin = "2.2.0"
 multidex = "2.0.1"
 mutabletheme = "1.0.0"
 opencv = "4.9.0"
+r8 = "8.13.17"
 recyclerview-flexibledivider = "1.4.0"
 retrofit = "3.0.0"
 retrofit2-kotlin-coroutines-adapter = "0.9.2"
@@ -40,7 +41,6 @@ appcompat = "1.6.1"
 eventbus = "3.3.1"
 shizuku = "13.1.5"
 timber = "5.0.1"
-zip4j = "2.11.5"
 dialogs-commons = "0.9.2.3"
 dialogs-core = "0.9.2.3"
 material = "1.12.0"
@@ -53,7 +53,6 @@ gson = "2.13.1"
 
 work = "2.8.1"
 fragment = "1.8.5"
-appcompat-version = "1.7.1"
 
 [libraries]
 android-issue-reporter = { module = "com.heinrichreimersoftware:android-issue-reporter", version.ref = "android-issue-reporter" }
@@ -65,6 +64,7 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx
 androidx-drawerlayout = { module = "androidx.drawerlayout:drawerlayout", version.ref = "drawerlayout" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
+r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
 commonmark-java = { module = "com.github.atlassian:commonmark-java", version.ref = "commonmark-java" }
 commons = { module = "com.afollestad.material-dialogs:commons", version.ref = "dialogs-commons" }
@@ -101,7 +101,6 @@ junit = { module = "junit:junit", version.ref = "junit" }
 eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 thoughtbot-expandablerecyclerview = { module = "com.thoughtbot:expandablerecyclerview", version.ref = "expandablerecyclerview-version" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
-zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 material-dialogs-core = { module = "com.afollestad.material-dialogs:core", version.ref = "dialogs-core" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 enhancedfloaty = { module = "com.github.hyb1996:EnhancedFloaty", version.ref = "enhancedfloaty" }

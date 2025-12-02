@@ -40,9 +40,7 @@ dependencies {
         exclude(group = "com.android.support", module = "support-annotations")
     }
     testImplementation(libs.junit)
-    api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(libs.eventbus)
-    implementation(libs.zip4j)
     api(libs.material.dialogs.core) {
         exclude(group = "com.android.support")
     }
@@ -67,6 +65,7 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.opencv)
     implementation(libs.androidx.browser)
+    implementation(libs.r8)
 
 
 }

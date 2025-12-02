@@ -1,159 +1,110 @@
-package com.stardust.autojs.rhino;
+package com.stardust.autojs.rhino
 
-import android.util.Log;
-
-import com.android.dx.command.dexer.Main;
-import com.stardust.pio.PFiles;
-import com.stardust.util.MD5;
-
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.FileHeader;
-import net.lingala.zip4j.model.ZipParameters;
-
-import org.mozilla.javascript.GeneratedClassLoader;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-
-import dalvik.system.DexClassLoader;
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.android.tools.r8.CompilationMode
+import com.android.tools.r8.D8
+import com.android.tools.r8.D8Command
+import com.android.tools.r8.OutputMode
+import com.android.tools.r8.origin.Origin
+import com.stardust.util.MD5
+import dalvik.system.DexClassLoader
+import org.mozilla.javascript.GeneratedClassLoader
+import timber.log.Timber
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
 
 /**
  * Created by Stardust on 2017/4/5.
+ *
+ * Create a new instance with the given parent classloader and cache dierctory
+ *
+ * @param parent the parent
+ * @param cacheDir the cache directory
  */
+class AndroidClassLoader(private val parent: ClassLoader, private val cacheDir: File) :
+    ClassLoader(parent), GeneratedClassLoader {
 
-public class AndroidClassLoader extends ClassLoader implements GeneratedClassLoader {
+    private val dexClassLoaders = mutableListOf<DexClassLoader>()
 
-
-    private static final String LOG_TAG = "AndroidClassLoader";
-    private final ClassLoader parent;
-    private final List<DexClassLoader> mDexClassLoaders = new ArrayList<>();
-    private final File mCacheDir;
-
-    /**
-     * Create a new instance with the given parent classloader and cache dierctory
-     *
-     * @param parent the parent
-     * @param dir    the cache directory
-     */
-    public AndroidClassLoader(ClassLoader parent, File dir) {
-        this.parent = parent;
-        mCacheDir = dir;
-        if (dir.exists()) {
-            PFiles.deleteFilesOfDir(dir);
-        } else {
-            dir.mkdirs();
-        }
+    init {
+        cacheDir.deleteRecursively()
+        cacheDir.mkdirs()
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Class<?> defineClass(String name, byte[] data) {
-        Log.d(LOG_TAG, "defineClass: name = " + name + " data.length = " + data.length);
-        File classFile = null;
+    override fun defineClass(name: String, data: ByteArray): Class<*> {
         try {
-            classFile = generateTempFile(name, false);
-            final ZipFile zipFile = new ZipFile(classFile);
-            final ZipParameters parameters = new ZipParameters();
-            parameters.setFileNameInZip(name.replace('.', '/') + ".class");
-            zipFile.addStream(new ByteArrayInputStream(data), parameters);
-            return dexJar(classFile, null).loadClass(name);
-        } catch (IOException | ClassNotFoundException e) {
-            throw new FatalLoadingException(e);
-        } finally {
-            if (classFile != null) {
-                classFile.delete();
+            val dexName = "${name}_${data.contentHashCode()}"
+            val outdir = File(cacheDir, dexName).also { it.mkdirs() }
+            val dexFile = File(outdir, "classes.dex")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                classToDex(data, outdir)
+            } else {
+                val classFile = File(outdir, "$dexName.class")
+                classFile.writeBytes(data)
+                legacyToDex(classFile, outdir).also { classFile.delete() }
             }
+            return loadDex(dexFile).loadClass(name).also {
+                dexFile.delete()
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+            throw FatalLoadingExceptionKt(e)
         }
     }
 
-    private File generateTempFile(String name, boolean create) throws IOException {
-        File file = new File(mCacheDir, name.hashCode() + System.currentTimeMillis() + ".jar");
-        if (create) {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-        } else {
-            file.delete();
-        }
-        return file;
-    }
-
-    public void loadJar(File jar) throws IOException {
-        Log.d(LOG_TAG, "loadJar: jar = " + jar);
-        if (!jar.exists() || !jar.canRead()) {
-            throw new FileNotFoundException("File does not exist or readable: " + jar.getPath());
-        }
-        File dexFile = new File(mCacheDir, generateDexFileName(jar));
-        if (dexFile.exists()) {
-            loadDex(dexFile);
-            return;
-        }
+    @Throws(IOException::class)
+    fun loadJar(jar: File) {
         try {
-            final File classFile = generateTempFile(jar.getPath(), false);
-            final ZipFile zipFile = new ZipFile(classFile);
-            final ZipFile jarFile = new ZipFile(jar);
-            //noinspection unchecked
-            for (FileHeader header : jarFile.getFileHeaders()) {
-                if (!header.isDirectory()) {
-                    final ZipParameters parameters = new ZipParameters();
-                    parameters.setFileNameInZip(header.getFileName());
-                    zipFile.addStream(jarFile.getInputStream(header), parameters);
-                }
+            if (!jar.exists() || !jar.canRead()) {
+                throw FileNotFoundException("File does not exist or readable: ${jar.path}")
             }
-            dexJar(classFile, dexFile);
-            classFile.delete();
-        } catch (ZipException e) {
-            throw new IOException(e);
+            val output = File(cacheDir, generateDexFileName(jar)).also { it.mkdirs() }
+            val dexFile = File(output, "classes.dex")
+            if (dexFile.exists()) {
+                loadDex(dexFile)
+                return
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                jarToDex(jar, output)
+            } else {
+                legacyToDex(jar, output)
+            }
+            loadDex(dexFile)
+        } catch (e: Exception) {
+            Timber.e(e)
+            throw e
         }
+
     }
 
-    private String generateDexFileName(File jar) {
-        String message = jar.getPath() + "_" + jar.lastModified();
-        return MD5.md5(message);
+    private fun generateDexFileName(jar: File): String {
+        val message = "${jar.path}_${jar.lastModified()}"
+        return MD5.md5(message)
     }
 
-    public DexClassLoader loadDex(File file) throws FileNotFoundException {
-        Log.d(LOG_TAG, "loadDex: file = " + file);
+    @Throws(FileNotFoundException::class)
+    fun loadDex(file: File): DexClassLoader {
+        Timber.d("loadDex: file = %s", file)
         if (!file.exists()) {
-            throw new FileNotFoundException(file.getPath());
+            throw FileNotFoundException(file.path)
         }
-        DexClassLoader loader = new DexClassLoader(file.getPath(), mCacheDir.getPath(), null, parent);
-        mDexClassLoaders.add(loader);
-        return loader;
+        val loader = DexClassLoader(file.path, cacheDir.path, null, parent)
+        dexClassLoaders.add(loader)
+        return loader
     }
 
-    private DexClassLoader dexJar(File classFile, File dexFile) throws IOException {
-        final Main.Arguments arguments = new Main.Arguments();
-        arguments.fileNames = new String[]{classFile.getPath()};
-        boolean isTmpDex = dexFile == null;
-        if (isTmpDex) {
-            dexFile = generateTempFile("dex-" + classFile.getPath(), true);
-        }
-        arguments.outName = dexFile.getPath();
-        arguments.jarOutput = true;
-        Main.run(arguments);
-        DexClassLoader loader = loadDex(dexFile);
-        if (isTmpDex) {
-            dexFile.delete();
-        }
-        return loader;
-    }
 
     /**
      * Does nothing
      *
      * @param aClass ignored
      */
-    @Override
-    public void linkClass(Class<?> aClass) {
+    override fun linkClass(aClass: Class<*>) {
         //doesn't make sense on android
     }
 
@@ -165,30 +116,53 @@ public class AndroidClassLoader extends ClassLoader implements GeneratedClassLoa
      * @return the class
      * @throws ClassNotFoundException if the class could not be found in any of the locations
      */
-    @Override
-    public Class<?> loadClass(String name, boolean resolve)
-            throws ClassNotFoundException {
-        Class<?> loadedClass = findLoadedClass(name);
+    @Throws(ClassNotFoundException::class)
+    override fun loadClass(name: String, resolve: Boolean): Class<*> {
+        var loadedClass = findLoadedClass(name)
         if (loadedClass == null) {
-            for (DexClassLoader dex : mDexClassLoaders) {
-                loadedClass = dex.loadClass(name);
+            for (dex in dexClassLoaders) {
+                loadedClass = try {
+                    dex.loadClass(name)
+                } catch (_: ClassNotFoundException) {
+                    null
+                }
                 if (loadedClass != null) {
-                    break;
+                    break
                 }
             }
             if (loadedClass == null) {
-                loadedClass = parent.loadClass(name);
+                loadedClass = parent.loadClass(name)
             }
         }
-        return loadedClass;
+        return loadedClass
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun classToDex(data: ByteArray, out: File) {
+        val cmd = D8Command.builder().addClassProgramData(data, Origin.unknown())
+            .setOutput(out.toPath(), OutputMode.DexIndexed)
+            .setMode(CompilationMode.RELEASE).build()
+        D8.run(cmd)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun jarToDex(jar: File, out: File) {
+        val cmd = D8Command.builder().addProgramFiles(jar.toPath())
+            .setOutput(out.toPath(), OutputMode.DexIndexed)
+            .setMode(CompilationMode.RELEASE).build()
+        D8.run(cmd)
+    }
+
+
+    fun legacyToDex(file: File, output: File) {
+        val args = arrayOf(
+            "--output", output.absolutePath, "--release", file.absolutePath
+        )
+        D8.main(args)
     }
 
     /**
      * Might be thrown in any Rhino method that loads bytecode if the loading failed
      */
-    public static class FatalLoadingException extends RuntimeException {
-        FatalLoadingException(Throwable t) {
-            super("Failed to define class", t);
-        }
-    }
+    class FatalLoadingExceptionKt(t: Throwable) : RuntimeException("Failed to define class", t)
 }
