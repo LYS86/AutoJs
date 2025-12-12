@@ -16,3 +16,5 @@
 /.idea/
 !.idea/gradle.xml
 **/build/**
+/.codebuddy/**
+/.vscode/settings.json
