@@ -14,8 +14,10 @@
     </declare-styleable>
 
     <declare-styleable name="PrefSwitch">
-        <attr name="key" format="string|reference"/>
-        <attr name="defaultValue" format="boolean"/>
+        <attr name="key" format="string|reference" />
+        <!--<attr name="defaultValue" format="boolean"/>-->
+        <!-- defaultValue 会和 androidx.preference.PreferenceManager 属性冲突       -->
+        <attr name="defValue" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="DrawerMenuItem">
