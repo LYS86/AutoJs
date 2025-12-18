@@ -17,8 +17,7 @@ import org.autojs.autojs.ui.widget.SimpleAdapterDataObserver
 
 class TaskManagerFragmentV2 : BaseFragment() {
 
-    private var _binding: FragmentTaskManagerBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentTaskManagerBinding
     private var isAdapterObserverRegistered = false
 
     private val adapterDataObserver = object : SimpleAdapterDataObserver() {
@@ -43,7 +42,7 @@ class TaskManagerFragmentV2 : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTaskManagerBinding.inflate(inflater, container, false)
+        binding = FragmentTaskManagerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -107,7 +106,6 @@ class TaskManagerFragmentV2 : BaseFragment() {
                 // Ignore
             }
         }
-        _binding = null
         super.onDestroyView()
     }
 }
