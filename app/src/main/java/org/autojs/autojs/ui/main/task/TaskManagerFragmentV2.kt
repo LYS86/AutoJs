@@ -9,15 +9,17 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.fragment.app.Fragment
 import org.autojs.autojs.R
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.databinding.FragmentTaskManagerBinding
 import org.autojs.autojs.ui.base.BaseFragment
 import org.autojs.autojs.ui.widget.SimpleAdapterDataObserver
 
-class TaskManagerFragmentV2 : BaseFragment() {
+class TaskManagerFragmentV2 : Fragment() {
 
-    private lateinit var binding: FragmentTaskManagerBinding
+    private var _binding: FragmentTaskManagerBinding? = null
+    private val binding get() = _binding!!
     private var isAdapterObserverRegistered = false
 
     private val adapterDataObserver = object : SimpleAdapterDataObserver() {
@@ -42,7 +44,7 @@ class TaskManagerFragmentV2 : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTaskManagerBinding.inflate(inflater, container, false)
+        _binding = FragmentTaskManagerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -106,6 +108,7 @@ class TaskManagerFragmentV2 : BaseFragment() {
                 // Ignore
             }
         }
+        _binding = null
         super.onDestroyView()
     }
 }
