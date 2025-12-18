@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.stardust.auojs.inrt.autojs.AutoJs
@@ -32,8 +31,22 @@ class LogActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        startActivity(Intent(this, SettingsActivity::class.java))
-        return true
+        when (item.itemId) {
+            R.id.restart -> {
+                AutoJs.instance.scriptEngineService.stopAll()
+                GlobalProjectLauncher.launch(this)
+                return true
+            }
+            R.id.stop -> {
+                AutoJs.instance.scriptEngineService.stopAllAndToast()
+                return true
+            }
+            R.id.settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
