@@ -21,7 +21,7 @@ import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.doc.DocsFragmentV2
 import org.autojs.autojs.ui.log.LogActivity
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
-import org.autojs.autojs.ui.main.task.TaskManagerFragmentV2
+import org.autojs.autojs.ui.main.task.TaskManagerFragment
 import org.autojs.autojs.ui.widget.SearchViewItem
 import org.greenrobot.eventbus.EventBus
 
@@ -76,7 +76,7 @@ class MainActivity : BaseActivity() {
             FragmentPagerAdapterBuilder(this)
                 .add(MyScriptListFragment(), R.string.text_file)
                 .add(DocsFragmentV2(), R.string.text_tutorial)
-                .add(TaskManagerFragmentV2(), R.string.text_manage).build()
+                .add(TaskManagerFragment(), R.string.text_manage).build()
 
         binding.viewpager.adapter = pagerAdapter
         tabLayout.setupWithViewPager(binding.viewpager)

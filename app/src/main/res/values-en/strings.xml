@@ -97,7 +97,7 @@
     <string name="text_use_volume_to_stop_running">Stop all scripts when volume changes</string>
     <string name="text_need_to_enable_accessibility_service">Need to enable Accessibility Service</string>
     <string name="text_refresh">Refresh</string>
-    <string name="notice_no_running_script"><![CDATA[No running script φ(>ω<*)]]></string>
+
     <string name="text_checking_update">Checking for updates</string>
     <string name="text_new_version">New Version</string>
     <string name="text_is_latest_version">No newer version found</string>

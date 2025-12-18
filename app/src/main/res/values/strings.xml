@@ -105,7 +105,6 @@
     <string name="text_import_fail">导入失败</string>
     <string name="text_no_brower">没有浏览器耶o(╯□╰)o快去安装一个吧</string>
     <string name="text_refresh">刷新</string>
-    <string name="notice_no_running_script"><![CDATA[没有正在运行的脚本 φ(>ω<*)]]></string>
     <string name="text_please_choose_a_script">请选择脚本</string>
     <string name="text_edit_prepare_script">编辑预执行脚本</string>
     <string name="text_pre_execute_script">预执行脚本</string>
