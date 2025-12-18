@@ -18,7 +18,7 @@ import org.autojs.autojs.BuildConfig
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ActivityMainBinding
 import org.autojs.autojs.ui.BaseActivity
-import org.autojs.autojs.ui.doc.DocsFragmentV2
+import org.autojs.autojs.ui.doc.DocsFragment
 import org.autojs.autojs.ui.log.LogActivity
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
 import org.autojs.autojs.ui.main.task.TaskManagerFragment
@@ -75,7 +75,7 @@ class MainActivity : BaseActivity() {
         pagerAdapter =
             FragmentPagerAdapterBuilder(this)
                 .add(MyScriptListFragment(), R.string.text_file)
-                .add(DocsFragmentV2(), R.string.text_tutorial)
+                .add(DocsFragment(), R.string.text_tutorial)
                 .add(TaskManagerFragment(), R.string.text_manage).build()
 
         binding.viewpager.adapter = pagerAdapter
