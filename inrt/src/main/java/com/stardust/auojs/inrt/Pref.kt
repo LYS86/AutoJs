@@ -1,7 +1,8 @@
 package com.stardust.auojs.inrt
 
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.core.content.edit
+import androidx.preference.PreferenceManager
 
 import com.stardust.app.GlobalAppContext
 
@@ -12,22 +13,16 @@ import com.stardust.app.GlobalAppContext
 object Pref {
 
     private const val KEY_FIRST_USING = "key_first_using"
-    private var sPreferences: SharedPreferences? = null
 
-    val preferences: SharedPreferences
-        get() {
-            return sPreferences ?: {
-                val pref = PreferenceManager.getDefaultSharedPreferences(GlobalAppContext.get())
-                sPreferences = pref
-                pref
-            }()
-        }
+    val preferences: SharedPreferences by lazy {
+        PreferenceManager.getDefaultSharedPreferences(GlobalAppContext.get())
+    }
 
     val isFirstUsing: Boolean
         get() {
             val firstUsing = preferences.getBoolean(KEY_FIRST_USING, true)
             if (firstUsing) {
-                preferences.edit().putBoolean(KEY_FIRST_USING, false).apply()
+                preferences.edit { putBoolean(KEY_FIRST_USING, false) }
             }
             return firstUsing
         }

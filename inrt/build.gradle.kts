@@ -106,5 +106,6 @@ dependencies {
     }
 
     implementation(libs.timber)
+    implementation(libs.androidx.preference)
     implementation(project(":autojs"))
 }
