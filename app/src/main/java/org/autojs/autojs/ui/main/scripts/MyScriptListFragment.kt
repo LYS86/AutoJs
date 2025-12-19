@@ -37,7 +37,6 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        checkPermissions()
         EventBus.getDefault().register(this)
     }
 
@@ -45,17 +44,8 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMyScriptListBinding.bind(view)
         setupScriptListView()
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (binding.scriptFileList.canGoBack()) {
-                        binding.scriptFileList.goBack()
-                    } else {
-                        requireActivity().onBackPressedDispatcher.onBackPressed()
-                    }
-                }
-            })
+        setupBackPressHandler()
+        checkPermission()
     }
 
     private fun setupScriptListView() {
@@ -140,8 +130,35 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         }
     }
 
-    private fun checkPermissions() {
-        if (hasStoragePermission()) return
+    private fun setupBackPressHandler() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (binding.scriptFileList.canGoBack()) {
+                        binding.scriptFileList.goBack()
+                    } else {
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
+                    }
+                }
+            })
+    }
+
+    private fun checkPermission() {
+        if (hasStoragePermission()) {
+            Explorers.workspace().refreshAll()
+            return
+        }
+        requireActivity()
+        showSnackbar(
+            message = "需要存储权限读写文件",
+            actionText = "授权"
+        ) {
+            requestStoragePermission()
+        }
+    }
+
+    private fun requestStoragePermission() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             requestPermission(
                 READ_EXTERNAL_STORAGE
@@ -154,7 +171,6 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
             requireActivity(),
             MANAGE_EXTERNAL_STORAGE
         )
-
     }
 
     private fun hasStoragePermission(): Boolean {
@@ -177,6 +193,7 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         }
     }
 
+//    NOTE: 默认路径变更，刷新当前页面
     @Subscribe
     fun onGlobalExplorerChange(event: ExplorerChangeEvent) {
         if (event.action == ExplorerChangeEvent.ALL) {
@@ -193,10 +210,12 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         )
         _binding = null
         super.onDestroyView()
+        Timber.d("%s onDestroyView", this::class.java.simpleName)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        Timber.d("%s onDestroy", this::class.java.simpleName)
         EventBus.getDefault().unregister(this)
     }
 }

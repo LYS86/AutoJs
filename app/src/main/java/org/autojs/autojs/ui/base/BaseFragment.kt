@@ -43,6 +43,18 @@ abstract class BaseFragment : Fragment {
        Snackbar.make(requireView(), resId, duration).show()
     }
 
+    fun showSnackbar(
+        message: String,
+        duration: Int = Snackbar.LENGTH_INDEFINITE,
+        actionText: String,
+        action: () -> Unit
+    ) {
+        Snackbar.make(requireView(), message, duration).apply {
+            setAction(actionText) { action() }
+            show()
+        }
+    }
+
     fun showToast(resId: Int, duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(requireContext(), resId, duration).show()
     }
