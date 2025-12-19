@@ -2,7 +2,7 @@ package org.autojs.autojs
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import androidx.core.content.edit
 import com.stardust.app.GlobalAppContext
 import org.autojs.autojs.R
@@ -10,13 +10,6 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-/**
- * 偏好设置工具类
- *
- * 注意：由于当前项目使用 AndroidX 依赖会有编译问题，暂时无法使用。
- * 待未来升级到 AndroidX 后，应替换为：
- * import androidx.preference.PreferenceManager
- */
 object PrefV2 {
 
     private val context: Context
@@ -38,8 +31,6 @@ object PrefV2 {
     fun string(key: String, default: String) = StringPreference(key, default)
     fun stringSet(key: String, default: Set<String>) = StringSetPreference(key, default)
 
-    // ================== 文档相关偏好设置 ================== //
-    
     /**
      * 获取文档URL
      * 根据用户设置的文档源返回相应的URL

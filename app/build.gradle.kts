@@ -143,4 +143,5 @@ dependencies {
     implementation(libs.roundedimageview)
     implementation(libs.jdeferred.android)
     implementation(libs.rootshell)
+    implementation(libs.androidx.preference)
 }
