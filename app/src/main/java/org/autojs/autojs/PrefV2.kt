@@ -2,10 +2,11 @@ package org.autojs.autojs
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
+import android.os.Environment
 import androidx.core.content.edit
+import androidx.preference.PreferenceManager
 import com.stardust.app.GlobalAppContext
-import org.autojs.autojs.R
+import java.io.File
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -15,7 +16,7 @@ object PrefV2 {
     private val context: Context
         get() = GlobalAppContext.get()
 
-    private val defaultPrefs: SharedPreferences by lazy {
+    val defaultPrefs: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(context)
     }
 
@@ -46,6 +47,18 @@ object PrefV2 {
         } else {
             "https://www.autojs.org/assets/autojs/docs/"
         }
+    }
+
+    /**
+     * 获取脚本目录路径
+     */
+    fun getScriptDirPath(): String {
+        val scriptDir = context.getString(R.string.default_value_script_dir_path)
+        val dir = defaultPrefs.getString(
+            context.getString(R.string.key_script_dir_path),
+            scriptDir
+        ) ?: scriptDir
+        return File(Environment.getExternalStorageDirectory(), dir).path
     }
 
     // ================== 一次性布尔值 ================== //

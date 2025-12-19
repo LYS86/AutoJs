@@ -5,7 +5,6 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -14,9 +13,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import com.stardust.autojs.permission.PermissionManager
-import org.autojs.autojs.Pref
+import org.autojs.autojs.PrefV2
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentMyScriptListBinding
+import org.autojs.autojs.external.fileprovider.AppFileProvider
 import org.autojs.autojs.model.explorer.ExplorerChangeEvent
 import org.autojs.autojs.model.explorer.ExplorerDirPage
 import org.autojs.autojs.model.explorer.Explorers
@@ -28,6 +28,8 @@ import org.autojs.autojs.ui.project.ProjectConfigActivity
 import org.autojs.autojs.ui.viewmodel.ExplorerItemList
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import timber.log.Timber
+import java.io.File
 
 class MyScriptListFragment : BaseFragment() {
 
@@ -70,17 +72,37 @@ class MyScriptListFragment : BaseFragment() {
 
     private fun setupScriptListView() {
         val sortConfig = ExplorerItemList.SortConfig.from(
-            PreferenceManager.getDefaultSharedPreferences(requireContext())
+            PrefV2.defaultPrefs
         )
         binding.scriptFileList.sortConfig = sortConfig
         binding.scriptFileList.setExplorer(
             Explorers.workspace(),
-            ExplorerDirPage.createRoot(Pref.getScriptDirPath())
+            ExplorerDirPage.createRoot(PrefV2.getScriptDirPath())
         )
-        binding.scriptFileList.setOnItemClickListener { v, item ->
+        binding.scriptFileList.setOnItemClickListener { _, item ->
             if (item.isEditable()) {
                 Scripts.edit(requireActivity(), item.toScriptFile())
+            } else {
+                openFile(item.path)
             }
+        }
+    }
+
+    /*TODO: 浏览器(via,chrome)无法打开html，提示：requires the provider be exported, or grantUriPermission()*/
+    private fun openFile(path: String) {
+        if (path.isEmpty()) return
+        val context = requireContext()
+        val uri = AppFileProvider.getUriForFile(context, File(path))
+        val mimeType = context.contentResolver.getType(uri) ?: "*/*"
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, mimeType)
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        }
+        try {
+            startActivity(Intent.createChooser(intent, getString(R.string.text_open_by_other_apps)))
+        } catch (e: Exception) {
+            Timber.e(e)
         }
     }
 
@@ -172,17 +194,17 @@ class MyScriptListFragment : BaseFragment() {
         if (event.action == ExplorerChangeEvent.ALL) {
             binding.scriptFileList.setExplorer(
                 Explorers.workspace(),
-                ExplorerDirPage.createRoot(Pref.getScriptDirPath())
+                ExplorerDirPage.createRoot(PrefV2.getScriptDirPath())
             )
         }
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
-        binding.scriptFileList.sortConfig?.saveInto(
-            PreferenceManager.getDefaultSharedPreferences(requireContext())
-        )
         _binding = null
+        binding.scriptFileList.sortConfig?.saveInto(
+            PrefV2.defaultPrefs
+        )
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
