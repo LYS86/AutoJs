@@ -8,7 +8,11 @@ import com.stardust.autojs.permission.PermissionManager
 import org.autojs.autojs.ui.common.MessageUtils
 import org.autojs.autojs.ui.permission.PermissionHub
 
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment : Fragment {
+    
+    constructor() : super()
+    
+    constructor(layoutResId: Int) : super(layoutResId)
 
      fun hasPermission(permission: String): Boolean {
         return PermissionManager.hasPermission(requireContext(), permission)

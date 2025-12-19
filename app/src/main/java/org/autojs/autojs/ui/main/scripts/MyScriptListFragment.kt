@@ -5,12 +5,10 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import com.stardust.autojs.permission.PermissionManager
 import org.autojs.autojs.PrefV2
@@ -31,7 +29,7 @@ import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import java.io.File
 
-class MyScriptListFragment : BaseFragment() {
+class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
 
     private var _binding: FragmentMyScriptListBinding? = null
     private val binding get() = _binding!!
@@ -43,17 +41,9 @@ class MyScriptListFragment : BaseFragment() {
         EventBus.getDefault().register(this)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentMyScriptListBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentMyScriptListBinding.bind(view)
         setupScriptListView()
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -62,9 +52,7 @@ class MyScriptListFragment : BaseFragment() {
                     if (binding.scriptFileList.canGoBack()) {
                         binding.scriptFileList.goBack()
                     } else {
-                        isEnabled = false
                         requireActivity().onBackPressedDispatcher.onBackPressed()
-                        isEnabled = true
                     }
                 }
             })
@@ -200,10 +188,10 @@ class MyScriptListFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
-        _binding = null
         binding.scriptFileList.sortConfig?.saveInto(
             PrefV2.defaultPrefs
         )
+        _binding = null
         super.onDestroyView()
     }
 
