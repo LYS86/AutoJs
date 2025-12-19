@@ -9,11 +9,11 @@ android {
     compileSdk = Versions.compileSdk
 
     defaultConfig {
-        applicationId = "org.autojs.autojs"
-    minSdk = Versions.minSdk
-    targetSdk = Versions.targetSdk
-    versionCode = Versions.appVersionCode
-    versionName = Versions.appVersionName
+        applicationId = "io.github.autojs"
+        minSdk = Versions.minSdk
+        targetSdk = Versions.targetSdk
+        versionCode = Versions.appVersionCode
+        versionName = Versions.appVersionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
