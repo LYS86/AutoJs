@@ -266,7 +266,7 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                 .positiveText(R.string.text_install)
                 .negativeText(android.R.string.cancel)
                 .onPositive((dialog, which) ->
-                        IntentUtil.installApkOrToast(BuildActivity.this, outApk.getPath(), AppFileProvider.AUTHORITY)
+                        IntentUtil.installApkOrToast(BuildActivity.this, outApk.getPath(), AppFileProvider.getAuthority(BuildActivity.this))
                 )
                 .show();
     }

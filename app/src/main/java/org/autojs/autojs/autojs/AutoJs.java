@@ -104,7 +104,7 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
 
     @Override
     protected AppUtils createAppUtils(Context context) {
-        return new AppUtils(context, AppFileProvider.AUTHORITY);
+        return new AppUtils(context, AppFileProvider.getAuthority(context));
     }
 
     @Override

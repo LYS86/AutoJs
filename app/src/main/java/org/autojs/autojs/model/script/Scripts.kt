@@ -67,7 +67,8 @@ object Scripts {
 
 
     fun openByOtherApps(uri: Uri) {
-        IntentUtil.viewFile(GlobalAppContext.get(), uri, "text/plain", AppFileProvider.AUTHORITY)
+        val context = GlobalAppContext.get()
+        IntentUtil.viewFile(context, uri, "text/plain", AppFileProvider.getAuthority(context))
     }
 
     fun openByOtherApps(file: File) {
@@ -138,7 +139,7 @@ object Scripts {
                 .setType("text/plain")
             .putExtra(
                 Intent.EXTRA_STREAM,
-                IntentUtil.getUriOfFile(context, file.path, AppFileProvider.AUTHORITY)
+                IntentUtil.getUriOfFile(context, file.path, AppFileProvider.getAuthority(context))
             ),
                 GlobalAppContext.getString(R.string.text_send)
         ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))

@@ -86,8 +86,8 @@
             android:theme="@style/AppTheme.Transparent" />
 
         <provider
-            android:name="org.autojs.autojs.external.fileprovider.AppFileProvider"
-            android:authorities="org.autojs.autojs.fileprovider"
+            android:name=".external.fileprovider.AppFileProvider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

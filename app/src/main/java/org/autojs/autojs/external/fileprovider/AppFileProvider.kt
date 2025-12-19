@@ -8,10 +8,15 @@ import java.io.File
 class AppFileProvider : FileProvider() {
 
     companion object {
-        const val AUTHORITY = "org.autojs.autojs.fileprovider"
 
+        @JvmStatic
+        fun getAuthority(context: Context): String {
+            return "${context.packageName}.fileprovider"
+        }
+
+        @JvmStatic
         fun getUriForFile(context: Context, file: File): Uri {
-            return getUriForFile(context, AUTHORITY, file)
+            return getUriForFile(context, getAuthority(context), file)
         }
     }
 }
