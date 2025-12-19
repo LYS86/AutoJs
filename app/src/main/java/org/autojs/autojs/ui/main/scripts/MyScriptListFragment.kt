@@ -5,9 +5,6 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import com.stardust.autojs.permission.PermissionManager
@@ -36,7 +33,6 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         EventBus.getDefault().register(this)
     }
 
@@ -45,6 +41,7 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         _binding = FragmentMyScriptListBinding.bind(view)
         setupScriptListView()
         setupBackPressHandler()
+        setupFloatingActionMenu()
         checkPermission()
     }
 
@@ -84,49 +81,42 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_script_list, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
+    private fun setupFloatingActionMenu() {
+        // 默认展开 FloatingActionMenu
+        binding.floatingActionMenu.expand()
+        binding.floatingActionMenu.setOnFloatingActionButtonClickListener { button, pos ->
+            when (pos) {
+                0 -> { // 新建文件夹
+                    ScriptOperations(
+                        requireContext(), binding.scriptFileList,
+                        binding.scriptFileList.currentPage
+                    ).newDirectory()
+                }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_new_directory -> {
-                ScriptOperations(
-                    requireContext(), binding.scriptFileList,
-                    binding.scriptFileList.currentPage
-                ).newDirectory()
-                true
+                1 -> { // 新建文件
+                    ScriptOperations(
+                        requireContext(), binding.scriptFileList,
+                        binding.scriptFileList.currentPage
+                    ).newFile()
+                }
+
+                2 -> { // 导入文件
+                    ScriptOperations(
+                        requireContext(), binding.scriptFileList,
+                        binding.scriptFileList.currentPage
+                    ).importFile()
+                }
+
+                3 -> { // 新建项目
+                    startActivity(Intent(context, ProjectConfigActivity::class.java).apply {
+                        putExtra(
+                            ProjectConfigActivity.EXTRA_PARENT_DIRECTORY,
+                            binding.scriptFileList.currentPage.path
+                        )
+                        putExtra(ProjectConfigActivity.EXTRA_NEW_PROJECT, true)
+                    })
+                }
             }
-
-            R.id.menu_new_file -> {
-                ScriptOperations(
-                    requireContext(), binding.scriptFileList,
-                    binding.scriptFileList.currentPage
-                ).newFile()
-                true
-            }
-
-            R.id.menu_import -> {
-                ScriptOperations(
-                    requireContext(), binding.scriptFileList,
-                    binding.scriptFileList.currentPage
-                ).importFile()
-                true
-            }
-
-            R.id.menu_new_project -> {
-                startActivity(Intent(context, ProjectConfigActivity::class.java).apply {
-                    putExtra(
-                        ProjectConfigActivity.EXTRA_PARENT_DIRECTORY,
-                        binding.scriptFileList.currentPage.path
-                    )
-                    putExtra(ProjectConfigActivity.EXTRA_NEW_PROJECT, true)
-                })
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -193,7 +183,7 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         }
     }
 
-//    NOTE: 默认路径变更，刷新当前页面
+    //    NOTE: 默认路径变更，刷新当前页面
     @Subscribe
     fun onGlobalExplorerChange(event: ExplorerChangeEvent) {
         if (event.action == ExplorerChangeEvent.ALL) {
