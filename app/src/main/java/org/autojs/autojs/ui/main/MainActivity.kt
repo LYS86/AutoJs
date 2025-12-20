@@ -80,26 +80,6 @@ class MainActivity : BaseActivity() {
 
         binding.viewpager.adapter = pagerAdapter
         tabLayout.setupWithViewPager(binding.viewpager)
-        setUpViewPagerFragmentBehaviors()
-    }
-
-    private fun setUpViewPagerFragmentBehaviors() {
-        pagerAdapter.setOnFragmentInstantiateListener { pos, fragment ->
-            if (pos == binding.viewpager.currentItem) {
-                (fragment as? ViewPagerFragment)?.onPageShow()
-            }
-        }
-
-        binding.viewpager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
-            private var previousFragment: ViewPagerFragment? = null
-
-            override fun onPageSelected(position: Int) {
-                val fragment = pagerAdapter.getStoredFragment(position) as? ViewPagerFragment
-                previousFragment?.onPageHide()
-                previousFragment = fragment
-                fragment?.onPageShow()
-            }
-        })
     }
 
     override fun onStart() {
