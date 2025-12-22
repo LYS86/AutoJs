@@ -1,59 +1,28 @@
-package com.stardust.autojs.project;
+package com.stardust.autojs.project
 
+import com.google.gson.annotations.SerializedName
+import java.util.zip.CRC32
 
-import com.google.gson.annotations.SerializedName;
-
-import java.util.zip.CRC32;
-
-public class BuildInfo {
-
+data class BuildInfo(
     @SerializedName("build_time")
-    private long mBuildTime;
-
+    var buildTime: Long = 0,
     @SerializedName("build_id")
-    private String mBuildId;
-
+    var buildId: String = "",
     @SerializedName("build_number")
-    private long mBuildNumber;
+    var buildNumber: Long = 0
+) {
+    companion object {
+        @JvmStatic
+        fun generate(buildNumber: Long): BuildInfo {
+            val time = System.currentTimeMillis()
+            val id = generateBuildId(buildNumber, time)
+            return BuildInfo(time, id, buildNumber)
+        }
 
-    public BuildInfo() {
-    }
-
-    public long getBuildNumber() {
-        return mBuildNumber;
-    }
-
-    public void setBuildNumber(long buildNumber) {
-        mBuildNumber = buildNumber;
-    }
-
-    public long getBuildTime() {
-        return mBuildTime;
-    }
-
-    public void setBuildTime(long buildTime) {
-        mBuildTime = buildTime;
-    }
-
-    public String getBuildId() {
-        return mBuildId;
-    }
-
-    public void setBuildId(String buildId) {
-        mBuildId = buildId;
-    }
-
-    public static BuildInfo generate(long buildNumber) {
-        BuildInfo info = new BuildInfo();
-        info.setBuildNumber(buildNumber);
-        info.setBuildTime(System.currentTimeMillis());
-        info.setBuildId(generateBuildId(buildNumber, info.getBuildTime()));
-        return info;
-    }
-
-    private static String generateBuildId(long buildNumber, long buildTime) {
-        CRC32 crc32 = new CRC32();
-        crc32.update((buildNumber + "" + buildTime).getBytes());
-        return String.format("%08X", crc32.getValue()) + "-" + buildNumber;
+        private fun generateBuildId(buildNumber: Long, buildTime: Long): String {
+            val crc32 = CRC32()
+            crc32.update("$buildNumber$buildTime".toByteArray())
+            return "%08X-%d".format(crc32.value, buildNumber)
+        }
     }
 }
