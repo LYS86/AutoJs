@@ -14,6 +14,8 @@
     <string name="text_file_not_exists">文件不存在</string>
     <string name="mt_color_picker_title">选择主题颜色</string>
     <string name="text_no_file_rw_permission">无文件读写权限</string>
+    <string name="text_need_storage_permission">需要存储权限读写文件</string>
+    <string name="text_grant_permission">授权</string>
     <string name="text_no_accessibility_permission">无障碍服务未启动</string>
     <string name="text_drawer_close">关闭侧拉菜单</string>
     <string name="text_drawer_open">打开侧拉菜单</string>
@@ -385,7 +387,6 @@
     <string name="text_usage_stats_permission">查看使用统计权限</string>
     <string name="description_usage_stats_permission">通过\"查看使用统计\"权限可以获取本设备过去使用应用的情况，从而使获取当前应用(currentPackage)时更准确。</string>
     <string name="text_open_with">打开方式</string>
-    <string name="description_storage_permission">对于 Android 11 及以上系统,需要授予"所有文件访问权限"，才能正常读写文件。</string>
     <plurals name="air_error_short_description" key="air_error_short_description">
         <item quantity="one">描述至少要 %d 个字.</item>
         <item quantity="other">描述至少要 %d 个字.</item>

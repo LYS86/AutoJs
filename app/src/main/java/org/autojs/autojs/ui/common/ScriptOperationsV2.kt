@@ -5,10 +5,11 @@ import android.net.Uri
 import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
+import com.stardust.autojs.project.ProjectConfig
 import com.stardust.pio.PFiles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.autojs.autojs.Pref
+import org.autojs.autojs.PrefV2
 import org.autojs.autojs.R
 import org.autojs.autojs.model.explorer.Explorer
 import org.autojs.autojs.model.explorer.ExplorerDirPage
@@ -16,6 +17,7 @@ import org.autojs.autojs.model.explorer.ExplorerFileItem
 import org.autojs.autojs.model.explorer.ExplorerPage
 import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.model.script.ScriptFile
+import org.autojs.autojs.model.script.Scripts
 import org.autojs.autojs.util.FileInfo
 import org.autojs.autojs.util.parseContentUri
 import timber.log.Timber
@@ -24,10 +26,69 @@ import java.io.InputStream
 class ScriptOperationsV2(
     private val context: Context,
     private val view: View? = null,
-    private val currentDirectory: ScriptFile = ScriptFile(Pref.getScriptDirPath()),
+    private val currentDirectory: ScriptFile = ScriptFile(PrefV2.getScriptDirPath()),
     private val explorer: Explorer = Explorers.workspace(),
     private val explorerPage: ExplorerPage = ExplorerDirPage(currentDirectory, null)
 ) {
+
+    suspend fun createFile(
+        fileName: String, content: String? = null, editor: Boolean = false
+    ): Boolean = withContext(Dispatchers.IO) {
+        try {
+            ScriptFile(currentDirectory, fileName).also {
+                it.parentFile?.mkdirs()
+                it.createNewFile()
+                content?.let { str -> it.writeText(str) }
+                if (editor) openEditor(it)
+                refreshAll()
+            }
+            true
+        } catch (e: Exception) {
+            Timber.e(e)
+            false
+        }
+    }
+
+    suspend fun createFolder(folderName: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            ScriptFile(currentDirectory, folderName).also {
+                it.mkdirs()
+                refreshAll()
+            }
+            true
+        } catch (e: Exception) {
+            Timber.e(e)
+            false
+        }
+    }
+
+    suspend fun createProject(projectName: String, editor: Boolean = false): Boolean =
+        withContext(Dispatchers.IO) {
+            val projectDir = ScriptFile(currentDirectory, projectName)
+            try {
+                projectDir.mkdirs()
+                ProjectConfig().apply {
+                    name = projectName
+                    packageName = "com.example.$projectName"
+                    mainScriptFile = "main.js"
+                    versionCode = 1
+                    versionName = "1.0.0"
+                }.also {
+                    ScriptFile(projectDir, "project.json").writeText(it.toJson())
+                    ScriptFile(projectDir, "main.js").createNewFile()
+                }
+                refreshAll()
+                if (editor) openEditor(projectDir)
+                true
+            } catch (e: Exception) {
+                Timber.e(e)
+                projectDir.delete()
+                false
+            }
+        }
+
+    private suspend fun openEditor(file: ScriptFile) =
+        withContext(Dispatchers.Main) { Scripts.edit(context, file.absolutePath) }
 
     /**
      * 处理uri,将文件复制到指定位置
@@ -70,8 +131,15 @@ class ScriptOperationsV2(
     /**
      * 处理sharedText导入
      */
-    suspend fun importSharedText(sharedText: String, fileName: String = "shared_text", fileExtension: String = "js"): Boolean {
-        Timber.d("导入sharedText开始: 文件名=%s, 扩展名=%s, 内容长度=%d", fileName, fileExtension, sharedText.length)
+    suspend fun importSharedText(
+        sharedText: String, fileName: String = "shared_text", fileExtension: String = "js"
+    ): Boolean {
+        Timber.d(
+            "导入sharedText开始: 文件名=%s, 扩展名=%s, 内容长度=%d",
+            fileName,
+            fileExtension,
+            sharedText.length
+        )
 
         return try {
             val pathTo = generateTargetPath(FileInfo(fileName, fileExtension))
@@ -133,7 +201,7 @@ class ScriptOperationsV2(
         return PFiles.generateNotExistingPath(basePath, ".${fileInfo.extension}")
     }
 
-    private fun copyResult(success: Boolean, pathTo: String) {
+    private suspend fun copyResult(success: Boolean, pathTo: String) {
         if (success) {
             Timber.d("文件导入成功: %s", pathTo)
             notifyFileCreated(ScriptFile(pathTo))
@@ -144,7 +212,11 @@ class ScriptOperationsV2(
         }
     }
 
-    private fun notifyFileCreated(scriptFile: ScriptFile) {
+    private suspend fun refreshAll() = withContext(Dispatchers.Main) {
+        explorer.refreshAll()
+    }
+
+    private suspend fun notifyFileCreated(scriptFile: ScriptFile) = withContext(Dispatchers.Main) {
         val item = if (scriptFile.isDirectory) {
             ExplorerDirPage(scriptFile, explorerPage)
         } else {

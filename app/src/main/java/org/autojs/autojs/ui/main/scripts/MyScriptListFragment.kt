@@ -12,15 +12,13 @@ import org.autojs.autojs.PrefV2
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentMyScriptListBinding
 import org.autojs.autojs.external.fileprovider.AppFileProvider
-import org.autojs.autojs.model.explorer.ExplorerChangeEvent
 import org.autojs.autojs.model.explorer.ExplorerDirPage
 import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.model.script.Scripts
 import org.autojs.autojs.ui.base.BaseFragment
-import org.autojs.autojs.ui.common.ScriptOperations
+import org.autojs.autojs.ui.dialog.CreateDialog
 import org.autojs.autojs.ui.main.QueryEvent
-import org.autojs.autojs.ui.project.ProjectConfigActivity
-import org.autojs.autojs.ui.viewmodel.ExplorerItemList
+import org.autojs.autojs.ui.viewmodel.ExplorerItemList.SortConfig
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
@@ -41,12 +39,12 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         _binding = FragmentMyScriptListBinding.bind(view)
         setupScriptListView()
         setupBackPressHandler()
-        setupFloatingActionMenu()
+        setupFab()
         checkPermission()
     }
 
     private fun setupScriptListView() {
-        val sortConfig = ExplorerItemList.SortConfig.from(
+        val sortConfig = SortConfig.from(
             PrefV2.defaultPrefs
         )
         binding.scriptFileList.sortConfig = sortConfig
@@ -81,42 +79,17 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         }
     }
 
-    private fun setupFloatingActionMenu() {
-        // 默认展开 FloatingActionMenu
-        binding.floatingActionMenu.expand()
-        binding.floatingActionMenu.setOnFloatingActionButtonClickListener { button, pos ->
-            when (pos) {
-                0 -> { // 新建文件夹
-                    ScriptOperations(
-                        requireContext(), binding.scriptFileList,
-                        binding.scriptFileList.currentPage
-                    ).newDirectory()
-                }
+    private fun setupFab() {
+        binding.fab.setOnClickListener {
+            showImportDialog()
+        }
+    }
 
-                1 -> { // 新建文件
-                    ScriptOperations(
-                        requireContext(), binding.scriptFileList,
-                        binding.scriptFileList.currentPage
-                    ).newFile()
-                }
-
-                2 -> { // 导入文件
-                    ScriptOperations(
-                        requireContext(), binding.scriptFileList,
-                        binding.scriptFileList.currentPage
-                    ).importFile()
-                }
-
-                3 -> { // 新建项目
-                    startActivity(Intent(context, ProjectConfigActivity::class.java).apply {
-                        putExtra(
-                            ProjectConfigActivity.EXTRA_PARENT_DIRECTORY,
-                            binding.scriptFileList.currentPage.path
-                        )
-                        putExtra(ProjectConfigActivity.EXTRA_NEW_PROJECT, true)
-                    })
-                }
-            }
+    private fun showImportDialog() {
+        val currentPage = binding.scriptFileList.currentPage
+        if (currentPage is ExplorerDirPage) {
+            val createDialog = CreateDialog.newInstance(currentPage)
+            createDialog.show(childFragmentManager, "CreateDialog")
         }
     }
 
@@ -127,7 +100,9 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
                 override fun handleOnBackPressed() {
                     if (binding.scriptFileList.canGoBack()) {
                         binding.scriptFileList.goBack()
+                        return
                     } else {
+                        isEnabled = false
                         requireActivity().onBackPressedDispatcher.onBackPressed()
                     }
                 }
@@ -141,8 +116,8 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         }
         requireActivity()
         showSnackbar(
-            message = "需要存储权限读写文件",
-            actionText = "授权"
+            message = getString(R.string.text_need_storage_permission),
+            actionText = getString(R.string.text_grant_permission)
         ) {
             requestStoragePermission()
         }
@@ -183,29 +158,16 @@ class MyScriptListFragment : BaseFragment(R.layout.fragment_my_script_list) {
         }
     }
 
-    //    NOTE: 默认路径变更，刷新当前页面
-    @Subscribe
-    fun onGlobalExplorerChange(event: ExplorerChangeEvent) {
-        if (event.action == ExplorerChangeEvent.ALL) {
-            binding.scriptFileList.setExplorer(
-                Explorers.workspace(),
-                ExplorerDirPage.createRoot(PrefV2.getScriptDirPath())
-            )
-        }
-    }
-
     override fun onDestroyView() {
         binding.scriptFileList.sortConfig?.saveInto(
             PrefV2.defaultPrefs
         )
         _binding = null
         super.onDestroyView()
-        Timber.d("%s onDestroyView", this::class.java.simpleName)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Timber.d("%s onDestroy", this::class.java.simpleName)
         EventBus.getDefault().unregister(this)
     }
 }
