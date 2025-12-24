@@ -1,392 +1,354 @@
-package com.stardust.autojs.runtime.api;
+package com.stardust.autojs.runtime.api
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.BatteryManager;
-import android.os.Build;
-import android.os.PowerManager;
-import android.os.Vibrator;
-import android.provider.Settings;
-import android.telephony.TelephonyManager;
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.media.AudioManager
+import android.net.wifi.WifiManager
+import android.os.BatteryManager
+import android.os.Build
+import android.os.PowerManager
+import android.os.Vibrator
+import android.provider.Settings
+import android.telephony.TelephonyManager
+import com.stardust.autojs.R
+import com.stardust.autojs.permission.PermissionManager.hasPermission
+import com.stardust.autojs.permission.PermissionManager.requestPermission
+import com.stardust.autojs.runtime.exception.ScriptException
+import com.stardust.pio.UncheckedIOException
+import com.stardust.util.ScreenMetrics
+import java.io.File
+import java.net.NetworkInterface
+import java.net.SocketException
+import java.util.Collections
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class Device(private val context: Context) {
 
-import com.stardust.autojs.R;
-import com.stardust.autojs.permission.PermissionManager;
-import com.stardust.autojs.runtime.exception.ScriptException;
-import com.stardust.pio.PFiles;
-import com.stardust.pio.UncheckedIOException;
-import com.stardust.util.ScreenMetrics;
+    val width: Int by lazy { ScreenMetrics.getDeviceScreenWidth() }
+    val height: Int by lazy { ScreenMetrics.getDeviceScreenHeight() }
+    val buildId: String by lazy { Build.ID }
+    val buildDisplay: String by lazy { Build.DISPLAY }
+    val product: String by lazy { Build.PRODUCT }
+    val board: String by lazy { Build.BOARD }
+    val brand: String by lazy { Build.BRAND }
+    val device: String by lazy { Build.DEVICE }
+    val model: String by lazy { Build.MODEL }
+    val bootloader: String by lazy { Build.BOOTLOADER }
+    val hardware: String by lazy { Build.HARDWARE }
+    val fingerprint: String by lazy { Build.FINGERPRINT }
+    val sdkInt: Int by lazy { Build.VERSION.SDK_INT }
+    val incremental: String by lazy { Build.VERSION.INCREMENTAL }
+    val release: String by lazy { Build.VERSION.RELEASE }
+    val baseOS: String? by lazy {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> Build.VERSION.BASE_OS
+            else -> null
+        }
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Collections;
-import java.util.List;
+    }
+    val securityPatch: String? by lazy {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> Build.VERSION.SECURITY_PATCH
+            else -> null
+        }
+    }
+    val codename: String by lazy { Build.VERSION.CODENAME }
 
-/**
- * Created by Stardust on 2017/12/2.
- */
-
-public class Device {
-
-    public static final int width = ScreenMetrics.getDeviceScreenWidth();
-
-    public static final int height = ScreenMetrics.getDeviceScreenHeight();
-
-    public static final String buildId = Build.ID;
-
-    public static final String buildDisplay = Build.DISPLAY;
-
-    public static final String product = Build.PRODUCT;
-
-    public static final String board = Build.BOARD;
-
-    public static final String brand = Build.BRAND;
-
-    public static final String device = Build.DEVICE;
-
-    public static final String model = Build.MODEL;
-
-    public static final String bootloader = Build.BOOTLOADER;
-
-    public static final String hardware = Build.HARDWARE;
-
-    public static final String fingerprint = Build.FINGERPRINT;
-
-    public static final int sdkInt = Build.VERSION.SDK_INT;
-
-    public static final String incremental = Build.VERSION.INCREMENTAL;
-
-    public static final String release = Build.VERSION.RELEASE;
-
-    public static final String baseOS;
-
-    public static final String securityPatch;
-
-    static {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            baseOS = Build.VERSION.BASE_OS;
-            securityPatch = Build.VERSION.SECURITY_PATCH;
-        } else {
-            baseOS = null;
-            securityPatch = null;
+    @Suppress("DEPRECATION")
+    val serial: String by lazy {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> Build.getSerial()
+            else -> Build.SERIAL
         }
     }
 
-    public static final String codename = Build.VERSION.CODENAME;
+    private var wakeLock: PowerManager.WakeLock? = null
+    private var wakeLockFlag: Int = 0
 
-    @SuppressLint("HardwareIds")
-    public static final String serial = Build.SERIAL;
-
-    private Context mContext;
-    private PowerManager.WakeLock mWakeLock;
-    private int mWakeLockFlag;
-
-    public Device(Context context) {
-        mContext = context;
+    private companion object {
+        const val FAKE_MAC_ADDRESS = "02:00:00:00:00:00"
     }
 
     @SuppressLint("HardwareIds")
-    @Nullable
-    public String getIMEI() {
-        checkReadPhoneStatePermission();
-        try {
-            return ((TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
-        } catch (SecurityException e) {
-            return null;
+    fun getIMEI(): String? {
+        checkReadPhoneStatePermission()
+        return try {
+            (context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager).deviceId
+        } catch (_: SecurityException) {
+            null
         }
     }
-
 
     @SuppressLint("HardwareIds")
-    public String getAndroidId() {
-        return Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+    fun getAndroidId(): String {
+        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    public int getBrightness() throws Settings.SettingNotFoundException {
-        return Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+    fun getBrightness(): Int {
+        return Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS)
     }
 
-    public int getBrightnessMode() throws Settings.SettingNotFoundException {
-        return Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE);
+    fun getBrightnessMode(): Int {
+        return Settings.System.getInt(
+            context.contentResolver,
+            Settings.System.SCREEN_BRIGHTNESS_MODE
+        )
     }
 
-    public void setBrightness(int b) throws Settings.SettingNotFoundException {
-        checkWriteSettingsPermission();
-        Settings.System.putInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, b);
+    fun setBrightness(value: Int) {
+        checkWriteSettingsPermission()
+        Settings.System.putInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS, value)
     }
 
-    public void setBrightnessMode(int b) throws Settings.SettingNotFoundException {
-        checkWriteSettingsPermission();
-        Settings.System.putInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, b);
+    fun setBrightnessMode(value: Int) {
+        checkWriteSettingsPermission()
+        Settings.System.putInt(
+            context.contentResolver,
+            Settings.System.SCREEN_BRIGHTNESS_MODE,
+            value
+        )
     }
 
-    public int getMusicVolume() {
-        return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .getStreamVolume(AudioManager.STREAM_MUSIC);
+    private inline fun <reified T> getSystemService(serviceName: String): T {
+        @Suppress("UNCHECKED_CAST")
+        return context.getSystemService(serviceName) as? T
+            ?: throw RuntimeException("should never happen...$serviceName")
     }
 
-    public int getNotificationVolume() {
-        return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+    fun getMusicVolume(): Int {
+        return getSystemService<AudioManager>(Context.AUDIO_SERVICE)
+            .getStreamVolume(AudioManager.STREAM_MUSIC)
     }
 
-    public int getAlarmVolume() {
-        return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .getStreamVolume(AudioManager.STREAM_ALARM);
+    fun getNotificationVolume(): Int {
+        return getSystemService<AudioManager>(Context.AUDIO_SERVICE)
+            .getStreamVolume(AudioManager.STREAM_NOTIFICATION)
     }
 
-    public int getMusicMaxVolume() {
-        return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+    fun getAlarmVolume(): Int {
+        return getSystemService<AudioManager>(Context.AUDIO_SERVICE)
+            .getStreamVolume(AudioManager.STREAM_ALARM)
     }
 
-    public int getNotificationMaxVolume() {
-        return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION);
+    fun getMusicMaxVolume(): Int {
+        return getSystemService<AudioManager>(Context.AUDIO_SERVICE)
+            .getStreamMaxVolume(AudioManager.STREAM_MUSIC)
     }
 
-    public int getAlarmMaxVolume() {
-        return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .getStreamMaxVolume(AudioManager.STREAM_ALARM);
+    fun getNotificationMaxVolume(): Int {
+        return getSystemService<AudioManager>(Context.AUDIO_SERVICE)
+            .getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION)
     }
 
-    public void setMusicVolume(int i) {
-        checkWriteSettingsPermission();
-        ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .setStreamVolume(AudioManager.STREAM_MUSIC, i, 0);
+    fun getAlarmMaxVolume(): Int {
+        return getSystemService<AudioManager>(Context.AUDIO_SERVICE)
+            .getStreamMaxVolume(AudioManager.STREAM_ALARM)
     }
 
-    public void setAlarmVolume(int i) {
-        checkWriteSettingsPermission();
-        ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .setStreamVolume(AudioManager.STREAM_ALARM, i, 0);
+    fun setMusicVolume(value: Int) {
+        checkWriteSettingsPermission()
+        getSystemService<AudioManager>(Context.AUDIO_SERVICE)
+            .setStreamVolume(AudioManager.STREAM_MUSIC, value, 0)
     }
 
-    public void setNotificationVolume(int i) {
-        checkWriteSettingsPermission();
-        ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
-                .setStreamVolume(AudioManager.STREAM_NOTIFICATION, i, 0);
+    fun setAlarmVolume(value: Int) {
+        checkWriteSettingsPermission()
+        getSystemService<AudioManager>(Context.AUDIO_SERVICE)
+            .setStreamVolume(AudioManager.STREAM_ALARM, value, 0)
     }
 
-    public float getBattery() {
-        Intent batteryIntent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        if (batteryIntent == null) {
-            return -1;
-        }
-        int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        float battery = ((float) level / scale) * 100.0f;
-        return Math.round(battery * 10) / 10;
+    fun setNotificationVolume(value: Int) {
+        checkWriteSettingsPermission()
+        getSystemService<AudioManager>(Context.AUDIO_SERVICE)
+            .setStreamVolume(AudioManager.STREAM_NOTIFICATION, value, 0)
     }
 
-    public long getTotalMem() {
-        ActivityManager activityManager = getSystemService(Context.ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo info = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(info);
-        return info.totalMem;
+    fun getBattery(): Float {
+        val batteryIntent =
+            context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+                ?: return -1f
+        val level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+        val scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+        val battery = (level.toFloat() / scale) * 100.0f
+        return Math.round(battery * 10) / 10.0f
     }
 
-    public long getAvailMem() {
-        ActivityManager activityManager = getSystemService(Context.ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo info = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(info);
-        return info.availMem;
+    fun getTotalMem(): Long {
+        val activityManager = getSystemService<ActivityManager>(Context.ACTIVITY_SERVICE)
+        val info = ActivityManager.MemoryInfo()
+        activityManager.getMemoryInfo(info)
+        return info.totalMem
     }
 
-    public boolean isCharging() {
-        Intent intent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        if (intent == null) {
-            throw new ScriptException("Cannot retrieve the battery state");
-        }
-        int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-        return plugged == BatteryManager.BATTERY_PLUGGED_AC || plugged == BatteryManager.BATTERY_PLUGGED_USB;
+    fun getAvailMem(): Long {
+        val activityManager = getSystemService<ActivityManager>(Context.ACTIVITY_SERVICE)
+        val info = ActivityManager.MemoryInfo()
+        activityManager.getMemoryInfo(info)
+        return info.availMem
     }
 
-    public void keepAwake(int flags, long timeout) {
-        checkWakeLock(flags);
-        mWakeLock.acquire(timeout);
+    fun isCharging(): Boolean {
+        val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            ?: throw ScriptException("Cannot retrieve the battery state")
+        val plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
+        return plugged == BatteryManager.BATTERY_PLUGGED_AC || plugged == BatteryManager.BATTERY_PLUGGED_USB
+    }
+
+    fun keepAwake(flags: Int, timeout: Long) {
+        checkWakeLock(flags)
+        wakeLock?.acquire(timeout)
     }
 
     @SuppressLint("WakelockTimeout")
-    public void keepAwake(int flags) {
-        checkWakeLock(flags);
-        mWakeLock.acquire();
+    fun keepAwake(flags: Int) {
+        checkWakeLock(flags)
+        wakeLock?.acquire()
     }
 
-    public boolean isScreenOn() {
-        //按照API文档来说不应该使用PowerManager.isScreenOn()，但是，isScreenOn()和实际不一致的情况通常只会出现在安卓智能手表的类似设备上
-        //因此这里仍然使用PowerManager.isScreenOn()
-        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-        //   return ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getState() == Display.STATE_ON;
-        //} else {
-        return ((PowerManager) getSystemService(Context.POWER_SERVICE)).isScreenOn();
-        //}
+    fun isScreenOn(): Boolean {
+        return getSystemService<PowerManager>(Context.POWER_SERVICE).isScreenOn
     }
 
-    public void wakeUpIfNeeded() {
+    fun wakeUpIfNeeded() {
         if (!isScreenOn()) {
-            wakeUp();
+            wakeUp()
         }
     }
 
-    public void wakeUp() {
-        keepScreenOn(200);
+    fun wakeUp() {
+        keepScreenOn(200)
     }
 
-    public void keepScreenOn() {
-        keepAwake(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP);
+    fun keepScreenOn() {
+        keepAwake(PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP)
     }
 
-    public void keepScreenOn(long timeout) {
-        keepAwake(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, timeout);
+    fun keepScreenOn(timeout: Long) {
+        keepAwake(
+            PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+            timeout
+        )
     }
 
-    public void keepScreenDim() {
-        keepAwake(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP);
+    fun keepScreenDim() {
+        keepAwake(PowerManager.SCREEN_DIM_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP)
     }
 
-    public void keepScreenDim(long timeout) {
-        keepAwake(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, timeout);
+    fun keepScreenDim(timeout: Long) {
+        keepAwake(PowerManager.SCREEN_DIM_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP, timeout)
     }
 
-    private void checkWakeLock(int flags) {
-        if (mWakeLock == null || flags != mWakeLockFlag) {
-            cancelKeepingAwake();
-            mWakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(flags, Device.class.getName());
+    private fun checkWakeLock(flags: Int) {
+        if (wakeLock == null || flags != wakeLockFlag) {
+            cancelKeepingAwake()
+            val powerManager = getSystemService<PowerManager>(Context.POWER_SERVICE)
+            wakeLock = powerManager.newWakeLock(flags, Device::class.java.name)
+            wakeLockFlag = flags
         }
     }
 
-    public void cancelKeepingAwake() {
-        if (mWakeLock != null && mWakeLock.isHeld())
-            mWakeLock.release();
+    fun cancelKeepingAwake() {
+        wakeLock?.takeIf { it.isHeld }?.release()
     }
 
-    public void vibrate(long millis) {
-        ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(millis);
+    fun vibrate(millis: Long) {
+        getSystemService<Vibrator>(Context.VIBRATOR_SERVICE).vibrate(millis)
     }
 
-    public void cancelVibration() {
-        ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).cancel();
+    fun cancelVibration() {
+        getSystemService<Vibrator>(Context.VIBRATOR_SERVICE).cancel()
     }
 
-
-    private void checkWriteSettingsPermission() {
-        if (PermissionManager.hasPermission(mContext, Manifest.permission.WRITE_SETTINGS)) {
-            return;
+    private fun checkWriteSettingsPermission() {
+        if (hasPermission(context, Manifest.permission.WRITE_SETTINGS)) {
+            return
         }
-        PermissionManager.requestPermission(mContext, Manifest.permission.WRITE_SETTINGS);
-        throw new SecurityException(mContext.getString(R.string.no_write_settings_permissin));
+        requestPermission(context, Manifest.permission.WRITE_SETTINGS)
+        throw SecurityException(context.getString(R.string.no_write_settings_permissin))
     }
 
-
-    private void checkReadPhoneStatePermission() {
-        if (!PermissionManager.hasPermission(mContext, Manifest.permission.READ_PHONE_STATE)) {
-            throw new SecurityException(
-                    mContext.getString(R.string.no_read_phone_state_permissin)
-            );
+    private fun checkReadPhoneStatePermission() {
+        if (hasPermission(context, Manifest.permission.READ_PHONE_STATE).not()) {
+            throw SecurityException(context.getString(R.string.no_read_phone_state_permissin))
         }
     }
-
-
-    // just to avoid warning of null pointer to make android studio happy..
-    @NonNull
-    @SuppressWarnings("unchecked")
-    private <T> T getSystemService(String service) {
-        Object systemService = mContext.getSystemService(service);
-        if (systemService == null) {
-            throw new RuntimeException("should never happen..." + service);
-        }
-        return (T) systemService;
-    }
-
-    private static final String FAKE_MAC_ADDRESS = "02:00:00:00:00:00";
 
     @SuppressLint("HardwareIds")
-    public String getMacAddress() throws Exception {
-        WifiManager wifiMan = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (wifiMan == null) {
-            return null;
-        }
-        WifiInfo wifiInf = wifiMan.getConnectionInfo();
-        if (wifiInf == null) {
-            return getMacByFile();
-        }
+    fun getMacAddress(): String? {
+        val wifiMan = context.getSystemService(Context.WIFI_SERVICE) as? WifiManager
+            ?: return null
+        val wifiInf = wifiMan.connectionInfo ?: return getMacByFile()
 
-        String mac = wifiInf.getMacAddress();
-        if (FAKE_MAC_ADDRESS.equals(mac)) {
-            mac = null;
+        var mac = wifiInf.macAddress
+        if (FAKE_MAC_ADDRESS == mac) {
+            mac = null
         }
         if (mac == null) {
-            mac = getMacByInterface();
+            mac = getMacByInterface()
             if (mac == null) {
-                mac = getMacByFile();
+                mac = getMacByFile()
             }
         }
-        return mac;
+        return mac
     }
 
-    private static String getMacByInterface() throws SocketException {
-        List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-        for (NetworkInterface networkInterface : networkInterfaces) {
-            if (networkInterface.getName().equalsIgnoreCase("wlan0")) {
-                byte[] macBytes = networkInterface.getHardwareAddress();
-                if (macBytes == null) {
-                    return null;
+    private fun getMacByInterface(): String? {
+        val networkInterfaces = try {
+            Collections.list(NetworkInterface.getNetworkInterfaces())
+        } catch (_: SocketException) {
+            return null
+        }
+
+        for (networkInterface in networkInterfaces) {
+            if (networkInterface.name.equals("wlan0", ignoreCase = true)) {
+                val macBytes = networkInterface.hardwareAddress ?: return null
+
+                val mac = StringBuilder()
+                for (b in macBytes) {
+                    mac.append(String.format("%02X:", b))
                 }
 
-                StringBuilder mac = new StringBuilder();
-                for (byte b : macBytes) {
-                    mac.append(String.format("%02X:", b));
+                if (mac.isNotEmpty()) {
+                    mac.deleteCharAt(mac.length - 1)
                 }
-
-                if (mac.length() > 0) {
-                    mac.deleteCharAt(mac.length() - 1);
-                }
-                return mac.toString();
+                return mac.toString()
             }
         }
-        return null;
+        return null
     }
 
-    private static String getMacByFile() throws Exception {
-        try {
-            return PFiles.read("/sys/class/net/wlan0/address");
-        } catch (UncheckedIOException e) {
-            return null;
+    private fun getMacByFile(): String? {
+        return try {
+            File("/sys/class/net/wlan0/address").readText()
+        } catch (_: UncheckedIOException) {
+            null
         }
     }
 
-    @Override
-    public String toString() {
-        return "Device{" +
-                "width=" + width +
-                ", height=" + height +
-                ", buildId='" + buildId + '\'' +
-                ", buildDisplay='" + buildDisplay + '\'' +
-                ", product='" + product + '\'' +
-                ", board='" + board + '\'' +
-                ", brand='" + brand + '\'' +
-                ", device='" + device + '\'' +
-                ", model='" + model + '\'' +
-                ", bootloader='" + bootloader + '\'' +
-                ", hardware='" + hardware + '\'' +
-                ", fingerprint='" + fingerprint + '\'' +
-                ", sdkInt=" + sdkInt +
-                ", incremental='" + incremental + '\'' +
-                ", release='" + release + '\'' +
-                ", baseOS='" + baseOS + '\'' +
-                ", securityPatch='" + securityPatch + '\'' +
-                ", serial='" + serial + '\'' +
-                '}';
+    override fun toString(): String {
+        return "Device1{" +
+                "width=$width" +
+                ", height=$height" +
+                ", buildId='$buildId'" +
+                ", buildDisplay='$buildDisplay'" +
+                ", product='$product'" +
+                ", board='$board'" +
+                ", brand='$brand'" +
+                ", device='$device'" +
+                ", model='$model'" +
+                ", bootloader='$bootloader'" +
+                ", hardware='$hardware'" +
+                ", fingerprint='$fingerprint'" +
+                ", sdkInt=$sdkInt" +
+                ", incremental='$incremental'" +
+                ", release='$release'" +
+                ", baseOS='$baseOS'" +
+                ", securityPatch='$securityPatch'" +
+                ", serial='$serial'" +
+                '}'
     }
 
 }
