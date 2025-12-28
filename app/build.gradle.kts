@@ -89,11 +89,6 @@ dependencies {
 
     // Common Markdown
     implementation(libs.commonmark.java)
-    // Android issue reporter
-    implementation(libs.android.issue.reporter) {
-        exclude(group = "com.afollestad.material-dialogs")
-        exclude(group = "com.android.support")
-    }
     // MultiLevelListView
     implementation(libs.android.multi.level.listview)
     // Licenses Dialog
@@ -144,4 +139,5 @@ dependencies {
     implementation(libs.jdeferred.android)
     implementation(libs.rootshell)
     implementation(libs.androidx.preference)
+    implementation(libs.expandable.layout)
 }

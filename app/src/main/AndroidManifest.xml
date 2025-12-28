@@ -134,11 +134,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="org.autojs.autojs.ui.error.IssueReporterActivity"
-            android:theme="@style/IssueReporterTheme"/>
-
-
         <service android:name="org.autojs.autojs.external.foreground.ForegroundService"/>
 
         <activity android:name="org.autojs.autojs.external.tasker.TaskPrefEditActivity"/>
