@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme.Splash" parent="Theme.SplashScreen">
+        <!--        &lt;!&ndash; 设置启动画面背景颜色 &ndash;&gt;-->
+        <!--        <item name="windowSplashScreenBackground">@android:color/white</item>-->
+        <!--        &lt;!&ndash; 设置启动画面图标 &ndash;&gt;-->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+
+        <item name="android:windowSplashScreenBrandingImage">@drawable/autojs</item>
+        <!-- 设置启动后Activity的主题 -->
+        <item name="postSplashScreenTheme">@style/AppTheme.FullScreen</item>
+    </style>
+</resources>

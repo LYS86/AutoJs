@@ -6,6 +6,7 @@ commonmark-java = "commonmark-parent-0.9.0"
 commons-io = "2.20.0"
 commons-lang3 = "3.18.0"
 core-ktx = "1.13.1"
+splashscreen = "1.2.0"
 crashreport = "4.1.9.3"
 drawerlayout = "1.2.0"
 expandablerecyclerview = "3.0.0-RC1"
@@ -64,6 +65,7 @@ android-plugin-client-sdk-for1-locale = { module = "com.twofortyfouram:android-p
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
+androidx-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashscreen" }
 androidx-drawerlayout = { module = "androidx.drawerlayout:drawerlayout", version.ref = "drawerlayout" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }

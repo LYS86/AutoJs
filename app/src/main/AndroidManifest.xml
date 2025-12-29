@@ -32,41 +32,31 @@
 
 
     <application
-        xmlns:tools="http://schemas.android.com/tools"
         android:name="org.autojs.autojs.App"
         android:allowBackup="false"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@drawable/autojs_material"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        android:enableOnBackInvokedCallback="true"
         tools:replace="android:label, android:icon, android:allowBackup">
 
         <meta-data
             android:name="android.max_aspect"
-            android:value="2.1"/>
+            android:value="2.1" />
 
         <activity
-            android:name="org.autojs.autojs.ui.splash.SplashActivity"
-            android:hardwareAccelerated="true"
-            android:label="@string/app_name"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.Splash">
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
-
-                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="org.autojs.autojs.ui.main.MainActivity"
-            android:hardwareAccelerated="true"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:exported="true"
-            android:theme="@style/AppTheme.FullScreen">
         </activity>
         <activity
             android:name=".external.shortcut.ShortcutActivity"

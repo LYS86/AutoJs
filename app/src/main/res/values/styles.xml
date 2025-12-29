@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="DialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert"/>
+    <style name="DialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert" />
 
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -32,9 +32,12 @@
         <item name="windowActionBar">false</item>
     </style>
 
-    <style name="AppTheme.Splash" parent="@android:style/Theme.Light.NoTitleBar.Fullscreen">
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
+    <!--         启动画面主题 -->
+    <style name="AppTheme.Splash" parent="Theme.SplashScreen">
+        <!--         设置启动画面图标 -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <!--         设置启动后Activity的主题 -->
+        <item name="postSplashScreenTheme">@style/AppTheme.FullScreen</item>
     </style>
 
     <style name="AppTheme.Settings" parent="AppTheme">

@@ -1,6 +1,5 @@
 package org.autojs.autojs.ui.main
 
-// BackPressedHandler 已弃用，优先使用 OnBackPressedDispatcher
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -8,8 +7,8 @@ import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
-import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.stardust.app.FragmentPagerAdapterBuilder
 import com.stardust.theme.ThemeColorManager
@@ -17,7 +16,7 @@ import com.stardust.util.DeveloperUtils
 import org.autojs.autojs.BuildConfig
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ActivityMainBinding
-import org.autojs.autojs.ui.BaseActivity
+import org.autojs.autojs.ui.BaseActivityV2
 import org.autojs.autojs.ui.doc.DocsFragment
 import org.autojs.autojs.ui.log.LogActivity
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
@@ -25,7 +24,7 @@ import org.autojs.autojs.ui.main.task.TaskManagerFragment
 import org.autojs.autojs.ui.widget.SearchViewItem
 import org.greenrobot.eventbus.EventBus
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivityV2() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var pagerAdapter: FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter
@@ -40,6 +39,7 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -56,7 +56,6 @@ class MainActivity : BaseActivity() {
     private fun setUpToolbar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        toolbar.title = getString(R.string.app_name)
 
         ActionBarDrawerToggle(
             this,

@@ -78,6 +78,7 @@ dependencies {
     // Android supports
     implementation(libs.appcompat)
     implementation(libs.androidx.cardview)
+    implementation(libs.androidx.splashscreen)
     implementation(libs.material)
     implementation(libs.androidx.multidex)
     // Personal libraries
