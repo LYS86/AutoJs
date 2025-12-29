@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import com.stardust.autojs.R
+import kotlin.jvm.JvmStatic
 
 /**
  * 前台服务
@@ -29,11 +30,13 @@ class MediaProjectionService : Service() {
         private const val CHANNEL_ID = "screen_capture_channel"
         private const val ACTION_STOP = "action.STOP_CAPTURE"
 
+        @JvmStatic
         fun start(context: Context) {
             val intent = Intent(context, MediaProjectionService::class.java)
             ContextCompat.startForegroundService(context, intent)
         }
 
+        @JvmStatic
         fun stop(context: Context) {
             val intent = Intent(context, MediaProjectionService::class.java).apply {
                 action = ACTION_STOP
@@ -46,22 +49,19 @@ class MediaProjectionService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        val notification = buildNotification()
+        @SuppressLint("InlinedApi")
+        ServiceCompat.startForeground(
+            this, NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+        )
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent == null) return START_NOT_STICKY
-        if (intent.action == ACTION_STOP) {
+        if (intent?.action == ACTION_STOP) {
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             return START_NOT_STICKY
         }
-
-        val notif = buildNotification()
-        @SuppressLint("InlinedApi")
-        ServiceCompat.startForeground(
-            this, NOTIFICATION_ID, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
-        )
-
         return START_STICKY
     }
 
@@ -82,7 +82,7 @@ class MediaProjectionService : Service() {
 
         return NotificationCompat.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.autojs_material)
             .setWhen(System.currentTimeMillis()).setContentTitle("屏幕录制")
-            .setCategory(NotificationCompat.CATEGORY_SERVICE).setContentText("正在后台录制屏幕")
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setOngoing(true).setColor(Color.RED).addAction(
                 0, "停止录制", stopPendingIntent
             ).build()

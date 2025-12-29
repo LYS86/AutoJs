@@ -21,6 +21,7 @@ import com.stardust.autojs.annotation.ScriptVariable;
 import com.stardust.autojs.core.image.ColorFinder;
 import com.stardust.autojs.core.image.ImageWrapper;
 import com.stardust.autojs.core.image.TemplateMatching;
+import com.stardust.autojs.core.image.capture.MediaProjectionService;
 import com.stardust.autojs.core.image.capture.ScreenCaptureRequester;
 import com.stardust.autojs.core.image.capture.ScreenCapturer;
 import com.stardust.autojs.core.opencv.Mat;
@@ -267,6 +268,7 @@ public class Images {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mScreenCapturer != null) {
             mScreenCapturer.release();
         }
+        MediaProjectionService.stop(mContext);
     }
 
     public Point findImage(ImageWrapper image, ImageWrapper template) {
