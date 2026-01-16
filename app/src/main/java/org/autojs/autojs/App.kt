@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.stardust.app.GlobalAppContext
+import com.stardust.autojs.core.logging.FileTree
 import com.stardust.autojs.core.ui.inflater.ImageLoader
 import com.stardust.autojs.core.ui.inflater.util.Drawables
 import com.stardust.theme.ThemeColor
@@ -84,6 +85,14 @@ class App : MultiDexApplication() {
                 else -> ReleaseTree()
             }
         )
+//        val logDir = filesDir.resolve("logs")
+        val logDir = getExternalFilesDir(null)!!.resolve("logs")
+        if (!logDir.exists()) {
+            logDir.mkdirs()
+        }
+        Timber.d("log dir: ${logDir.absolutePath}")
+        val fileTree = FileTree(logDir)
+        Timber.plant(fileTree)
     }
 
     private class ReleaseTree : DebugTree() {
