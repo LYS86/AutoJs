@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -106,7 +105,7 @@ class DrawerFragment : BaseFragment() {
 
 
     private fun inputRemoteHost() {
-        val host = DevPluginService2.getInstance().serverAddress
+        val host = DevPluginService2.instance.serverAddress
         val input = EditText(requireActivity()).apply {
             setText(host)
         }
@@ -116,7 +115,7 @@ class DrawerFragment : BaseFragment() {
             .setView(input)
             .setCancelable(false)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                DevPluginService2.getInstance().connectToServer(input.text.toString())
+                DevPluginService2.instance.connectToServer(input.text.toString())
             }
             .setNegativeButton(android.R.string.cancel, null)
             .setOnCancelListener {
@@ -143,7 +142,7 @@ class DrawerFragment : BaseFragment() {
             setChecked(mForegroundServiceItem, true)
         }
         lifecycleScope.launch {
-            DevPluginService2.getInstance().connectionState.collect { state ->
+            DevPluginService2.instance.connectionState.collect { state ->
                 mConnectionItem.let {
                     val isConnected = state is DevPluginService2.State.Connected
                     val inProgress = state is DevPluginService2.State.Connecting
@@ -161,7 +160,7 @@ class DrawerFragment : BaseFragment() {
                 }
             }
         }
-        DevPluginService2.getInstance().restore()
+        DevPluginService2.instance.restore()
     }
 
     private fun initButton() {
@@ -354,11 +353,11 @@ class DrawerFragment : BaseFragment() {
 
     private fun connectOrDisconnectToRemote(holder: DrawerMenuItemViewHolder) {
         val checked = holder.switchCompat.isChecked
-        val connected = DevPluginService2.getInstance().isConnected
+        val connected = DevPluginService2.instance.isConnected
         if (checked && !connected) {
             inputRemoteHost()
         } else if (!checked && connected) {
-            DevPluginService2.getInstance().disconnect()
+            DevPluginService2.instance.disconnect()
         }
     }
 

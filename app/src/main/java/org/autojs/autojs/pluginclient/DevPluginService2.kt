@@ -1,11 +1,6 @@
 package org.autojs.autojs.pluginclient
 
-import android.os.Build
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import com.stardust.app.GlobalAppContext
-import com.stardust.util.MapBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,14 +12,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
-import org.autojs.autojs.BuildConfig
 import org.autojs.autojs.PrefV2
+import org.autojs.autojs.core.log.WebSocketSender
 import org.autojs.autojs.tool.NetworkTool
 import timber.log.Timber
 import java.io.File
 import java.net.SocketTimeoutException
 
-class DevPluginService2 private constructor() {
+class DevPluginService2 private constructor() : WebSocketSender {
 
     sealed class State {
         object Connecting : State()
@@ -48,30 +43,18 @@ class DevPluginService2 private constructor() {
 
     // 内部状态
     private val mBytes = HashMap<String, JsonWebSocket2.Bytes>()
-    private val mRequiredBytesCommands = HashMap<String, JsonObject>()
+    private val mRequiredBytesCommands = HashMap<String, ServerMessage>()
     private var mSocket: JsonWebSocket2? = null
     private var socketJob: Job? = null
     private val mResponseHandler: DevPluginResponseHandler2
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
     companion object {
-        private const val CLIENT_VERSION = 2
         private const val TYPE_HELLO = "hello"
         private const val TYPE_BYTES_COMMAND = "bytes_command"
         private const val HANDSHAKE_TIMEOUT = 10 * 1000L
         private const val PORT = 9317
-
-        @Volatile
-        private var instance: DevPluginService2? = null
-
-        @JvmStatic
-        fun getInstance(): DevPluginService2 {
-            return instance ?: synchronized(this) {
-                instance ?: DevPluginService2().also {
-                    instance = it
-                }
-            }
-        }
+        val instance: DevPluginService2 by lazy { DevPluginService2() }
     }
 
     init {
@@ -128,9 +111,7 @@ class DevPluginService2 private constructor() {
 
     private fun socket(host: String): Flow<JsonWebSocket2> {
         return flow {
-            val (ip, port) = parseHost(host)
-            Timber.d("host to $ip:$port")
-            val url = buildUrl(ip, port)
+            val url = buildUrl(host)
             Timber.d("WebSocket URL: $url")
             val socket = JsonWebSocket2(url)
             emit(socket)
@@ -177,46 +158,39 @@ class DevPluginService2 private constructor() {
         }
     }
 
-    private fun onSocketData(jsonWebSocket: JsonWebSocket2, element: JsonElement) {
-        if (!element.isJsonObject) {
-            return
-        }
+    private fun onSocketData(jsonWebSocket: JsonWebSocket2, message: ServerMessage) {
         try {
-            val obj = element.asJsonObject
-            val typeElement = obj.get("type")
-            if (typeElement == null || !typeElement.isJsonPrimitive) return
-            when (typeElement.asString) {
+            when (message.type) {
                 TYPE_HELLO -> {
-                    onServerHello(jsonWebSocket, obj)
+                    onServerHello(jsonWebSocket)
                 }
 
                 TYPE_BYTES_COMMAND -> {
-                    handleBytesCommand(obj)
+                    handleBytesCommand(message)
                 }
 
                 else -> {
-                    coroutineScope.launch { mResponseHandler.handle(obj) }
+                    coroutineScope.launch { mResponseHandler.handle(message) }
                 }
             }
         } catch (e: Exception) {
-            Timber.w(e, "信息解析出错: $element")
+            Timber.w(e, "信息解析出错: $message")
         }
     }
 
-    private fun handleBytesCommand(obj: JsonObject) {
-        val md5 = obj.get("md5").asString
+    private fun handleBytesCommand(message: ServerMessage) {
+        val md5 = message.data.id
         val bytes = mBytes.remove(md5)
         if (bytes != null) {
-            coroutineScope.launch { handleBytes(obj, bytes) }
+            coroutineScope.launch { handleBytes(message, bytes) }
         } else {
-            mRequiredBytesCommands[md5] = obj
+            mRequiredBytesCommands[md5] = message
         }
     }
 
-    private suspend fun handleBytes(obj: JsonObject, bytes: JsonWebSocket2.Bytes) {
-        val dir = mResponseHandler.handleBytes(obj, bytes)
-        obj.get("data").asJsonObject.add("dir", JsonPrimitive(dir.path))
-        mResponseHandler.handle(obj)
+    private suspend fun handleBytes(message: ServerMessage, bytes: JsonWebSocket2.Bytes) {
+        val dir = mResponseHandler.handleBytes(message.data, bytes)
+        mResponseHandler.handle(message, dir)
     }
 
     private fun onSocketData(bytes: JsonWebSocket2.Bytes) {
@@ -231,13 +205,13 @@ class DevPluginService2 private constructor() {
     private class HandshakeSuccessException : Exception()
 
     private suspend fun sayHelloToServer(socket: JsonWebSocket2) {
-        writeMap(
-            socket,
-            TYPE_HELLO,
-            MapBuilder<String, Any>().put("device_name", "${Build.BRAND} ${Build.MODEL}")
-                .put("client_version", CLIENT_VERSION).put("app_version", BuildConfig.VERSION_NAME)
-                .put("app_version_code", BuildConfig.VERSION_CODE).build()
-        )
+
+        val message = ClientMessage(
+            type = "hello",
+            data = DeviceInfo()
+        ).toJson()
+        socket.write(message)
+
         try {
             withTimeout(HANDSHAKE_TIMEOUT) {
                 connectionState.collect { state ->
@@ -258,56 +232,34 @@ class DevPluginService2 private constructor() {
         socket.close()
     }
 
-    private fun onServerHello(jsonWebSocket: JsonWebSocket2, message: JsonObject) {
+    private fun onServerHello(jsonWebSocket: JsonWebSocket2) {
         mSocket = jsonWebSocket
         _connectionState.value = State.Connected
     }
 
-    fun log(log: String) {
-        if (!isConnected) return
-        val data = JsonObject().apply {
-            addProperty("log", log)
+    override fun sendLog(message: String) {
+        coroutineScope.launch {
+            val clientMessage = ClientMessage(
+                type = "log",
+                data = Log(message, message)
+            )
+            mSocket?.write(clientMessage.toJson())
         }
-        write(mSocket!!, "log", data)
-    }
-
-    private fun write(socket: JsonWebSocket2, type: String, data: JsonObject): Boolean {
-        val json = JsonObject().apply {
-            addProperty("type", type)
-            add("data", data)
-        }
-        return socket.write(json)
-    }
-
-    private fun writeMap(socket: JsonWebSocket2, type: String, map: Map<String, *>): Boolean {
-        val data = JsonObject().apply {
-            map.forEach { (key, value) ->
-                when (value) {
-                    is String -> addProperty(key, value)
-                    is Char -> addProperty(key, value)
-                    is Number -> addProperty(key, value)
-                    is Boolean -> addProperty(key, value)
-                    is JsonElement -> add(key, value)
-                    else -> throw IllegalArgumentException("Unsupported type: ${value?.javaClass}")
-                }
-            }
-        }
-        return write(socket, type, data)
     }
 
     private fun parseHost(host: String): Pair<String, Int> {
-        // 标准格式: host:port
         val lastColon = host.lastIndexOf(':')
         if (lastColon > 0 && lastColon < host.length - 1) {
             val portStr = host.substring(lastColon + 1)
             val port = portStr.toIntOrNull() ?: PORT
-            return Pair(host.substring(0, lastColon), port)
+            return Pair(host.take(lastColon), port)
         }
 
         return Pair(host, PORT)
     }
 
-    private fun buildUrl(ip: String, port: Int): String {
+    private fun buildUrl(host: String): String {
+        val (ip, port) = parseHost(host)
         return when {
             ip.startsWith("ws://") || ip.startsWith("wss://") -> "$ip:$port"
             else -> "ws://$ip:$port"

@@ -29,12 +29,12 @@ class JsonWebSocket2(client: OkHttpClient, request: Request) : WebSocketListener
 
     private val webSocket: WebSocket = client.newWebSocket(request, this)
 
-    private val dataChannel = Channel<JsonElement>(Channel.BUFFERED)
+    private val dataChannel = Channel<ServerMessage>(Channel.BUFFERED)
     private val bytesChannel = Channel<Bytes>(Channel.BUFFERED)
     private val closed = AtomicBoolean(false)
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    val dataFlow: Flow<JsonElement> = dataChannel.receiveAsFlow()
+    val dataFlow: Flow<ServerMessage> = dataChannel.receiveAsFlow()
     val bytesFlow: Flow<Bytes> = bytesChannel.receiveAsFlow()
 
     // 状态回调接口
@@ -63,8 +63,8 @@ class JsonWebSocket2(client: OkHttpClient, request: Request) : WebSocketListener
         Timber.d("onMessage: $text")
         scope.launch {
             try {
-                val element = JsonParser().parse(text)
-                dataChannel.send(element)
+                val message = ServerMessage.create(text)
+                dataChannel.send(message)
             } catch (e: Exception) {
                 Timber.w(e, "parse json error: $text")
             }
@@ -79,9 +79,8 @@ class JsonWebSocket2(client: OkHttpClient, request: Request) : WebSocketListener
         }
     }
 
-    fun write(element: JsonElement): Boolean {
-        val json = element.toString()
-        Timber.d("write: $json")
+    fun write(json: String): Boolean {
+        Timber.d("send: $json")
         return webSocket.send(json)
     }
 

@@ -1,8 +1,5 @@
 package org.autojs.autojs.pluginclient
 
-import android.text.TextUtils
-import com.google.gson.JsonNull
-import com.google.gson.JsonObject
 import com.stardust.app.GlobalAppContext
 import com.stardust.autojs.execution.ScriptExecution
 import com.stardust.autojs.project.ProjectLauncher
@@ -12,7 +9,7 @@ import com.stardust.pio.PFiles
 import com.stardust.util.MD5
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.autojs.autojs.Pref
+import org.autojs.autojs.PrefV2
 import org.autojs.autojs.R
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.model.script.Scripts
@@ -36,39 +33,29 @@ class DevPluginResponseHandler2(private val cacheDir: File) {
         }
     }
 
-    suspend fun handle(data: JsonObject): Boolean {
-        val type = data.get("type")?.asString ?: return false
-        when (type) {
+    suspend fun handle(message: ServerMessage, dir: File? = null): Boolean {
+        val data = message.data
+        when (message.type) {
             "command" -> {
-                val command = data.getAsJsonObject("data")
-                when (command.getString("command")) {
+                when (data.command) {
                     "run" -> {
-                        val script = command.getString("script")
-                        val name = command.getString("name")
-                        val id = command.getString("id")
-                        runScript(id, name, script)
+                        runScript(data.id, data.name, data.script)
                         return true
                     }
 
                     "stop" -> {
-                        val id = command.getString("id")
-                        stopScript(id)
+                        stopScript(data.id)
                         return true
                     }
 
                     "save" -> {
-                        val script = command.getString("script")
-                        val name = command.getString("name")
-                        saveScript(name, script)
+                        saveScript(data.name, data.script)
                         return true
                     }
 
                     "rerun" -> {
-                        val id = command.getString("id")
-                        val script = command.getString("script")
-                        val name = command.getString("name")
-                        stopScript(id)
-                        runScript(id, name, script)
+                        stopScript(data.id)
+                        runScript(data.id, data.name, data.script)
                         return true
                     }
 
@@ -78,52 +65,53 @@ class DevPluginResponseHandler2(private val cacheDir: File) {
                     }
 
                     else -> {
-                        Timber.e("Unknown command: $command")
+                        Timber.e("Unknown command: ${data.command}")
                     }
                 }
             }
 
             "bytes_command" -> {
-                val command = data.getAsJsonObject("data")
-                when (command.getString("command")) {
+                if (dir == null) {
+                    Timber.e("bytes_command requires dir parameter")
+                    return false
+                }
+                when (data.command) {
                     "run_project" -> {
-                        launchProject(command.get("dir").asString)
+                        launchProject(dir.path)
                         return true
                     }
 
                     "save_project" -> {
-                        val name = command.getString("name")
-                        val dir = command.getString("dir")
-                        saveProject(name, dir)
+                        saveProject(data.name, dir.path)
                         return true
                     }
 
                     else -> {
-                        Timber.e("Unknown bytes command: $command")
+                        Timber.e("Unknown bytes command: ${data.command}")
                     }
                 }
+            }
+
+            else -> {
+                Timber.e("Unknown message type: ${message.type}")
             }
         }
         return false
     }
 
-    suspend fun handleBytes(data: JsonObject, bytes: JsonWebSocket2.Bytes): File =
+    suspend fun handleBytes(data: Data, bytes: JsonWebSocket2.Bytes): File =
         withContext(Dispatchers.IO) {
-            val id = data.getAsJsonObject("data").get("id").asString
+            val id = data.id
             val idMd5 = MD5.md5(id)
             val dir = File(cacheDir, idMd5)
             Zip.unzip(ByteArrayInputStream(bytes.byteString.toByteArray()), dir)
             dir
         }
 
-    fun runScript(viewId: String, name: String?, script: String) {
-        val scriptName = if (TextUtils.isEmpty(name)) {
-            "[$viewId]"
-        } else {
-            PFiles.getNameWithoutExtension(name)
-        }
-        Scripts.run(StringScriptSource("[remote]$scriptName", script))?.let {
-            scriptExecutions[viewId] = it
+    fun runScript(id: String, name: String, script: String) {
+        val scriptName = PFiles.getNameWithoutExtension(name.ifEmpty { "[$id]" })
+        Scripts.run(StringScriptSource("temp_$scriptName", script))?.let {
+            scriptExecutions[id] = it
         }
     }
 
@@ -131,7 +119,7 @@ class DevPluginResponseHandler2(private val cacheDir: File) {
         try {
             ProjectLauncher(dir).launch(AutoJs.getInstance().scriptEngineService)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e, "launch project error: $dir")
             GlobalAppContext.toast(R.string.text_invalid_project)
         }
     }
@@ -145,47 +133,21 @@ class DevPluginResponseHandler2(private val cacheDir: File) {
     }
 
 
-    fun saveScript(name: String?, script: String) {
-        var fileName =
-            if (TextUtils.isEmpty(name)) "untitled" else PFiles.getNameWithoutExtension(name)
-        if (!fileName.endsWith(".js")) fileName += ".js"
-        val file = File(Pref.getScriptDirPath(), fileName)
-        PFiles.ensureDir(file.path)
-        PFiles.write(file, script)
+    fun saveScript(name: String, script: String) {
+        val fileName = if (name.endsWith(".js")) name else "$name.js"
+        File(PrefV2.getScriptDirPath(), fileName).writeText(script)
         GlobalAppContext.toast(R.string.text_script_save_successfully)
     }
 
-    suspend fun saveProject(name: String?, dir: String) = withContext(Dispatchers.IO) {
-        var projectName =
-            if (TextUtils.isEmpty(name)) "untitled" else PFiles.getNameWithoutExtension(name)
-        val toDir = File(Pref.getScriptDirPath(), projectName)
+    suspend fun saveProject(name: String, dir: String) = withContext(Dispatchers.IO) {
+        val projectName = PFiles.getNameWithoutExtension(name)
+        val toDir = File(PrefV2.getScriptDirPath(), projectName)
         try {
-            copyDir(File(dir), toDir)
-            withContext(Dispatchers.Main) {
-                GlobalAppContext.toast(R.string.text_project_save_success, toDir.path)
-            }
+            File(dir).copyRecursively(toDir, true)
+            GlobalAppContext.toast(R.string.text_project_save_success, toDir.path)
         } catch (err: Exception) {
-            withContext(Dispatchers.Main) {
-                GlobalAppContext.toast(R.string.text_project_save_error, err.message ?: "")
-            }
+            Timber.e(err, "save project error: $dir")
+            GlobalAppContext.toast(R.string.text_project_save_error, err.message ?: "")
         }
     }
-
-    private fun JsonObject.getString(key: String): String {
-        return get(key)?.asString ?: ""
-    }
-
-    private fun copyDir(fromDir: File, toDir: File) {
-        toDir.mkdirs()
-        val files = fromDir.listFiles() ?: return
-        for (file in files) {
-            if (file.isDirectory) {
-                copyDir(file, File(toDir, file.name))
-            } else {
-                FileOutputStream(File(toDir, file.name)).use { fos ->
-                    PFiles.write(FileInputStream(file), fos, true)
-                }
-            }
-        }
-    }
-} 
+}

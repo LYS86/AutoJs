@@ -107,18 +107,6 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
         return new AppUtils(context, AppFileProvider.getAuthority(context));
     }
 
-    @Override
-    protected GlobalConsole createGlobalConsole() {
-        return new GlobalConsole(getUiHandler()) {
-            @Override
-            public String println(int level, CharSequence charSequence) {
-                String log = super.println(level, charSequence);
-                DevPluginService2.getInstance().log(log);
-                return log;
-            }
-        };
-    }
-
     public void ensureAccessibilityServiceEnabled() {
         if (isServiceRunning()) return;
         String error = checkServiceState();

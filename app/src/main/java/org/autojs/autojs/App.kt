@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -14,14 +13,17 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.stardust.app.GlobalAppContext
-import com.stardust.autojs.core.logging.FileTree
+import org.autojs.autojs.core.log.FileTree
+import org.autojs.autojs.core.log.WebSocketTree
 import com.stardust.autojs.core.ui.inflater.ImageLoader
 import com.stardust.autojs.core.ui.inflater.util.Drawables
 import com.stardust.theme.ThemeColor
 import com.tencent.bugly.crashreport.CrashReport
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.autojs.key.GlobalKeyObserver
+import org.autojs.autojs.core.log.ReleaseTree
 import org.autojs.autojs.external.receiver.DynamicBroadcastReceivers
+import org.autojs.autojs.pluginclient.DevPluginService2
 import org.autojs.autojs.theme.ThemeColorManagerCompat
 import org.autojs.autojs.timing.TimedTaskManager
 import org.autojs.autojs.timing.TimedTaskScheduler
@@ -93,14 +95,10 @@ class App : MultiDexApplication() {
         Timber.d("log dir: ${logDir.absolutePath}")
         val fileTree = FileTree(logDir)
         Timber.plant(fileTree)
-    }
 
-    private class ReleaseTree : DebugTree() {
-        override fun isLoggable(tag: String?, priority: Int): Boolean {
-            // 只允许 INFO 及以上级别的日志
-            return priority >= Log.INFO
-        }
-
+        // 种植 WebSocketTree 并注入发送器
+        val webSocketTree = WebSocketTree(DevPluginService2.instance)
+        Timber.plant(webSocketTree)
     }
 
     @SuppressLint("CheckResult")
