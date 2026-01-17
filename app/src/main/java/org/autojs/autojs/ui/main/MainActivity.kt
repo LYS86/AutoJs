@@ -4,18 +4,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.stardust.app.FragmentPagerAdapterBuilder
 import com.stardust.theme.ThemeColorManager
 import com.stardust.util.DeveloperUtils
+import kotlinx.coroutines.launch
 import org.autojs.autojs.BuildConfig
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ActivityMainBinding
+import org.autojs.autojs.pluginclient.DevPluginService2
 import org.autojs.autojs.ui.BaseActivityV2
 import org.autojs.autojs.ui.doc.DocsFragment
 import org.autojs.autojs.ui.log.LogActivity
@@ -45,6 +49,7 @@ class MainActivity : BaseActivityV2() {
         setContentView(binding.root)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         setUpViews()
+        observeConnectionState()
     }
 
     private fun setUpViews() {
@@ -155,6 +160,22 @@ class MainActivity : BaseActivityV2() {
 
     private fun submitForwardQuery() {
         EventBus.getDefault().post(QueryEvent.FIND_FORWARD)
+    }
+
+    private fun observeConnectionState() {
+        lifecycleScope.launch {
+            DevPluginService2.instance.connectionState.collect { state ->
+                keepScreenOn(state is DevPluginService2.State.Connected)
+            }
+        }
+    }
+
+    private fun keepScreenOn(keepOn: Boolean) {
+        if (keepOn) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
     }
 
     override fun onDestroy() {
