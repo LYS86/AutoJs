@@ -294,7 +294,7 @@ public class CircularMenu implements Recorder.OnStateChangedListener,
         try {
             mWindow.close();
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            Timber.e(e);
         } finally {
             EventBus.getDefault().post(new StateChangeEvent(STATE_CLOSED, mState));
             mState = STATE_CLOSED;

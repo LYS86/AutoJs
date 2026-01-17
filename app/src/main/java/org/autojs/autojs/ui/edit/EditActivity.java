@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.edit;
 
+import timber.log.Timber;
+
 import static org.autojs.autojs.ui.edit.EditorView.EXTRA_CONTENT;
 import static org.autojs.autojs.ui.edit.EditorView.EXTRA_NAME;
 import static org.autojs.autojs.ui.edit.EditorView.EXTRA_PATH;
@@ -275,7 +277,7 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
                     .subscribe(t -> PFiles.write(tmp, t));
             return tmp;
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return null;
         }
     }

@@ -1,5 +1,7 @@
 package com.stardust.autojs.core.ui.inflater.util;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -171,7 +173,7 @@ public class Drawables {
                     final Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
                     view.post(() -> callback.onLoaded(bmp));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Timber.e(e);
                 }
             }).start();
         }

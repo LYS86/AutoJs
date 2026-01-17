@@ -1,5 +1,7 @@
 package org.autojs.autojs.timing;
 
+import timber.log.Timber;
+
 import android.content.IntentFilter;
 
 import org.autojs.autojs.storage.database.BaseModel;
@@ -30,7 +32,7 @@ public class IntentTask extends BaseModel {
             try {
                 filter.addDataType(mDataType);
             } catch (IntentFilter.MalformedMimeTypeException e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         }
         return filter;

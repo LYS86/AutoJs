@@ -159,7 +159,7 @@ class NodeInfo(resources: Resources?, node: UiObject, var parent: NodeInfo?) {
                     } catch (e: PackageManager.NameNotFoundException) {
                         //fixme 点击悬浮窗后，循环抛出异常，需要评估风险
                         Timber.w(e)
-//                        e.printStackTrace()
+//                        Timber.e(e)
                     }
 
                 }

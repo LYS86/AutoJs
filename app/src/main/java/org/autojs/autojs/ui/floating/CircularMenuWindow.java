@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.floating;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -216,7 +218,7 @@ public class CircularMenuWindow extends FloatyWindow {
             getWindowManager().removeView(mCircularActionView);
             FloatyService.removeWindow(this);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 

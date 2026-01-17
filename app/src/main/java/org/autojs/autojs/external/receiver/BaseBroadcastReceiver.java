@@ -1,5 +1,7 @@
 package org.autojs.autojs.external.receiver;
 
+import timber.log.Timber;
+
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -44,7 +46,7 @@ public class BaseBroadcastReceiver extends BroadcastReceiver {
         try {
             AutoJs.getInstance().getScriptEngineService().execute(file.toSource(), config);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }

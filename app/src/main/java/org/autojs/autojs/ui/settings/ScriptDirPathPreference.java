@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.settings;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import androidx.annotation.NonNull;
 import android.text.TextUtils;
@@ -98,7 +100,7 @@ public class ScriptDirPathPreference extends MaterialEditTextPreference {
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
+                        Timber.e(e);
                         dialog.dismiss();
                         Explorers.workspace().refreshAll();
                         Toast.makeText(getContext(), getContext().getString(R.string.text_error_copy_file,

@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.edit;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
@@ -104,7 +106,7 @@ public class FindOrReplaceDialogBuilder extends ThemeColorMaterialDialogBuilder 
             }
             dialog.dismiss();
         } catch (CodeEditor.CheckedPatternSyntaxException e) {
-            e.printStackTrace();
+            Timber.e(e);
             binding.keywords.setError(getContext().getString(R.string.error_pattern_syntax));
         }
     }

@@ -1,5 +1,7 @@
 package com.stardust.autojs.core.console;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
@@ -170,7 +172,7 @@ public class ConsoleImpl extends AbstractConsole {
                 FloatyService.addWindow(mFloatyWindow);
                 // SecurityException: https://github.com/hyb1996-guest/AutoJsIssueReport/issues/4781
             } catch (WindowManager.BadTokenException | SecurityException e) {
-                e.printStackTrace();
+                Timber.e(e);
                 mUiHandler.toast(R.string.text_no_floating_window_permission);
             }
         });

@@ -1,5 +1,7 @@
 package com.stardust.auojs.inrt.autojs
 
+import timber.log.Timber
+
 import android.content.Context
 import com.stardust.autojs.engine.LoopBasedJavaScriptEngine
 import com.stardust.autojs.engine.encryption.ScriptEncryption
@@ -21,7 +23,7 @@ class XJavaScriptEngine(context: Context) : LoopBasedJavaScriptEngine(context) {
                     return
                 }
             } catch (e: Throwable) {
-                e.printStackTrace()
+                Timber.e(e)
                 return
             }
         }
@@ -36,7 +38,7 @@ class XJavaScriptEngine(context: Context) : LoopBasedJavaScriptEngine(context) {
         try {
             super.execute(StringScriptSource(file.name, String(ScriptEncryption.decrypt(bytes, EncryptedScriptFileHeader.BLOCK_SIZE))))
         } catch (e: GeneralSecurityException) {
-            e.printStackTrace()
+            Timber.e(e)
         }
         return true
     }

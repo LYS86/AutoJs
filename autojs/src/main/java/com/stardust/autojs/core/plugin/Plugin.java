@@ -1,5 +1,7 @@
 package com.stardust.autojs.core.plugin;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -36,7 +38,7 @@ public class Plugin {
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         } catch (Throwable e) {
-            e.printStackTrace();
+            Timber.e(e);
             throw new PluginLoadException(e);
         }
     }
@@ -62,12 +64,12 @@ public class Plugin {
         try {
             mGetVersion = pluginClass.getMethod("getVersion");
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         try {
             mGetScriptDir = pluginClass.getMethod("getAssetsScriptDir");
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 

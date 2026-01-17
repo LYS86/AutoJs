@@ -1,5 +1,7 @@
 package org.autojs.autojs.tool;
 
+import timber.log.Timber;
+
 import com.stardust.autojs.core.util.ProcessShell;
 import com.stericson.RootShell.RootShell;
 
@@ -13,7 +15,7 @@ public class RootTool {
         try {
             return RootShell.isRootAvailable();
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }

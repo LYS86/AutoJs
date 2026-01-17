@@ -1,5 +1,7 @@
 package com.stardust.pio;
 
+import timber.log.Timber;
+
 import android.app.NativeActivity;
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -79,7 +81,7 @@ public class PFiles {
             try {
                 return file.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         }
         return false;
@@ -172,7 +174,7 @@ public class PFiles {
             write(is, fos);
             return true;
         } catch (IOException | UncheckedIOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -284,7 +286,7 @@ public class PFiles {
         try {
             return copyStream(new FileInputStream(pathFrom), pathTo);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -293,7 +295,7 @@ public class PFiles {
         try {
             return copyStream(context.getAssets().open(assetFile), path);
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }

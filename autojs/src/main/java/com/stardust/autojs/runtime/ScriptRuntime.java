@@ -1,5 +1,7 @@
 package com.stardust.autojs.runtime;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import android.os.Build;
 import android.os.Looper;
@@ -437,7 +439,7 @@ public class ScriptRuntime {
         try {
             r.run();
         } catch (Throwable e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 

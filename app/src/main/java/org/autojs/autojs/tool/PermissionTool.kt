@@ -1,5 +1,7 @@
 package org.autojs.autojs.tool
 
+import timber.log.Timber
+
 import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
@@ -54,7 +56,7 @@ class PermissionTool(
                 context.startActivity(intent)
                 return true
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e(e)
                 return false
             }
         }

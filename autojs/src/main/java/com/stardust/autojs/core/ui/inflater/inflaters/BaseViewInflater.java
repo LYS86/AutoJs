@@ -1,5 +1,7 @@
 package com.stardust.autojs.core.ui.inflater.inflaters;
 
+import timber.log.Timber;
+
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -611,7 +613,7 @@ public class BaseViewInflater<V extends View> implements ViewInflater<V> {
             field.set(layoutParams, gravity);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -630,7 +632,7 @@ public class BaseViewInflater<V extends View> implements ViewInflater<V> {
             setGravity.invoke(view, Gravities.parse(g));
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }

@@ -1,5 +1,7 @@
 package com.stardust.autojs.core.image.capture;
 
+import timber.log.Timber;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -76,7 +78,7 @@ public class ScreenCapturer {
                     try {
                         refreshVirtualDisplay(orientation);
                     }catch (Exception e){
-                        e.printStackTrace();
+                        Timber.e(e);
                         mException = e;
                     }
                 }

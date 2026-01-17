@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.explorer;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.AttributeSet;
@@ -76,7 +78,7 @@ public class ExplorerProjectToolbar extends CardView {
             new ProjectLauncher(mDirectory.getPath())
                     .launch(AutoJs.getInstance().getScriptEngineService());
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }

@@ -1,5 +1,7 @@
 package org.autojs.autojs.tool;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/2/2.
  */
@@ -76,7 +78,7 @@ public class CrashHandler extends CrashReport.CrashHandleCallback implements Unc
             String msg = errorType + ": " + errorMessage;
             startErrorReportActivity(msg, errorStack);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            Timber.e(throwable);
         }
         return super.onCrashHandleStart(crashType, errorType, errorMessage, errorStack);
     }

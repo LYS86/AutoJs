@@ -1,5 +1,7 @@
 package com.stardust.autojs.script;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import android.view.View;
 
@@ -98,7 +100,7 @@ public class JsBeautifier {
             try {
                 prepareIfNeeded();
             } catch (Exception e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         });
     }

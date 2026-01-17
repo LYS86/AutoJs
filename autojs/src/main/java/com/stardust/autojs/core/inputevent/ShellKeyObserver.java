@@ -1,5 +1,7 @@
 package com.stardust.autojs.core.inputevent;
 
+import timber.log.Timber;
+
 import androidx.annotation.NonNull;
 import android.util.SparseArray;
 
@@ -81,7 +83,7 @@ public class ShellKeyObserver implements InputEventObserver.InputEventListener {
                 }
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 

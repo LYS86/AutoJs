@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.edit;
 
+import timber.log.Timber;
+
 import static org.autojs.autojs.model.script.Scripts.ACTION_ON_EXECUTION_FINISHED;
 import static org.autojs.autojs.model.script.Scripts.EXTRA_EXCEPTION_COLUMN_NUMBER;
 import static org.autojs.autojs.model.script.Scripts.EXTRA_EXCEPTION_LINE_NUMBER;
@@ -447,7 +449,7 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         save()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(Observers.emptyConsumer(), e -> {
-                    e.printStackTrace();
+                    Timber.e(e);
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }

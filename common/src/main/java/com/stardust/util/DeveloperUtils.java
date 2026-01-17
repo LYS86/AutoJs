@@ -1,5 +1,7 @@
 package com.stardust.util;
 
+import timber.log.Timber;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Service;
@@ -52,7 +54,7 @@ public class DeveloperUtils {
             }
             return builder.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         return null;
     }
@@ -145,7 +147,7 @@ public class DeveloperUtils {
             }
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }

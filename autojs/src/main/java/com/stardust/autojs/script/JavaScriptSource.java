@@ -1,5 +1,7 @@
 package com.stardust.autojs.script;
 
+import timber.log.Timber;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -91,7 +93,7 @@ public abstract class JavaScriptSource extends ScriptSource {
                 break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return EXECUTION_MODE_NORMAL;
         }
         return EXECUTION_MODE_NORMAL;

@@ -1,5 +1,7 @@
 package com.stardust.auojs.inrt
 
+import timber.log.Timber
+
 import android.Manifest
 import android.content.Intent
 import android.graphics.Typeface
@@ -49,7 +51,7 @@ class SplashActivity : AppCompatActivity() {
             try {
                 GlobalProjectLauncher.launch(this)
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e(e)
                 runOnUiThread {
                     Toast.makeText(this@SplashActivity, e.message, Toast.LENGTH_LONG).show()
                     startActivity(Intent(this@SplashActivity, LogActivity::class.java))

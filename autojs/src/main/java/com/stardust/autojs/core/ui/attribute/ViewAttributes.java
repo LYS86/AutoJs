@@ -1,5 +1,7 @@
 package com.stardust.autojs.core.ui.attribute;
 
+import timber.log.Timber;
+
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -403,7 +405,7 @@ public class ViewAttributes {
             setGravity.invoke(mView, g);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -531,7 +533,7 @@ public class ViewAttributes {
                 field.set(layoutParams, gravity);
                 mView.setLayoutParams(layoutParams);
             } catch (Exception e) {
-                e.printStackTrace();
+                Timber.e(e);
                 //TODO throw or ?
             }
         }

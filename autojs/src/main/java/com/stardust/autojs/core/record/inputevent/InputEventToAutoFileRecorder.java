@@ -1,5 +1,7 @@
 package com.stardust.autojs.core.record.inputevent;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import androidx.annotation.NonNull;
 import android.util.Log;
@@ -58,7 +60,7 @@ public class InputEventToAutoFileRecorder extends InputEventRecorder {
             convertEventOrThrow(event);
             Log.d(LOG_TAG, "recordInputEvent: " + event);
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
 
     }
@@ -133,7 +135,7 @@ public class InputEventToAutoFileRecorder extends InputEventRecorder {
         try {
             mDataOutputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 }

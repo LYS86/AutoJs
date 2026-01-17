@@ -1,5 +1,7 @@
 package org.autojs.autojs.external.shortcut
 
+import timber.log.Timber
+
 import android.app.Activity
 import android.os.Bundle
 import android.widget.Toast
@@ -24,7 +26,7 @@ class ShortcutActivity : Activity() {
         try {
             Scripts.run(ScriptFile(path))
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
             Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
         }
     }

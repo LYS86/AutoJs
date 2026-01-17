@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.edit.theme;
 
+import timber.log.Timber;
+
 import android.graphics.Color;
 import android.util.SparseIntArray;
 
@@ -101,7 +103,7 @@ public class Theme {
         try {
             return fromJson(new InputStreamReader(context.getAssets().open(assetsPath)));
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return null;
         }
     }

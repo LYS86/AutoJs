@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.widget;
 
+import timber.log.Timber;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -217,7 +219,7 @@ public class EWebView extends FrameLayout implements SwipeRefreshLayout.OnRefres
                 try {
                     getContext().startActivity(Intent.createChooser(intent, getResources().getString(R.string.text_open_with)));
                 } catch (ActivityNotFoundException e) {
-                    e.printStackTrace();
+                    Timber.e(e);
                     return false;
                 }
             }

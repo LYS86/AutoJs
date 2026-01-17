@@ -1,5 +1,7 @@
 package org.autojs.autojs.model.script
 
+import timber.log.Timber
+
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -89,7 +91,7 @@ object Scripts {
             AutoJs.getInstance().scriptEngineService.execute(file.toSource(),
                     ExecutionConfig(workingDirectory = file.parent))
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
             Toast.makeText(GlobalAppContext.get(), e.message, Toast.LENGTH_LONG).show()
             null
         }
@@ -101,7 +103,7 @@ object Scripts {
         return try {
             AutoJs.getInstance().scriptEngineService.execute(source, ExecutionConfig(workingDirectory = Pref.getScriptDirPath()))
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
             Toast.makeText(GlobalAppContext.get(), e.message, Toast.LENGTH_LONG).show()
             null
         }

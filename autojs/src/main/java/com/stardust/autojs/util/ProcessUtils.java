@@ -1,5 +1,7 @@
 package com.stardust.autojs.util;
 
+import timber.log.Timber;
+
 import android.util.Log;
 
 import com.stardust.autojs.core.util.ProcessShell;
@@ -21,7 +23,7 @@ public class ProcessUtils {
             pid.setAccessible(true);
             return (int) pid.get(process);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return -1;
         }
     }

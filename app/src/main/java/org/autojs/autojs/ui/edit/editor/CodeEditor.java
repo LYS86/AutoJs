@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.edit.editor;
 
+import timber.log.Timber;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import com.google.android.material.snackbar.Snackbar;
@@ -319,7 +321,7 @@ public class CodeEditor extends HVScrollView {
             @Override
             public void onException(Exception e) {
                 setProgress(false);
-                e.printStackTrace();
+                Timber.e(e);
             }
         });
     }

@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.common;
 
+import timber.log.Timber;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -256,7 +258,7 @@ public class ScriptOperations {
         try {
             return importFile(sample.getSimplifiedName(), sample.openInputStream(), sample.getExtension());
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             showMessage(R.string.text_import_fail);
             return Observable.error(e);
         }

@@ -1,5 +1,7 @@
 package com.stardust.autojs.core.opencv;
 
+import timber.log.Timber;
+
 import com.stardust.util.ResourceMonitor;
 
 import org.mozilla.javascript.ScriptRuntime;
@@ -20,7 +22,7 @@ public class Mat extends org.opencv.core.Mat implements ResourceMonitor.Resource
             nClone = org.opencv.core.Mat.class.getDeclaredMethod("n_clone", long.class);
             nClone.setAccessible(true);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 

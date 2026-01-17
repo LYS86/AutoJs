@@ -1,5 +1,7 @@
 package org.autojs.autojs.ui.project;
 
+import timber.log.Timber;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -118,7 +120,7 @@ public class ProjectConfigActivity extends BaseActivity {
         if (mIconBitmap != null) {
             saveIcon(mIconBitmap)
                     .subscribe(ignored -> saveProjectConfig(), e -> {
-                        e.printStackTrace();
+                        Timber.e(e);
                         Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         } else {
@@ -135,7 +137,7 @@ public class ProjectConfigActivity extends BaseActivity {
                         Explorers.workspace().notifyChildrenChanged(new ExplorerDirPage(mParentDirectory, null));
                         finish();
                     }, e -> {
-                        e.printStackTrace();
+                        Timber.e(e);
                         Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         } else {
@@ -151,7 +153,7 @@ public class ProjectConfigActivity extends BaseActivity {
                         Explorers.workspace().notifyItemChanged(item, item);
                         finish();
                     }, e -> {
-                        e.printStackTrace();
+                        Timber.e(e);
                         Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         }
