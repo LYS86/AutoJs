@@ -179,7 +179,7 @@ class DevPluginService2 private constructor() : WebSocketSender {
     }
 
     private fun handleBytesCommand(message: ServerMessage) {
-        val md5 = message.data.id
+        val md5 = message.md5
         val bytes = mBytes.remove(md5)
         if (bytes != null) {
             coroutineScope.launch { handleBytes(message, bytes) }

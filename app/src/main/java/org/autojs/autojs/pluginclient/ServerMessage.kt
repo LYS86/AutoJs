@@ -2,9 +2,7 @@ package org.autojs.autojs.pluginclient
 
 import android.os.Build
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import com.google.gson.annotations.SerializedName
 import org.autojs.autojs.BuildConfig
 
@@ -13,7 +11,8 @@ data class ServerMessage(
     val type: String = "",
     val data: Data = Data(),
     @SerializedName("message_id")
-    val messageId: Long = 0L
+    val messageId: Long = 0L,
+    val md5: String = ""
 ) {
     companion object {
         fun create(string: String): ServerMessage {
