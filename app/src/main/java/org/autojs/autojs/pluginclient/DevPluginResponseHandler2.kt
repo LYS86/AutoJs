@@ -1,6 +1,7 @@
 package org.autojs.autojs.pluginclient
 
 import com.stardust.app.GlobalAppContext
+import com.stardust.autojs.core.console.GlobalConsole
 import com.stardust.autojs.execution.ScriptExecution
 import com.stardust.autojs.project.ProjectLauncher
 import com.stardust.autojs.script.StringScriptSource
@@ -16,8 +17,6 @@ import org.autojs.autojs.model.script.Scripts
 import timber.log.Timber
 import java.io.ByteArrayInputStream
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 
 class DevPluginResponseHandler2(private val cacheDir: File) {
     private val scriptExecutions = HashMap<String, ScriptExecution>()
@@ -65,7 +64,8 @@ class DevPluginResponseHandler2(private val cacheDir: File) {
                     }
 
                     else -> {
-                        Timber.e("Unknown command: ${data.command}")
+                        Timber.tag(GlobalConsole::class.simpleName.orEmpty())
+                            .e("Unknown command: ${data.command}")
                     }
                 }
             }
@@ -93,7 +93,8 @@ class DevPluginResponseHandler2(private val cacheDir: File) {
             }
 
             else -> {
-                Timber.e("Unknown message type: ${message.type}")
+                Timber.tag(GlobalConsole::class.simpleName.orEmpty())
+                    .e("Unknown message type: ${message.type}")
             }
         }
         return false
