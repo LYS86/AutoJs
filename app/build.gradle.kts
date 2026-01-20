@@ -32,27 +32,16 @@ android {
     }
 
 
-    flavorDimensions += "channel"
+    namespace = "org.autojs.autojs"
 
     splits {
         abi {
             isEnable = true
             reset()
-            include("x86", "armeabi-v7a", "arm64-v8a", "x86_64")
-            isUniversalApk = true
+            include("arm64-v8a")
+            isUniversalApk = false
         }
     }
-
-    productFlavors {
-        create("common") {
-            buildConfigField("String", "CHANNEL", "\"common\"")
-        }
-        create("coolapk") {
-            buildConfigField("String", "CHANNEL", "\"coolapk\"")
-        }
-    }
-
-    namespace = "org.autojs.autojs"
 
     lint {
         abortOnError = false
