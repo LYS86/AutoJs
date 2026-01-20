@@ -5,6 +5,7 @@ import android.content.ContextWrapper;
 import androidx.annotation.Nullable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -38,12 +39,12 @@ public class ConsoleFloaty extends ResizableExpandableFloaty.AbstractResizableEx
 
     @Override
     public int getInitialWidth() {
-        return WindowManager.LayoutParams.WRAP_CONTENT; //ScreenMetrics.getDeviceScreenWidth() * 2 / 3;
+        return WindowManager.LayoutParams.WRAP_CONTENT;
     }
 
     @Override
     public int getInitialHeight() {
-        return WindowManager.LayoutParams.WRAP_CONTENT;//ScreenMetrics.getDeviceScreenHeight() / 3;
+        return WindowManager.LayoutParams.WRAP_CONTENT;
     }
 
     @Override
@@ -64,18 +65,12 @@ public class ConsoleFloaty extends ResizableExpandableFloaty.AbstractResizableEx
         View view = View.inflate(mContextWrapper, R.layout.floating_console_expand, null);
         setListeners(view, window);
         setUpConsole(view, window);
-        setInitialMeasure(view);
         mExpandedView = view;
         return view;
     }
 
     public View getExpandedView() {
         return mExpandedView;
-    }
-
-    private void setInitialMeasure(final View view) {
-        view.post(() -> ViewUtil.setViewMeasure(view, ScreenMetrics.getDeviceScreenWidth() * 2 / 3,
-                ScreenMetrics.getDeviceScreenHeight() / 3));
     }
 
     private void initConsoleTitle(View view) {

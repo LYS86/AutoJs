@@ -2,6 +2,7 @@ package com.stardust.autojs.core.console;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
 import com.stardust.autojs.util.FloatingPermission;
 import com.stardust.enhancedfloaty.FloatyService;
 import com.stardust.enhancedfloaty.ResizableExpandableFloatyWindow;
+import com.stardust.util.ScreenMetrics;
 import com.stardust.util.UiHandler;
 import com.stardust.util.ViewUtil;
 
@@ -90,6 +92,12 @@ public class ConsoleImpl extends AbstractConsole {
             @Override
             public void onCreate(FloatyService service, WindowManager manager) {
                 super.onCreate(service, manager);
+                View expandedView = mConsoleFloaty.getExpandedView();
+                if (expandedView != null) {
+                    ViewUtil.setViewMeasure(expandedView,
+                            ScreenMetrics.getDeviceScreenWidth() * 2 / 3,
+                            ScreenMetrics.getDeviceScreenHeight() / 3);
+                }
                 expand();
                 mFloatyWindow.getWindowBridge().updatePosition(mX, mY);
                 synchronized (WINDOW_SHOW_LOCK) {
