@@ -26,6 +26,8 @@ import com.stardust.util.SparseArrayEntries;
 import java.util.ArrayList;
 import java.util.Map;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/5/2.
  * <p>
@@ -200,8 +202,9 @@ public class ConsoleView extends FrameLayout implements ConsoleImpl.LogListener 
 
     public void showEditText() {
         post(() -> {
-            mWindow.requestWindowFocus();
-            //mInputContainer.setVisibility(VISIBLE);
+            if (mWindow != null) {
+                mWindow.requestWindowFocus();
+            }
             mEditText.requestFocus();
         });
     }

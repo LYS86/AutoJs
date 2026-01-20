@@ -78,6 +78,7 @@ public class ConsoleImpl extends AbstractConsole {
     private BlockingQueue<String> mInput = new ArrayBlockingQueue<>(1);
     private WeakReference<ConsoleView> mConsoleView;
     private volatile boolean mShown = false;
+    private volatile boolean mConsoleViewReady = false;
     private int mX, mY;
 
     public ConsoleImpl(UiHandler uiHandler) {
@@ -112,7 +113,8 @@ public class ConsoleImpl extends AbstractConsole {
         mConsoleView = new WeakReference<>(consoleView);
         setLogListener(consoleView);
         synchronized (this) {
-            this.notify();
+            mConsoleViewReady = true;
+            this.notifyAll();
         }
     }
 
@@ -260,10 +262,12 @@ public class ConsoleImpl extends AbstractConsole {
 
     private void waitForConsoleView() {
         synchronized (this) {
-            try {
-                this.wait();
-            } catch (InterruptedException e) {
-                throw new ScriptInterruptedException();
+            while (!mConsoleViewReady) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    throw new ScriptInterruptedException();
+                }
             }
         }
     }
