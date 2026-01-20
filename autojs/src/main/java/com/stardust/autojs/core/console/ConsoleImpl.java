@@ -1,12 +1,11 @@
 package com.stardust.autojs.core.console;
 
-import timber.log.Timber;
-
 import android.content.Context;
 import android.content.Intent;
+import android.view.WindowManager;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.view.WindowManager;
 
 import com.stardust.autojs.R;
 import com.stardust.autojs.annotation.ScriptInterface;
@@ -25,6 +24,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import timber.log.Timber;
 
 /**
  * Created by Stardust on 2017/5/2.
@@ -158,8 +159,10 @@ public class ConsoleImpl extends AbstractConsole {
 
     @Override
     public void show() {
-        if (mShown) {
-            return;
+        synchronized (WINDOW_SHOW_LOCK) {
+            if (mShown) {
+                return;
+            }
         }
         if (!FloatingPermission.canDrawOverlays(mUiHandler.getContext())) {
             FloatingPermission.manageDrawOverlays(mUiHandler.getContext());
@@ -195,16 +198,16 @@ public class ConsoleImpl extends AbstractConsole {
 
     @Override
     public void hide() {
+        synchronized (WINDOW_SHOW_LOCK) {
+            if (!mShown) {
+                return;
+            }
+            mShown = false;
+        }
         mUiHandler.post(() -> {
-            synchronized (WINDOW_SHOW_LOCK) {
-                if (!mShown)
-                    return;
-                try {
-                    mFloatyWindow.close();
-                } catch (IllegalArgumentException ignored) {
-
-                }
-                mShown = false;
+            try {
+                mFloatyWindow.close();
+            } catch (IllegalArgumentException ignored) {
             }
         });
     }
