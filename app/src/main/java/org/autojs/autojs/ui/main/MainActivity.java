@@ -46,7 +46,6 @@ import org.autojs.autojs.external.foreground.ForegroundService;
 import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.tool.AccessibilityServiceTool;
 import org.autojs.autojs.ui.BaseActivity;
-import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.doc.DocsFragment_;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.log.LogActivity_;
@@ -92,7 +91,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkPermissions();
-        showAccessibilitySettingPromptIfDisabled();
         mVersionGuard = new VersionGuard(this);
         showAnnunciationIfNeeded();
         applyDayNightMode();
@@ -135,20 +133,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
 
     private void checkPermissions() {
         checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-
-    private void showAccessibilitySettingPromptIfDisabled() {
-        if (AccessibilityServiceTool.isAccessibilityServiceEnabled(this)) {
-            return;
-        }
-        new NotAskAgainDialog.Builder(this, "MainActivity.accessibility")
-                .title(R.string.text_need_to_enable_accessibility_service)
-                .content(R.string.explain_accessibility_permission)
-                .positiveText(R.string.text_go_to_setting)
-                .negativeText(R.string.text_cancel)
-                .onPositive((dialog, which) ->
-                        AccessibilityServiceTool.enableAccessibilityService()
-                ).show();
     }
 
     private void setUpToolbar() {
