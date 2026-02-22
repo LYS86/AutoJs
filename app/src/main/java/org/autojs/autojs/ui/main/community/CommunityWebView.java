@@ -29,8 +29,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Stardust on 2017/10/19.
+ * @deprecated 此功能已弃用，配合CommunityFragment使用
  */
-
+@Deprecated
 public class CommunityWebView extends EWebView {
 
     private String mUrl;

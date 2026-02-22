@@ -21,7 +21,9 @@ import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Stardust on 2017/12/10.
+ * @deprecated 此功能已弃用，配合社区功能使用
  */
+@Deprecated
 @SuppressLint("CheckResult")
 public class CommunityDrawerMenu {
 

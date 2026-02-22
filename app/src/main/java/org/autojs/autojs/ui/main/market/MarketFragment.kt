@@ -23,6 +23,11 @@ import org.autojs.autojs.ui.main.ViewPagerFragment
 import org.autojs.autojs.ui.widget.AvatarView
 import org.joda.time.format.DateTimeFormat
 
+/**
+ * 市场Fragment
+ * @deprecated 此功能已弃用，主页不再显示市场Tab
+ */
+@Deprecated("此功能已弃用，主页不再显示市场Tab")
 class MarketFragment : ViewPagerFragment(0) {
 
     private val mTopics = ArrayList<Topic>()

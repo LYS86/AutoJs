@@ -8,6 +8,10 @@ import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.image_text.view.*
 import org.autojs.autojs.R
 
+/**
+ * @deprecated 此功能已弃用，配合MarketFragment使用
+ */
+@Deprecated("此功能已弃用，配合MarketFragment使用")
 class ImageText : LinearLayout {
 
     var text: CharSequence?

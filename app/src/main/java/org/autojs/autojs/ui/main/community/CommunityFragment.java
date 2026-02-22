@@ -22,7 +22,9 @@ import java.net.URLEncoder;
 
 /**
  * Created by Stardust on 2017/8/22.
+ * @deprecated 此功能已弃用，主页不再显示社区Tab
  */
+@Deprecated
 @EFragment(R.layout.fragment_community)
 public class CommunityFragment extends ViewPagerFragment implements BackPressedHandler {
 

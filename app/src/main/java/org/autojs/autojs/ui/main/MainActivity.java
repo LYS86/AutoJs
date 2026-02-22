@@ -50,9 +50,6 @@ import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.doc.DocsFragment_;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.log.LogActivity_;
-import org.autojs.autojs.ui.main.community.CommunityFragment;
-import org.autojs.autojs.ui.main.community.CommunityFragment_;
-import org.autojs.autojs.ui.main.market.MarketFragment;
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment_;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment_;
 import org.autojs.autojs.ui.settings.SettingsActivity_;
@@ -60,7 +57,6 @@ import org.autojs.autojs.ui.update.VersionGuard;
 import org.autojs.autojs.ui.widget.CommonMarkdownView;
 import org.autojs.autojs.ui.widget.SearchViewItem;
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Arrays;
 
@@ -99,7 +95,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         showAccessibilitySettingPromptIfDisabled();
         mVersionGuard = new VersionGuard(this);
         showAnnunciationIfNeeded();
-        EventBus.getDefault().register(this);
         applyDayNightMode();
     }
 
@@ -171,8 +166,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         mPagerAdapter = new FragmentPagerAdapterBuilder(this)
                 .add(new MyScriptListFragment_(), R.string.text_file)
                 .add(new DocsFragment_(), R.string.text_tutorial)
-                .add(new CommunityFragment_(), R.string.text_community)
-                .add(new MarketFragment(), R.string.text_market)
                 .add(new TaskManagerFragment_(), R.string.text_manage)
                 .build();
         mViewPager.setAdapter(mPagerAdapter);
@@ -321,12 +314,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         return super.onOptionsItemSelected(item);
     }
 
-    @Subscribe
-    public void onLoadUrl(CommunityFragment.LoadUrl loadUrl) {
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-    }
-
-
     private void setUpSearchMenuItem(MenuItem searchMenuItem) {
         mSearchViewItem = new SearchViewItem(this, searchMenuItem) {
             @Override
@@ -367,9 +354,4 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         EventBus.getDefault().post(event);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
 }
