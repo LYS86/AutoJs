@@ -16,7 +16,6 @@ import com.stardust.autojs.runtime.api.AppUtils;
 import com.stardust.autojs.runtime.exception.ScriptException;
 import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
 
-import org.autojs.autojs.BuildConfig;
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
@@ -170,11 +169,7 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
 
     @Override
     protected AccessibilityConfig createAccessibilityConfig() {
-        AccessibilityConfig config = super.createAccessibilityConfig();
-        if (BuildConfig.CHANNEL.equals("coolapk")) {
-            config.addWhiteList("com.coolapk.market");
-        }
-        return config;
+        return super.createAccessibilityConfig();
     }
 
     @Override

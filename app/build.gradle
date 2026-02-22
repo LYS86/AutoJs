@@ -52,7 +52,6 @@ android {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.1'
     }
 
-    flavorDimensions "channel"
     splits {
 
         // Configures multiple APKs based on ABI.
@@ -72,14 +71,6 @@ android {
 
             // Specifies that we do not want to also generate a universal APK that includes all ABIs.
             universalApk false
-        }
-    }
-    productFlavors {
-        common {
-            buildConfigField "String", "CHANNEL", '"common"'
-        }
-        coolapk {
-            buildConfigField "String", "CHANNEL", '"coolapk"'
         }
     }
 
