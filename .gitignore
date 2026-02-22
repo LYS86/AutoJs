@@ -2,9 +2,7 @@
 .gradle
 /tools
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
-/.idea/caches
+.idea/
 .DS_Store
 /build
 /release
@@ -12,4 +10,3 @@
 .externalNativeBuild
 *.apk
 *.exe
-.idea/caches/build_file_checksums.ser
