@@ -234,6 +234,9 @@ public class CodeEditText extends AppCompatEditText {
                 return;
             }
             int lineEnd = Math.min(layout.getLineVisibleEnd(line), highlightTokens.colors.length);
+            if (lineEnd <= lineStart) {
+                continue;
+            }
             int visibleCharStart = getVisibleCharIndex(paint, scrollX, lineStart, lineEnd);
             int visibleCharEnd = getVisibleCharIndex(paint, scrollX + mParentScrollView.getWidth(), lineStart, lineEnd) + 1;
             int previousColorPos = visibleCharStart;
@@ -302,6 +305,9 @@ public class CodeEditText extends AppCompatEditText {
     private int getVisibleCharIndex(Paint paint, int x, int lineStart, int lineEnd) {
         if (x == 0)
             return lineStart;
+        if (lineEnd <= lineStart) {
+            return lineStart;
+        }
         int low = lineStart;
         int high = lineEnd - 1;
         while (low < high) {
