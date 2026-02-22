@@ -9,8 +9,6 @@ import com.stardust.concurrent.VolatileBox;
 import com.stardust.pio.PFiles;
 
 import org.autojs.autojs.R;
-import org.autojs.autojs.model.script.ScriptFile;
-import org.autojs.autojs.network.NodeBB;
 import org.autojs.autojs.network.api.DownloadApi;
 import org.autojs.autojs.tool.SimpleObserver;
 
@@ -39,6 +37,7 @@ import retrofit2.Retrofit;
 public class DownloadManager {
 
     private static final String LOG_TAG = "DownloadManager";
+    private static final String BASE_URL = "https://www.autojs.org/";
     private static DownloadManager sInstance;
 
     private static final int RETRY_COUNT = 3;
@@ -48,7 +47,7 @@ public class DownloadManager {
 
     public DownloadManager() {
         mRetrofit = new Retrofit.Builder()
-                .baseUrl(NodeBB.BASE_URL)
+                .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(new OkHttpClient.Builder()
                         .addInterceptor(chain -> {
