@@ -141,8 +141,6 @@ dependencies {
     implementation 'joda-time:joda-time:2.9.9'
     // Tasker Plugin
     implementation 'com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3'
-    // Flurry
-    implementation 'com.flurry.android:analytics:7.0.0@aar'
     // Bugly
     implementation 'com.tencent.bugly:crashreport:2.6.6'
     // MaterialDialogCommon
