@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.jakewharton.butterknife'
 
@@ -16,7 +15,6 @@ configurations.all {
 
 android {
     compileSdkVersion versions.compile
-    buildToolsVersion versions.buildTool
     defaultConfig {
         applicationId "org.autojs.autojs"
         minSdkVersion versions.mini

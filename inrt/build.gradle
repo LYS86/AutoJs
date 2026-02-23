@@ -1,10 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion versions.compile
-    buildToolsVersion versions.buildTool
 
     defaultConfig {
         applicationId "com.stardust.auojs.inrt"
