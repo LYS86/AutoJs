@@ -56,7 +56,8 @@ import java.util.Stack
 
 open class ExplorerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
-) : ThemeColorSwipeRefreshLayout(context, attrs), SwipeRefreshLayout.OnRefreshListener, PopupMenu.OnMenuItemClickListener {
+) : ThemeColorSwipeRefreshLayout(context, attrs), SwipeRefreshLayout.OnRefreshListener,
+    PopupMenu.OnMenuItemClickListener {
 
     private val logTag = "ExplorerView"
 
@@ -68,21 +69,10 @@ open class ExplorerView @JvmOverloads constructor(
         fun onItemOperated(item: ExplorerItem)
     }
 
-    @JvmField
     val viewTypeItem = 0
-    @JvmField
     val viewTypePage = 1
     //category是类别，也即"文件", "文件夹"那两个
-    @JvmField
     val viewTypeCategory = 2
-    
-    // 保持 Java 兼容性
-    @JvmField
-    val VIEW_TYPE_ITEM = viewTypeItem
-    @JvmField
-    val VIEW_TYPE_PAGE = viewTypePage
-    @JvmField
-    val VIEW_TYPE_CATEGORY = viewTypeCategory
 
     private val positionOfCategoryDir = 0
 
@@ -105,7 +95,15 @@ open class ExplorerView @JvmOverloads constructor(
     }
 
     private fun init() {
-        Log.d(logTag, "item bg = " + Integer.toHexString(ContextCompat.getColor(context, R.color.item_background)))
+        Log.d(
+            logTag,
+            "item bg = " + Integer.toHexString(
+                ContextCompat.getColor(
+                    context,
+                    R.color.item_background
+                )
+            )
+        )
         setOnRefreshListener(this)
         val binding = ExplorerViewBinding.inflate(LayoutInflater.from(context), this, true)
         mExplorerItemListView = binding.explorerItemList
@@ -157,7 +155,8 @@ open class ExplorerView @JvmOverloads constructor(
     }
 
     protected fun enterDirectChildPage(childItemGroup: ExplorerPage) {
-        mCurrentPageState.scrollY = (mExplorerItemListView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+        mCurrentPageState.scrollY =
+            (mExplorerItemListView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
         mPageStateHistory.push(mCurrentPageState)
         setCurrentPageState(ExplorerPageState(childItemGroup))
         loadItemList()
@@ -273,7 +272,8 @@ open class ExplorerView @JvmOverloads constructor(
         val item = event.item
         val changedItemPath = item?.path
         if (currentDirPath == changedItemPath || (currentDirPath == changedDirPath &&
-                event.action == ExplorerChangeEvent.CHILDREN_CHANGE)) {
+                    event.action == ExplorerChangeEvent.CHILDREN_CHANGE)
+        ) {
             loadItemList()
             return
         }
@@ -285,10 +285,12 @@ open class ExplorerView @JvmOverloads constructor(
                         mExplorerAdapter.notifyItemChanged(item, i)
                     }
                 }
+
                 ExplorerChangeEvent.CREATE -> {
                     mExplorerItemList.insertAtFront(event.newItem)
                     mExplorerAdapter.notifyItemInserted(event.newItem, 0)
                 }
+
                 ExplorerChangeEvent.REMOVE -> {
                     val i = mExplorerItemList.remove(item)
                     if (i >= 0) {
@@ -317,12 +319,14 @@ open class ExplorerView @JvmOverloads constructor(
                         .subscribe(Observers.emptyObserver())
                 }
             }
+
             R.id.delete -> {
                 mSelectedItem?.let {
                     ScriptOperations(context, this, getCurrentPage())
                         .delete(it.toScriptFile())
                 }
             }
+
             R.id.run_repeatedly -> {
                 mSelectedItem?.let {
                     ScriptLoopDialog(context, it.toScriptFile())
@@ -330,24 +334,28 @@ open class ExplorerView @JvmOverloads constructor(
                     notifyOperated()
                 }
             }
+
             R.id.create_shortcut -> {
                 mSelectedItem?.let {
                     ScriptOperations(context, this, getCurrentPage())
                         .createShortcut(it.toScriptFile())
                 }
             }
+
             R.id.open_by_other_apps -> {
                 mSelectedItem?.let {
                     Scripts.openByOtherApps(it.toScriptFile())
                     notifyOperated()
                 }
             }
+
             R.id.send -> {
                 mSelectedItem?.let {
                     Scripts.send(it.toScriptFile())
                     notifyOperated()
                 }
             }
+
             R.id.timed_task -> {
                 mSelectedItem?.let {
                     ScriptOperations(context, this, getCurrentPage())
@@ -355,6 +363,7 @@ open class ExplorerView @JvmOverloads constructor(
                     notifyOperated()
                 }
             }
+
             R.id.action_build_apk -> {
                 mSelectedItem?.let {
                     BuildActivity_.intent(context)
@@ -363,27 +372,34 @@ open class ExplorerView @JvmOverloads constructor(
                     notifyOperated()
                 }
             }
+
             R.id.action_sort_by_date -> {
                 sort(ExplorerItemList.SORT_TYPE_DATE, mDirSortMenuShowing)
             }
+
             R.id.action_sort_by_type -> {
                 sort(ExplorerItemList.SORT_TYPE_TYPE, mDirSortMenuShowing)
             }
+
             R.id.action_sort_by_name -> {
                 sort(ExplorerItemList.SORT_TYPE_NAME, mDirSortMenuShowing)
             }
+
             R.id.action_sort_by_size -> {
                 sort(ExplorerItemList.SORT_TYPE_SIZE, mDirSortMenuShowing)
             }
+
             R.id.reset -> {
                 mSelectedItem?.let {
                     Explorers.Providers.workspace().resetSample(it.toScriptFile())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ 
-                            Snackbar.make(this, R.string.text_reset_succeed, Snackbar.LENGTH_SHORT).show()
+                        .subscribe({
+                            Snackbar.make(this, R.string.text_reset_succeed, Snackbar.LENGTH_SHORT)
+                                .show()
                         }, Observers.toastMessage())
                 }
             }
+
             else -> return false
         }
         return true
@@ -424,17 +440,40 @@ open class ExplorerView @JvmOverloads constructor(
         mExplorer?.unregisterChangeListener(this)
     }
 
-    protected open fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup, viewType: Int): BindableViewHolder<*> {
+    protected open fun onCreateViewHolder(
+        inflater: LayoutInflater,
+        parent: ViewGroup,
+        viewType: Int
+    ): BindableViewHolder<*> {
         return when (viewType) {
-            viewTypeItem -> ExplorerItemViewHolder(ScriptFileListFileBinding.inflate(inflater, parent, false))
-            viewTypePage -> ExplorerPageViewHolder(ScriptFileListDirectoryBinding.inflate(inflater, parent, false))
-            else -> CategoryViewHolder(ScriptFileListCategoryBinding.inflate(inflater, parent, false))
+            viewTypeItem -> ExplorerItemViewHolder(
+                ScriptFileListFileBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                )
+            )
+
+            viewTypePage -> ExplorerPageViewHolder(
+                ScriptFileListDirectoryBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                )
+            )
+
+            else -> CategoryViewHolder(
+                ScriptFileListCategoryBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                )
+            )
         }
     }
 
-    protected fun getExplorerItemListView(): RecyclerView {
-        return mExplorerItemListView
-    }
+    protected val explorerItemListView: RecyclerView
+        get() = mExplorerItemListView
 
     private inner class ExplorerAdapter : RecyclerView.Adapter<BindableViewHolder<*>>() {
 
@@ -451,11 +490,16 @@ open class ExplorerView @JvmOverloads constructor(
                 position == positionOfCategoryDir || position == positionOfCategoryFile -> {
                     bindableViewHolder.bind(position == positionOfCategoryDir, position)
                 }
+
                 position < positionOfCategoryFile -> {
                     bindableViewHolder.bind(mExplorerItemList.getItemGroup(position - 1), position)
                 }
+
                 else -> {
-                    bindableViewHolder.bind(mExplorerItemList.getItem(position - positionOfCategoryFile - 1), position)
+                    bindableViewHolder.bind(
+                        mExplorerItemList.getItem(position - positionOfCategoryFile - 1),
+                        position
+                    )
                 }
             }
         }
@@ -501,10 +545,12 @@ open class ExplorerView @JvmOverloads constructor(
         }
     }
 
-    protected inner class ExplorerItemViewHolder(private val binding: ScriptFileListFileBinding) : BindableViewHolder<ExplorerItem>(binding.root) {
+    protected inner class ExplorerItemViewHolder(private val binding: ScriptFileListFileBinding) :
+        BindableViewHolder<ExplorerItem>(binding.root) {
 
         private lateinit var mExplorerItem: ExplorerItem
-        private val mFirstCharBackground: GradientDrawable = binding.firstChar.background as GradientDrawable
+        private val mFirstCharBackground: GradientDrawable =
+            binding.firstChar.background as GradientDrawable
 
         init {
             binding.item.setOnClickListener { onItemClick() }
@@ -561,7 +607,8 @@ open class ExplorerView @JvmOverloads constructor(
         }
     }
 
-    protected inner class ExplorerPageViewHolder(private val binding: ScriptFileListDirectoryBinding) : BindableViewHolder<ExplorerPage>(binding.root) {
+    protected inner class ExplorerPageViewHolder(private val binding: ScriptFileListDirectoryBinding) :
+        BindableViewHolder<ExplorerPage>(binding.root) {
 
         private lateinit var mExplorerPage: ExplorerPage
 
@@ -590,7 +637,8 @@ open class ExplorerView @JvmOverloads constructor(
         }
     }
 
-    inner class CategoryViewHolder(private val binding: ScriptFileListCategoryBinding) : BindableViewHolder<Boolean>(binding.root) {
+    inner class CategoryViewHolder(private val binding: ScriptFileListCategoryBinding) :
+        BindableViewHolder<Boolean>(binding.root) {
 
         private var mIsDir = false
 
@@ -611,24 +659,32 @@ open class ExplorerView @JvmOverloads constructor(
             }
             if (isDirCategory) {
                 binding.collapse.rotation = if (mCurrentPageState.dirsCollapsed) -90f else 0f
-                binding.order.setImageResource(if (mExplorerItemList.isDirSortedAscending)
-                    R.drawable.ic_ascending_order else R.drawable.ic_descending_order)
+                binding.order.setImageResource(
+                    if (mExplorerItemList.isDirSortedAscending)
+                        R.drawable.ic_ascending_order else R.drawable.ic_descending_order
+                )
             } else {
                 binding.collapse.rotation = if (mCurrentPageState.filesCollapsed) -90f else 0f
-                binding.order.setImageResource(if (mExplorerItemList.isFileSortedAscending)
-                    R.drawable.ic_ascending_order else R.drawable.ic_descending_order)
+                binding.order.setImageResource(
+                    if (mExplorerItemList.isFileSortedAscending)
+                        R.drawable.ic_ascending_order else R.drawable.ic_descending_order
+                )
             }
         }
 
         private fun changeSortOrder() {
             if (mIsDir) {
-                binding.order.setImageResource(if (mExplorerItemList.isDirSortedAscending)
-                    R.drawable.ic_ascending_order else R.drawable.ic_descending_order)
+                binding.order.setImageResource(
+                    if (mExplorerItemList.isDirSortedAscending)
+                        R.drawable.ic_ascending_order else R.drawable.ic_descending_order
+                )
                 mExplorerItemList.isDirSortedAscending = !mExplorerItemList.isDirSortedAscending
                 sort(mExplorerItemList.dirSortType, mIsDir)
             } else {
-                binding.order.setImageResource(if (mExplorerItemList.isFileSortedAscending)
-                    R.drawable.ic_ascending_order else R.drawable.ic_descending_order)
+                binding.order.setImageResource(
+                    if (mExplorerItemList.isFileSortedAscending)
+                        R.drawable.ic_ascending_order else R.drawable.ic_descending_order
+                )
                 mExplorerItemList.isFileSortedAscending = !mExplorerItemList.isFileSortedAscending
                 sort(mExplorerItemList.fileSortType, mIsDir)
             }
