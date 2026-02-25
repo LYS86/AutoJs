@@ -80,6 +80,12 @@ class TestUiObject @JvmOverloads constructor(private val mChildCount: Int = Math
 
         var count = 0
         var max = 0
-        private val random = Random()
+        private var random = Random(12345L)
+
+        fun reset() {
+            count = 0
+            max = 0
+            random = Random(12345L)
+        }
     }
 }

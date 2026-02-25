@@ -4,6 +4,7 @@ import com.stardust.automator.test.TestUiObject
 import com.stardust.automator.UiObject
 import com.stardust.automator.search.DFS
 
+import org.junit.Before
 import org.junit.Test
 import java.util.Random
 
@@ -14,9 +15,14 @@ import org.junit.Assert.*
  */
 class DfsFilterTest {
 
-    private class RandomFilter : Filter {
+    @Before
+    fun setUp() {
+        TestUiObject.reset()
+    }
 
-        private val mRandom = Random()
+    private class RandomFilter(seed: Long) : Filter {
+
+        private val mRandom = Random(seed)
 
         override fun filter(node: UiObject): Boolean {
             return mRandom.nextBoolean()
@@ -26,9 +32,9 @@ class DfsFilterTest {
     @Test
     @Throws(Exception::class)
     fun filter() {
-        val filter = RandomFilter()
+        val filter = RandomFilter(12345L)
         val root = TestUiObject(10)
-        val list = DFS(filter).search(root)
+        val list = DFS.search(root, filter)
         for (uiObject in list) {
             if (root !== uiObject)
                 uiObject.recycle()

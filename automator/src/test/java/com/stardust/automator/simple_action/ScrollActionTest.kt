@@ -5,6 +5,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 import com.stardust.automator.test.TestUiObject
 import com.stardust.automator.UiObject
 
+import org.junit.Before
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -13,6 +14,12 @@ import org.junit.Assert.*
  * Created by Stardust on 2017/5/5.
  */
 class ScrollActionTest {
+
+    @Before
+    fun setUp() {
+        TestUiObject.reset()
+    }
+
     @Test
     @Throws(Exception::class)
     fun perform() {
