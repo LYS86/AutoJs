@@ -99,7 +99,7 @@
             android:configChanges="orientation|screenSize"
             />
         <activity
-            android:name=".ui.project.BuildActivity_"
+            android:name=".ui.project.BuildActivity"
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".ui.project.ProjectConfigActivity_"/>
         <activity android:name=".ui.log.LogActivity_"/>

@@ -2,6 +2,7 @@ package org.autojs.autojs.ui.explorer
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.Log
@@ -43,7 +44,6 @@ import org.autojs.autojs.tool.Observers
 import org.autojs.autojs.ui.common.ScriptLoopDialog
 import org.autojs.autojs.ui.common.ScriptOperations
 import org.autojs.autojs.ui.project.BuildActivity
-import org.autojs.autojs.ui.project.BuildActivity_
 import org.autojs.autojs.ui.viewmodel.ExplorerItemList
 import org.autojs.autojs.ui.widget.BindableViewHolder
 import org.autojs.autojs.workground.WrapContentGridLayoutManger
@@ -366,9 +366,11 @@ open class ExplorerView @JvmOverloads constructor(
 
             R.id.action_build_apk -> {
                 mSelectedItem?.let {
-                    BuildActivity_.intent(context)
-                        .extra(BuildActivity.EXTRA_SOURCE, it.path)
-                        .start()
+                    context.startActivity(
+                        Intent(context, BuildActivity::class.java).putExtra(
+                            BuildActivity.EXTRA_SOURCE, it.path
+                        )
+                    )
                     notifyOperated()
                 }
             }

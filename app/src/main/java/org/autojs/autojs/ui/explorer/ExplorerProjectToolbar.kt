@@ -1,6 +1,7 @@
 package org.autojs.autojs.ui.explorer
 
 import android.content.Context
+import android.content.Intent
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,7 +17,6 @@ import org.autojs.autojs.databinding.ExplorerProjectToolbarBinding
 import org.autojs.autojs.model.explorer.ExplorerChangeEvent
 import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.ui.project.BuildActivity
-import org.autojs.autojs.ui.project.BuildActivity_
 import org.autojs.autojs.ui.project.ProjectConfigActivity
 import org.autojs.autojs.ui.project.ProjectConfigActivity_
 import org.greenrobot.eventbus.Subscribe
@@ -71,9 +71,11 @@ class ExplorerProjectToolbar @JvmOverloads constructor(
 
     private fun build() {
         mDirectory?.let {
-            BuildActivity_.intent(context)
-                .extra(BuildActivity.EXTRA_SOURCE, it.path)
-                .start()
+            context.startActivity(
+                Intent(context, BuildActivity::class.java).putExtra(
+                    BuildActivity.EXTRA_SOURCE, it.path
+                )
+            )
         }
     }
 
