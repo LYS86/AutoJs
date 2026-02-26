@@ -34,7 +34,6 @@
     <string name="github">软件源代码</string>
     <string name="text_already_copy_to_clip">已复制到剪贴板</string>
     <string name="my_github">https://github.com/LYS86/AutoJs</string>
-    <string name="share_app">[Auto.js]下载地址：http://www.coolapk.com/apk/org.autojs.autojs </string>
     <string name="text_floating_window">悬浮窗</string>
     <string name="text_error_report">错误报告</string>
     <string name="text_press_again_to_exit">再按一次退出程序</string>
@@ -48,7 +47,6 @@
     <string name="text_already_delete">已删除</string>
     <string name="text_error">错误</string>
     <string name="text_copy_debug_info">复制调试信息</string>
-    <string name="text_it_is_the_developer_of_app">这是软件开发者(。・・)ノ</string>
     <string name="text_please_choose">请选择</string>
     <string name="text_crash">崩溃了o(≧口≦)o</string>
     <string name="crash_feedback">将会自动提交错误信息。您也可以手动复制调试信息提交给开发者(*^▽^*)或者点击\"退出\"退出程序o(╥﹏╥)o</string>

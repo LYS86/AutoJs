@@ -33,7 +33,6 @@
     <string name="github">Source Code</string>
     <string name="text_already_copy_to_clip">Copied</string>
     <string name="my_github">https://github.com/LYS86/AutoJs</string>
-    <string name="share_app">[UiAutomator]Download：http://www.coolapk.com/apk/org.autojs.autojs </string>
     <string name="text_floating_window">Floating Window</string>
     <string name="text_error_report">Bug Report</string>
     <string name="text_press_again_to_exit">Press again to exit</string>
@@ -47,7 +46,6 @@
     <string name="text_already_delete">Deleted</string>
     <string name="text_error">Error</string>
     <string name="text_copy_debug_info">Copy debugging log</string>
-    <string name="text_it_is_the_developer_of_app">This is a software developer(。・・)ノ</string>
     <string name="text_please_choose">Please choose </string>
     <string name="text_crash">Crash~ o(≧口≦)o</string>
     <string name="crash_feedback">(ಥ _ ಥ)Exit or submit a bug report or copy debugging log to the developer(≧∇≦)ﾉ</string>
