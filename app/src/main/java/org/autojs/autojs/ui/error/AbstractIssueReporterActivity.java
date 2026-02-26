@@ -55,8 +55,9 @@ import static android.util.Patterns.EMAIL_ADDRESS;
 
 /**
  * Created by Stardust on 2017/4/3.
+ * @deprecated 已弃用，请使用 {@link com.stardust.autojs.util.Browser#openUrl} 打开 GitHub Issues 页面
  */
-
+@Deprecated
 public abstract class AbstractIssueReporterActivity extends BaseActivity {
 
     private static final String TAG = AbstractIssueReporterActivity.class.getSimpleName();

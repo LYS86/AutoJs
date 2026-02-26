@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.stardust.autojs.util.Browser;
 import com.stardust.util.IntentUtil;
 
 import org.autojs.autojs.BuildConfig;
@@ -23,7 +24,6 @@ import org.autojs.autojs.R;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
 import org.autojs.autojs.network.download.DownloadManager;
 import org.autojs.autojs.network.entity.VersionInfo;
-import org.autojs.autojs.tool.IntentTool;
 import org.autojs.autojs.ui.widget.CommonMarkdownView;
 
 import java.io.File;
@@ -98,7 +98,7 @@ public class UpdateInfoDialogBuilder extends MaterialDialog.Builder {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    IntentTool.browse(v.getContext(), download.url);
+                    Browser.openUrl(v.getContext(), download.url);
                 }
             });
         }

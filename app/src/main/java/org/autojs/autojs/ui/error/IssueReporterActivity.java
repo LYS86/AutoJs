@@ -7,8 +7,9 @@ import com.heinrichreimersoftware.androidissuereporter.model.github.GithubTarget
 
 /**
  * Created by Stardust on 2017/2/13.
+ * @deprecated 已弃用，请使用 {@link com.stardust.autojs.util.Browser#openUrl} 打开 GitHub Issues 页面
  */
-
+@Deprecated
 public class IssueReporterActivity extends AbstractIssueReporterActivity {
 
     @Override

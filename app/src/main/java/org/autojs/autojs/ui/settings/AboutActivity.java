@@ -5,9 +5,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import org.autojs.autojs.tool.IntentTool;
+
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
+
+import com.stardust.autojs.util.Browser;
 import com.stardust.util.IntentUtil;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -21,7 +23,9 @@ import org.androidannotations.annotations.ViewById;
 
 /**
  * Created by Stardust on 2017/2/2.
+ * @deprecated 已弃用，请使用 {@link com.stardust.autojs.util.Browser#openUrl} 打开项目页面
  */
+@Deprecated
 @EActivity(R.layout.activity_about)
 public class AboutActivity extends BaseActivity {
 
@@ -45,7 +49,7 @@ public class AboutActivity extends BaseActivity {
 
     @Click(R.id.github)
     void openGitHub() {
-        IntentTool.browse(this, getString(R.string.my_github));
+        Browser.openUrl(this, getString(R.string.my_github));
     }
 
     @Click(R.id.qq)
