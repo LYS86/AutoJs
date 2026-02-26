@@ -24,8 +24,6 @@ allprojects {
         mavenCentral()
         google()
         maven { url "https://jitpack.io" }
-        maven { url "https://repo.gradle.org/artifactory/jitpack/" }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 }
 
