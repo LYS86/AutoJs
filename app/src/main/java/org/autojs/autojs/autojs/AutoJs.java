@@ -24,7 +24,7 @@ import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutHierarchyFloatyWindow;
-import org.autojs.autojs.ui.log.LogActivity_;
+import org.autojs.autojs.ui.log.LogActivity;
 import org.autojs.autojs.ui.settings.SettingsActivity_;
 
 import com.stardust.view.accessibility.AccessibilityService;
@@ -176,7 +176,7 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
     protected ScriptRuntime createRuntime() {
         ScriptRuntime runtime = super.createRuntime();
         runtime.putProperty("class.settings", SettingsActivity_.class);
-        runtime.putProperty("class.console", LogActivity_.class);
+        runtime.putProperty("class.console", LogActivity.class);
         runtime.putProperty("broadcast.inspect_layout_bounds", LayoutBoundsFloatyWindow.class.getName());
         runtime.putProperty("broadcast.inspect_layout_hierarchy", LayoutHierarchyFloatyWindow.class.getName());
         return runtime;
