@@ -32,7 +32,7 @@ import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
-import org.autojs.autojs.ui.main.MainActivity_;
+import org.autojs.autojs.ui.main.MainActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -213,7 +213,7 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
             super.finish();
         }
         if (mNewTask) {
-            startActivity(new Intent(this, MainActivity_.class));
+            startActivity(new Intent(this, MainActivity.class));
         }
     }
 

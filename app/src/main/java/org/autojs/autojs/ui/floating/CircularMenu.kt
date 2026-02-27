@@ -28,7 +28,7 @@ import org.autojs.autojs.tool.RootTool
 import org.autojs.autojs.ui.common.NotAskAgainDialog
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutHierarchyFloatyWindow
-import org.autojs.autojs.ui.main.MainActivity_
+import org.autojs.autojs.ui.main.MainActivity
 import org.autojs.autojs.ui.explorer.ExplorerView
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
 import com.stardust.util.ClipboardUtil
@@ -293,7 +293,7 @@ class CircularMenu(context: Context) : Recorder.OnStateChangedListener, LayoutIn
 
     private fun openLauncher() {
         dismissSettingsDialog()
-        mContext.startActivity(Intent(mContext, MainActivity_::class.java)
+        mContext.startActivity(Intent(mContext, MainActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
