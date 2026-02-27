@@ -102,7 +102,7 @@
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".ui.project.ProjectConfigActivity"/>
         <activity android:name=".ui.log.LogActivity"/>
-        <activity android:name=".ui.doc.DocumentationActivity_"/>
+        <activity android:name=".ui.doc.DocumentationActivity"/>
         <activity android:name=".ui.shortcut.ShortcutIconSelectActivity"/>
         <activity android:name=".ui.timing.TimedTaskSettingActivity_"/>
         <activity

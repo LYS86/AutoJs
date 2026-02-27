@@ -2,6 +2,7 @@ package org.autojs.autojs.ui.doc
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import com.afollestad.materialdialogs.MaterialDialog
@@ -23,9 +24,9 @@ class ManualDialog(context: Context) {
         binding.close.setOnClickListener { dialog.dismiss() }
         binding.fullscreen.setOnClickListener {
             dialog.dismiss()
-            DocumentationActivity_.intent(binding.root.context)
-                .extra(DocumentationActivity.EXTRA_URL, binding.ewebView.webView.url)
-                .start()
+            val intent = Intent(binding.root.context, DocumentationActivity::class.java)
+                .putExtra(DocumentationActivity.EXTRA_URL, binding.ewebView.webView.url)
+            binding.root.context.startActivity(intent)
         }
     }
 
