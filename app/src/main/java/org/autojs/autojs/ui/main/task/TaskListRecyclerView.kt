@@ -1,6 +1,7 @@
 package org.autojs.autojs.ui.main.task
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.Log
@@ -27,11 +28,6 @@ import org.autojs.autojs.databinding.TaskListRecyclerViewItemBinding
 import org.autojs.autojs.storage.database.ModelChange
 import org.autojs.autojs.timing.TimedTaskManager
 import org.autojs.autojs.ui.timing.TimedTaskSettingActivity
-import org.autojs.autojs.ui.timing.TimedTaskSettingActivity_
-
-/**
- * Created by Stardust on 2017/3/24.
- */
 
 class TaskListRecyclerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyle: Int = 0
@@ -96,7 +92,6 @@ class TaskListRecyclerView @JvmOverloads constructor(
         }
         mAdapter = Adapter(mTaskGroups)
         adapter = mAdapter
-        //notifyDataSetChanged not working...
     }
 
     override fun onAttachedToWindow() {
@@ -200,9 +195,9 @@ class TaskListRecyclerView @JvmOverloads constructor(
                 val task = mTask as Task.PendingTask
                 val extra = if (task.timedTask == null) TimedTaskSettingActivity.EXTRA_INTENT_TASK_ID
                 else TimedTaskSettingActivity.EXTRA_TASK_ID
-                TimedTaskSettingActivity_.intent(context)
-                    .extra(extra, task.id)
-                    .start()
+                val intent = Intent(context, TimedTaskSettingActivity::class.java)
+                    .putExtra(extra, task.id)
+                context.startActivity(intent)
             }
         }
     }
@@ -226,5 +221,4 @@ class TaskListRecyclerView @JvmOverloads constructor(
             icon.rotation = if (expanded) -90f else 0f
         }
     }
-
 }
