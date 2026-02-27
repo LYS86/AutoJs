@@ -30,7 +30,7 @@ import org.autojs.autojs.databinding.ActivityMainBinding
 import org.autojs.autojs.external.foreground.ForegroundService
 import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.ui.BaseActivity
-import org.autojs.autojs.ui.doc.DocsFragment_
+import org.autojs.autojs.ui.doc.DocsFragment
 import org.autojs.autojs.ui.floating.FloatyWindowManger
 import org.autojs.autojs.ui.log.LogActivity
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
@@ -134,7 +134,7 @@ class MainActivity : BaseActivity(),
         val tabLayout = findViewById<TabLayout>(R.id.tab)
         pagerAdapter = FragmentPagerAdapterBuilder(this)
             .add(MyScriptListFragment(), R.string.text_file)
-            .add(DocsFragment_(), R.string.text_tutorial)
+            .add(DocsFragment(), R.string.text_tutorial)
             .add(TaskManagerFragment(), R.string.text_manage)
             .build()
         binding.viewpager.adapter = pagerAdapter
