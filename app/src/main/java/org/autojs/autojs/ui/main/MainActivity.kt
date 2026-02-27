@@ -33,7 +33,7 @@ import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.doc.DocsFragment_
 import org.autojs.autojs.ui.floating.FloatyWindowManger
 import org.autojs.autojs.ui.log.LogActivity
-import org.autojs.autojs.ui.main.scripts.MyScriptListFragment_
+import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
 import org.autojs.autojs.ui.main.task.TaskManagerFragment
 import org.autojs.autojs.ui.settings.SettingsActivity
 import org.autojs.autojs.ui.update.VersionGuard
@@ -133,7 +133,7 @@ class MainActivity : BaseActivity(),
     private fun setUpTabViewPager() {
         val tabLayout = findViewById<TabLayout>(R.id.tab)
         pagerAdapter = FragmentPagerAdapterBuilder(this)
-            .add(MyScriptListFragment_(), R.string.text_file)
+            .add(MyScriptListFragment(), R.string.text_file)
             .add(DocsFragment_(), R.string.text_tutorial)
             .add(TaskManagerFragment(), R.string.text_manage)
             .build()
