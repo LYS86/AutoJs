@@ -18,7 +18,6 @@ import org.autojs.autojs.model.explorer.ExplorerChangeEvent
 import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.ui.project.BuildActivity
 import org.autojs.autojs.ui.project.ProjectConfigActivity
-import org.autojs.autojs.ui.project.ProjectConfigActivity_
 import org.greenrobot.eventbus.Subscribe
 
 class ExplorerProjectToolbar @JvmOverloads constructor(
@@ -108,9 +107,10 @@ class ExplorerProjectToolbar @JvmOverloads constructor(
 
     private fun edit() {
         mDirectory?.let {
-            ProjectConfigActivity_.intent(context)
-                .extra(ProjectConfigActivity.EXTRA_DIRECTORY, it.path)
-                .start()
+            context.startActivity(
+                Intent(context, ProjectConfigActivity::class.java)
+                    .putExtra(ProjectConfigActivity.EXTRA_DIRECTORY, it.path)
+            )
         }
     }
 
