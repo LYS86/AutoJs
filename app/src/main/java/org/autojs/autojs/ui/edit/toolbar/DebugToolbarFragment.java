@@ -2,11 +2,16 @@ package org.autojs.autojs.ui.edit.toolbar;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.stardust.autojs.execution.ScriptExecution;
@@ -16,9 +21,8 @@ import com.stardust.autojs.rhino.debug.Dim;
 import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
 import com.stardust.pio.PFiles;
 
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.FragmentDebugToolbarBinding;
 import org.autojs.autojs.ui.edit.EditorView;
 import org.autojs.autojs.ui.edit.debug.CodeEvaluator;
 import org.autojs.autojs.ui.edit.debug.DebugBar;
@@ -30,10 +34,12 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.List;
 
-@EFragment(R.layout.fragment_debug_toolbar)
 public class DebugToolbarFragment extends ToolbarFragment implements DebugCallback, CodeEditor.CursorChangeCallback, CodeEvaluator {
 
     private static final String LOG_TAG = "DebugToolbarFragment";
+    
+    private FragmentDebugToolbarBinding binding;
+    
     private EditorView mEditorView;
     private boolean mCursorChangeFromUser = true;
     private Debugger mDebugger;
@@ -69,8 +75,15 @@ public class DebugToolbarFragment extends ToolbarFragment implements DebugCallba
     }
 
     @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentDebugToolbarBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupClickListeners();
         mEditorView = findEditorView(view);
         mDebugger = DebuggerSingleton.get();
         mDebugger.setWeakDebugCallback(new WeakReference<>(this));
@@ -85,6 +98,14 @@ public class DebugToolbarFragment extends ToolbarFragment implements DebugCallba
             mEditorView.exitDebugging();
         }
         Log.d(LOG_TAG, "onViewCreated");
+    }
+
+    private void setupClickListeners() {
+        binding.stepOver.setOnClickListener(v -> stepOver());
+        binding.stepInto.setOnClickListener(v -> stepInto());
+        binding.stepOut.setOnClickListener(v -> stepOut());
+        binding.stopScript.setOnClickListener(v -> stopScript());
+        binding.resumeScript.setOnClickListener(v -> resumeScript());
     }
 
     private void setupEditor() {
@@ -126,30 +147,25 @@ public class DebugToolbarFragment extends ToolbarFragment implements DebugCallba
         debugBar.setCodeEvaluator(null);
     }
 
-    @Click(R.id.step_over)
     void stepOver() {
         setInterrupted(false);
         mDebugger.stepOver();
     }
 
-    @Click(R.id.step_into)
     void stepInto() {
         setInterrupted(false);
         mDebugger.stepInto();
     }
 
-    @Click(R.id.step_out)
     void stepOut() {
         setInterrupted(false);
         mDebugger.stepOut();
     }
 
-    @Click(R.id.stop_script)
     void stopScript() {
         mEditorView.forceStop();
     }
 
-    @Click(R.id.resume_script)
     void resumeScript() {
         setInterrupted(false);
         mDebugger.resume();
@@ -192,14 +208,13 @@ public class DebugToolbarFragment extends ToolbarFragment implements DebugCallba
         debugBar.refresh(start, end - start);
     }
 
+    @Override
     public String eval(String expr) {
         return mDebugger.eval(expr);
     }
 
     private void showDebuggingLineOnEditor(Dim.StackFrame stackFrame, String message) {
-        //如果调试进入到其他脚本（例如模块脚本），则改变当前编辑器的文本为自动调试的脚本的代码
         String source;
-        //标记是否需要更改编辑器文本
         boolean shouldChangeText = !stackFrame.getUrl().equals(mCurrentEditorSourceUrl);
         if (shouldChangeText) {
             source = stackFrame.sourceInfo().source();
@@ -225,7 +240,6 @@ public class DebugToolbarFragment extends ToolbarFragment implements DebugCallba
             }
         });
     }
-
 
     @Override
     public void onCursorChange(String line, int ch) {
@@ -270,6 +284,12 @@ public class DebugToolbarFragment extends ToolbarFragment implements DebugCallba
     @Override
     public List<Integer> getMenuItemIds() {
         return Arrays.asList(R.id.step_over, R.id.step_into, R.id.step_out, R.id.resume_script, R.id.stop_script);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     @Override

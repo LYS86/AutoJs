@@ -53,7 +53,7 @@ import org.autojs.autojs.ui.edit.keyboard.FunctionsKeyboardHelper
 import org.autojs.autojs.ui.edit.keyboard.FunctionsKeyboardView
 import org.autojs.autojs.ui.edit.theme.Theme
 import org.autojs.autojs.ui.edit.theme.Themes
-import org.autojs.autojs.ui.edit.toolbar.DebugToolbarFragment_
+import org.autojs.autojs.ui.edit.toolbar.DebugToolbarFragment
 import org.autojs.autojs.ui.edit.toolbar.NormalToolbarFragment
 import org.autojs.autojs.ui.edit.toolbar.SearchToolbarFragment
 import org.autojs.autojs.ui.edit.toolbar.ToolbarFragment
@@ -507,7 +507,7 @@ class EditorView : FrameLayout, CodeCompletionBar.OnHintClickListener, Functions
     }
 
     fun debug() {
-        val debugToolbarFragment = DebugToolbarFragment_.builder().build()
+        val debugToolbarFragment = DebugToolbarFragment()
         activity.supportFragmentManager.beginTransaction()
             .replace(R.id.toolbar_menu, debugToolbarFragment)
             .commit()
