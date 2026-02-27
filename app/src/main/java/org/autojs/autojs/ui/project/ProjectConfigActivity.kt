@@ -216,7 +216,7 @@ class ProjectConfigActivity : BaseActivity() {
         if (resultCode != RESULT_OK) {
             return
         }
-        ShortcutIconSelectActivity.getBitmapFromIntent(applicationContext, data)
+        ShortcutIconSelectActivity.getBitmapFromIntent(applicationContext, data!!)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ bitmap ->

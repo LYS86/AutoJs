@@ -29,6 +29,7 @@ class ShortcutCreateActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_FILE = "file"
         private const val LOG_TAG = "ShortcutCreateActivity"
+        private const val REQUEST_CODE_SELECT_ICON = 21209
     }
 
     private lateinit var scriptFile: ScriptFile
@@ -66,8 +67,7 @@ class ShortcutCreateActivity : AppCompatActivity() {
     }
 
     private fun selectIcon() {
-        ShortcutIconSelectActivity_.intent(this)
-            .startForResult(21209)
+        startActivityForResult(Intent(this, ShortcutIconSelectActivity::class.java), REQUEST_CODE_SELECT_ICON)
     }
 
     @SuppressLint("NewApi")

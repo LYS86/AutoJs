@@ -27,7 +27,6 @@ import org.autojs.autojs.tool.BitmapTool
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity
-import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity_
 import java.io.File
 import java.util.concurrent.Callable
 
@@ -147,8 +146,7 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
     }
 
     private fun selectIcon() {
-        ShortcutIconSelectActivity_.intent(this)
-            .startForResult(REQUEST_CODE)
+        startActivityForResult(Intent(this, ShortcutIconSelectActivity::class.java), REQUEST_CODE)
     }
 
     private fun buildApk() {
@@ -311,7 +309,7 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
     companion object {
         private const val REQUEST_CODE = 44401
         @JvmField
-        val EXTRA_SOURCE: String = BuildActivity::class.java.name + ".extra_source_file"
+        val EXTRA_SOURCE: String = "${BuildActivity::class.java.name}.extra_source_file"
         private const val LOG_TAG = "BuildActivity"
         private val REGEX_PACKAGE_NAME = Regex("^([A-Za-z][A-Za-z\\d_]*\\.)+([A-Za-z][A-Za-z\\d_]*)$")
     }
