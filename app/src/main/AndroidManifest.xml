@@ -108,7 +108,7 @@
         <activity
             android:name=".ui.shortcut.ShortcutCreateActivity"
             android:theme="@style/AppTheme.Transparent"/>
-        <activity android:name=".external.widget.ScriptWidgetSettingsActivity_">
+        <activity android:name=".external.widget.ScriptWidgetSettingsActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
