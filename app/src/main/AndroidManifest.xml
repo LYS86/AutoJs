@@ -82,7 +82,7 @@
         </provider>
 
         <activity
-            android:name=".ui.edit.EditActivity_"
+            android:name=".ui.edit.EditActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="standard"
             android:multiprocess="true"
