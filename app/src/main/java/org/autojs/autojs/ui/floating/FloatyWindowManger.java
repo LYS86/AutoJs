@@ -53,11 +53,11 @@ public class FloatyWindowManger {
         return sCircularMenu != null && sCircularMenu.get() != null;
     }
 
-    public static void showCircularMenuIfNeeded() {
+    public static boolean showCircularMenuIfNeeded() {
         if (isCircularMenuShowing()) {
-            return;
+            return true;
         }
-        showCircularMenu();
+        return showCircularMenu();
     }
 
     public static boolean showCircularMenu() {

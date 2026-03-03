@@ -95,8 +95,11 @@ class DrawerFragment : androidx.fragment.app.Fragment() {
     private fun setUpViews() {
         initMenuItems()
         if (Pref.isFloatingMenuShown()) {
-            FloatyWindowManger.showCircularMenuIfNeeded()
-            setChecked(floatingWindowItem, true)
+            val success = FloatyWindowManger.showCircularMenuIfNeeded()
+            setChecked(floatingWindowItem, success)
+            if (!success) {
+                Pref.setFloatingMenuShown(false)
+            }
         }
         setChecked(connectionItem, DevPluginService.getInstance().isConnected())
         if (Pref.isForegroundServiceEnabled()) {
@@ -175,16 +178,16 @@ class DrawerFragment : androidx.fragment.app.Fragment() {
     fun showOrDismissFloatingWindow(holder: DrawerMenuItemViewHolder) {
         val isFloatingWindowShowing = FloatyWindowManger.isCircularMenuShowing()
         val checked = holder.getSwitchCompat().isChecked
-        activity?.let { activity ->
-            if (activity.isFinishing.not()) {
-                Pref.setFloatingMenuShown(checked)
-            }
-        }
         if (checked && isFloatingWindowShowing.not()) {
-            setChecked(floatingWindowItem, FloatyWindowManger.showCircularMenu())
-            enableAccessibilityServiceByRootIfNeeded()
+            val success = FloatyWindowManger.showCircularMenu()
+            setChecked(floatingWindowItem, success)
+            Pref.setFloatingMenuShown(success)
+            if (success) {
+                enableAccessibilityServiceByRootIfNeeded()
+            }
         } else if (checked.not() && isFloatingWindowShowing) {
             FloatyWindowManger.hideCircularMenu()
+            Pref.setFloatingMenuShown(false)
         }
     }
 
