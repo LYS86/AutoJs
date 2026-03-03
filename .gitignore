@@ -9,4 +9,5 @@
 *.apk
 *.exe
 **/build/
+!**/src/**/build/
 **/.gradle/

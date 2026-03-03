@@ -34,6 +34,167 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/build_result_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    app:cardCornerRadius="2dp"
+                    app:cardElevation="1dp"
+                    app:cardUseCompatPadding="true"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:id="@+id/build_step_prepare"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="8dp">
+
+                            <ImageView
+                                android:id="@+id/icon_prepare"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_build_step_pending"/>
+
+                            <TextView
+                                android:id="@+id/text_prepare"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="12dp"
+                                android:text="@string/apk_builder_prepare"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                android:ellipsize="end"
+                                android:maxLines="2"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/build_step_build"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="8dp">
+
+                            <ImageView
+                                android:id="@+id/icon_build"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_build_step_pending"/>
+
+                            <TextView
+                                android:id="@+id/text_build"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="12dp"
+                                android:text="@string/apk_builder_build"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                android:ellipsize="end"
+                                android:maxLines="2"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/build_step_sign"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="8dp">
+
+                            <ImageView
+                                android:id="@+id/icon_sign"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_build_step_pending"/>
+
+                            <TextView
+                                android:id="@+id/text_sign"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="12dp"
+                                android:text="@string/apk_builder_package"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                android:ellipsize="end"
+                                android:maxLines="2"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/build_step_clean"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="8dp">
+
+                            <ImageView
+                                android:id="@+id/icon_clean"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_build_step_pending"/>
+
+                            <TextView
+                                android:id="@+id/text_clean"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="12dp"
+                                android:text="@string/apk_builder_clean"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                android:ellipsize="end"
+                                android:maxLines="2"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/build_success_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_build_successfully"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                android:textColor="?attr/colorPrimary"/>
+
+                            <TextView
+                                android:id="@+id/build_result_path"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/btn_install"
+                                style="@style/Base.Widget.AppCompat.Button.Colored"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/text_install"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
@@ -108,6 +269,36 @@
 
                             <androidx.appcompat.widget.AppCompatButton
                                 android:id="@+id/select_output"
+                                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom"
+                                android:text="@string/text_select"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/template_path_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="@string/text_template_apk_path">
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/template_path"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/select_template"
                                 style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                                 android:layout_width="60dp"
                                 android:layout_height="wrap_content"
@@ -235,6 +426,103 @@
 
                         </LinearLayout>
 
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/sign_config"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    app:cardCornerRadius="2dp"
+                    app:cardElevation="1dp"
+                    app:cardUseCompatPadding="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="24dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="24dp"
+                            android:text="@string/text_sign_config"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                            android:textColor="?android:textColorSecondary"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="@string/text_keystore_path">
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    android:id="@+id/keystore_path"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="text"/>
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/select_keystore"
+                                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom"
+                                android:text="@string/text_select"/>
+                        </LinearLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:hint="@string/text_keystore_password"
+                            app:passwordToggleEnabled="true">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/keystore_password"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textPassword"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:hint="@string/text_key_alias">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/key_alias"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:hint="@string/text_key_password"
+                            app:passwordToggleEnabled="true">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/key_password"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textPassword"/>
+                        </com.google.android.material.textfield.TextInputLayout>
 
                     </LinearLayout>
 

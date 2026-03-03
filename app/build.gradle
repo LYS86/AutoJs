@@ -72,6 +72,7 @@ android {
 
 
 dependencies {
+    implementation 'commons-io:commons-io:2.5'
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1-alpha01', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -100,7 +101,10 @@ dependencies {
     implementation 'com.github.aakira:expandable-layout:1.6.0@aar'
     //FlexibleDivider
     implementation 'com.yqritc:recyclerview-flexibledivider:1.4.0'
-    implementation 'local:AutoJsApkBuilder:1.0.1'
+    implementation project(':apkbuilder')
+    // APK Signing
+    implementation 'com.android.tools.build:apksig:8.7.3'
+    implementation 'com.madgag.spongycastle:prov:1.58.0.0'
     // RxJava
     implementation "io.reactivex.rxjava2:rxjava:2.1.2"
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
@@ -129,6 +133,8 @@ dependencies {
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
     // Optional, if you use support library fragments:
     debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
+    // Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation project(':automator')
     implementation project(':common')
     implementation project(':autojs')

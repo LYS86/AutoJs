@@ -219,6 +219,8 @@
     <string name="apk_builder_package">打包中</string>
     <string name="apk_builder_clean">清理临时文件</string>
     <string name="text_source_file_path">脚本文件(夹)路径</string>
+    <string name="text_template_apk_path">模版APK路径(可选)</string>
+    <string name="text_template_apk_title">选择模版APK</string>
     <string name="text_search">搜索</string>
     <string name="text_select_icon">选择图标</string>
     <string name="text_use_android_n_shortcut">添加到安卓7.0 Shortcut</string>
@@ -371,4 +373,19 @@
     <string name="text_star">收藏</string>
     <string name="text_upvote">赞</string>
     <string name="text_downvote">踩</string>
+    <string name="text_sign_config">签名配置</string>
+    <string name="text_keystore_path">签名文件路径</string>
+    <string name="text_keystore_password">签名文件密码</string>
+    <string name="text_key_alias">密钥别名</string>
+    <string name="text_key_password">密钥密码</string>
+    <string name="text_sign_config_required">请填写签名配置</string>
+    <string name="text_keystore_not_found">签名文件不存在</string>
+    <string name="text_keystore_path_empty">请选择签名文件</string>
+    <string name="text_keystore_password_empty">请填写签名文件密码</string>
+    <string name="text_key_alias_empty">请填写密钥别名</string>
+    <string name="text_key_password_empty">请填写密钥密码</string>
+    <string name="text_keystore_password_error">签名文件密码错误</string>
+    <string name="text_key_alias_error">密钥别名错误</string>
+    <string name="text_template_not_found">模版APK不存在</string>
+    <string name="text_build_error_unknown">构建失败：未知错误</string>
 </resources>

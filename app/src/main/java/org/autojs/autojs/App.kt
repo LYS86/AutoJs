@@ -29,6 +29,7 @@ import org.autojs.autojs.timing.TimedTaskManager
 import org.autojs.autojs.timing.TimedTaskScheduler
 import org.autojs.autojs.tool.CrashHandler
 import org.autojs.autojs.ui.error.ErrorReportActivity
+import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -42,6 +43,7 @@ class App : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        Timber.plant(Timber.DebugTree())
         GlobalAppContext.set(this)
         instance = WeakReference(this)
         setUpDebugEnvironment()

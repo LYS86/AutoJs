@@ -55,45 +55,6 @@ android {
     }
 }
 
-def buildApkPluginForAbi(File pluginProjectDir, String abi) {
-    copy {
-        from file('..\\app\\release\\')
-        into new File(pluginProjectDir, 'app\\src\\main\\assets')
-        def fileName = "inrt-" + abi + "-release.apk"
-        include fileName
-        rename fileName, 'template.apk'
-    }
-    exec {
-        workingDir pluginProjectDir
-        commandLine 'gradlew.bat', 'assembleRelease'
-    }
-    copy {
-        from new File(pluginProjectDir, 'app\\build\\outputs\\apk\\release')
-        into file('..\\common\\release')
-        def fileName = '打包插件-' + versions.appVersionName + '-release.apk'
-        include fileName
-        rename fileName, '打包插件-' + abi + '-' + versions.appVersionName + '-release.apk'
-    }
-}
-
-task buildApkPlugin {
-    doLast {
-        def pluginProjectDirPath = '..\\..\\AutoJsApkBuilderPlugin'
-        def pluginProjectDir = file(pluginProjectDirPath)
-        if (!pluginProjectDir.exists() || !pluginProjectDir.isDirectory()) {
-            println 'pluginProjectDir not exists'
-            return
-        }
-        buildApkPluginForAbi(pluginProjectDir, 'armeabi-v7a')
-        buildApkPluginForAbi(pluginProjectDir, 'x86')
-    }
-}
-
-tasks.whenTaskAdded { task ->
-    if (task.name == 'assembleRelease') {
-        task.finalizedBy 'buildApkPlugin'
-    }
-}
 
 dependencies {
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1-alpha01', {

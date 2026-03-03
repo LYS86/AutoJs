@@ -7,9 +7,11 @@ import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
-import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.textfield.TextInputLayout
+import org.autojs.autojs.build.ApkSigner
 import com.stardust.autojs.project.ProjectConfig
 import com.stardust.util.IntentUtil
 import io.reactivex.Observable
@@ -17,25 +19,22 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
-import org.autojs.autojs.autojs.build.ApkBuilder
+import org.autojs.autojs.build.ApkBuilder
 import org.autojs.autojs.build.ApkBuilderPluginHelper
 import org.autojs.autojs.databinding.ActivityBuildBinding
 import org.autojs.autojs.external.fileprovider.AppFileProvider
 import org.autojs.autojs.model.script.ScriptFile
-import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
 import org.autojs.autojs.tool.BitmapTool
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity
 import java.io.File
-import java.util.concurrent.Callable
 
 class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
 
     private lateinit var binding: ActivityBuildBinding
 
     private var projectConfig: ProjectConfig? = null
-    private var progressDialog: MaterialDialog? = null
     private var source: String? = null
     private var isDefaultIcon = true
 
@@ -51,46 +50,38 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
         source = intent.getStringExtra(EXTRA_SOURCE)
         source?.let { setupWithSourceFile(ScriptFile(it)) }
         setupClickListeners()
-        checkApkBuilderPlugin()
     }
 
     private fun setupClickListeners() {
         binding.selectSource.setOnClickListener { selectSourceFilePath() }
         binding.selectOutput.setOnClickListener { selectOutputDirPath() }
+        binding.selectTemplate.setOnClickListener { selectTemplateApk() }
+        binding.selectKeystore.setOnClickListener { selectKeystoreFile() }
         binding.icon.setOnClickListener { selectIcon() }
         binding.fab.setOnClickListener { buildApk() }
-    }
-
-    private fun checkApkBuilderPlugin() {
-        if (ApkBuilderPluginHelper.isPluginAvailable(this).not()) {
-            showPluginDownloadDialog(R.string.no_apk_builder_plugin, true)
-            return
-        }
-        val version = ApkBuilderPluginHelper.getPluginVersion(this)
-        if (version < 0) {
-            showPluginDownloadDialog(R.string.no_apk_builder_plugin, true)
-            return
-        }
-        if (version < ApkBuilderPluginHelper.getSuitablePluginVersion()) {
-            showPluginDownloadDialog(R.string.apk_builder_plugin_version_too_low, false)
+        binding.btnInstall.setOnClickListener {
+            val outApk = it.tag as? File ?: return@setOnClickListener
+            IntentUtil.installApkOrToast(this, outApk.path, AppFileProvider.AUTHORITY)
         }
     }
 
-    private fun showPluginDownloadDialog(msgRes: Int, finishIfCanceled: Boolean) {
-        ThemeColorMaterialDialogBuilder(this)
-            .content(msgRes)
-            .positiveText(R.string.ok)
-            .negativeText(R.string.cancel)
-            .onPositive { _, _ -> downloadPlugin() }
-            .onNegative { _, _ ->
-                if (finishIfCanceled) finish()
+    private fun selectTemplateApk() {
+        val initialDir = if (binding.templatePath.text.toString().isNotEmpty()) {
+            File(binding.templatePath.text.toString()).parent ?: Pref.getScriptDirPath()
+        } else {
+            Pref.getScriptDirPath()
+        }
+        FileChooserDialogBuilder(this)
+            .title(R.string.text_template_apk_title)
+            .dir(initialDir)
+            .singleChoice { file ->
+                if (file.name.endsWith(".apk", ignoreCase = true)) {
+                    binding.templatePath.setText(file.path)
+                } else {
+                    Toast.makeText(this, R.string.text_invalid_package_name, Toast.LENGTH_SHORT).show()
+                }
             }
             .show()
-    }
-
-    private fun downloadPlugin() {
-        val pluginVersion = ApkBuilderPluginHelper.getSuitablePluginVersion()
-        IntentUtil.browse(this, "https://i.autojs.org/autojs/plugin/$pluginVersion.apk")
     }
 
     private fun setupWithSourceFile(file: ScriptFile) {
@@ -149,15 +140,69 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
         startActivityForResult(Intent(this, ShortcutIconSelectActivity::class.java), REQUEST_CODE)
     }
 
-    private fun buildApk() {
-        if (ApkBuilderPluginHelper.isPluginAvailable(this).not()) {
-            Toast.makeText(this, R.string.text_apk_builder_plugin_unavailable, Toast.LENGTH_SHORT).show()
-            return
+    private fun selectKeystoreFile() {
+        val initialDir = if (File(binding.keystorePath.text.toString()).exists()) {
+            File(binding.keystorePath.text.toString()).parent ?: Pref.getScriptDirPath()
+        } else {
+            Pref.getScriptDirPath()
         }
+        FileChooserDialogBuilder(this)
+            .title(R.string.text_keystore_path)
+            .dir(initialDir)
+            .singleChoice { file ->
+                binding.keystorePath.setText(file.path)
+            }
+            .show()
+    }
+
+    private fun buildApk() {
         if (checkInputs().not()) {
             return
         }
-        doBuildingApk()
+        val signConfigResult = getSignConfig()
+        if (signConfigResult.isFailure) {
+            val error = signConfigResult.exceptionOrNull() ?: Exception("Unknown error")
+            showProgressCard()
+            resetBuildSteps()
+            setStepError(binding.iconPrepare, binding.textPrepare, error.message ?: "Unknown error")
+            binding.fab.show()
+            return
+        }
+        doBuildingApk(signConfigResult.getOrThrow())
+    }
+
+    private fun getSignConfig(): Result<ApkSigner.SignConfig> {
+        val keystorePath = binding.keystorePath.text.toString()
+        val keystorePassword = binding.keystorePassword.text.toString()
+        val keyAlias = binding.keyAlias.text.toString()
+        val keyPassword = binding.keyPassword.text.toString()
+
+        if (keystorePath.isEmpty()) {
+            return Result.failure(Exception(getString(R.string.text_keystore_path_empty)))
+        }
+        if (keystorePassword.isEmpty()) {
+            return Result.failure(Exception(getString(R.string.text_keystore_password_empty)))
+        }
+        if (keyAlias.isEmpty()) {
+            return Result.failure(Exception(getString(R.string.text_key_alias_empty)))
+        }
+        if (keyPassword.isEmpty()) {
+            return Result.failure(Exception(getString(R.string.text_key_password_empty)))
+        }
+
+        val keystoreFile = File(keystorePath)
+        if (!keystoreFile.exists()) {
+            return Result.failure(Exception(getString(R.string.text_keystore_not_found)))
+        }
+
+        return Result.success(
+            ApkSigner.SignConfig(
+                keyStoreFile = keystoreFile,
+                keyStorePassword = keystorePassword,
+                keyAlias = keyAlias,
+                keyPassword = keyPassword
+            )
+        )
     }
 
     private fun checkInputs(): Boolean {
@@ -194,21 +239,59 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
     }
 
     @SuppressLint("CheckResult")
-    private fun doBuildingApk() {
+    private fun doBuildingApk(signConfig: ApkSigner.SignConfig) {
         val appConfig = createAppConfig()
         val tmpDir = File(cacheDir, "build/")
         val outApk = File(
             binding.outputPath.text.toString(),
             "${appConfig.appName}_v${appConfig.versionName}.apk"
         )
-        showProgressDialog()
-        Observable.fromCallable { callApkBuilder(tmpDir, outApk, appConfig) }
+        val templatePath = binding.templatePath.text.toString()
+        showProgressCard()
+        resetBuildSteps()
+        Observable.fromCallable { callApkBuilder(tmpDir, outApk, appConfig, signConfig, templatePath) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { onBuildSuccessful(outApk) },
                 { error -> onBuildFailed(error) }
             )
+    }
+
+    private fun showProgressCard() {
+        binding.buildResultCard.visibility = View.VISIBLE
+        binding.buildSuccessContent.visibility = View.GONE
+        binding.fab.hide()
+    }
+
+    private fun resetBuildSteps() {
+        val defaultColor = resources.getColor(android.R.color.tab_indicator_text, null)
+        setStepPending(binding.iconPrepare)
+        setStepPending(binding.iconBuild)
+        setStepPending(binding.iconSign)
+        setStepPending(binding.iconClean)
+        binding.textPrepare.setText(R.string.apk_builder_prepare)
+        binding.textPrepare.setTextColor(defaultColor)
+        binding.textBuild.setText(R.string.apk_builder_build)
+        binding.textBuild.setTextColor(defaultColor)
+        binding.textSign.setText(R.string.apk_builder_package)
+        binding.textSign.setTextColor(defaultColor)
+        binding.textClean.setText(R.string.apk_builder_clean)
+        binding.textClean.setTextColor(defaultColor)
+    }
+
+    private fun setStepPending(icon: ImageView) {
+        icon.setImageResource(R.drawable.ic_build_step_pending)
+    }
+
+    private fun setStepSuccess(icon: ImageView) {
+        icon.setImageResource(R.drawable.ic_build_step_success)
+    }
+
+    private fun setStepError(icon: ImageView, text: TextView, message: String) {
+        icon.setImageResource(R.drawable.ic_build_step_error)
+        text.text = message
+        text.setTextColor(resources.getColor(android.R.color.holo_red_dark, null))
     }
 
     private fun createAppConfig(): ApkBuilder.AppConfig {
@@ -220,73 +303,93 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
         val versionCode = binding.versionCode.text.toString().toInt()
         val appName = binding.appName.text.toString()
         val packageName = binding.packageName.text.toString()
-        return ApkBuilder.AppConfig()
-            .setAppName(appName)
-            .setSourcePath(jsPath)
-            .setPackageName(packageName)
-            .setVersionCode(versionCode)
-            .setVersionName(versionName)
-            .setIcon(
-                if (isDefaultIcon) null else {
-                    Callable { BitmapTool.drawableToBitmap(binding.icon.drawable) }
-                }
-            )
+        return ApkBuilder.AppConfig(
+            appName = appName,
+            sourcePath = jsPath,
+            packageName = packageName,
+            versionCode = versionCode,
+            versionName = versionName,
+            icon = if (isDefaultIcon) null else {
+                { BitmapTool.drawableToBitmap(binding.icon.drawable) }
+            }
+        )
     }
 
-    private fun callApkBuilder(tmpDir: File, outApk: File, appConfig: ApkBuilder.AppConfig): ApkBuilder {
-        val templateApk = ApkBuilderPluginHelper.openTemplateApk(this)
-        return ApkBuilder(templateApk, outApk, tmpDir.path)
+    private fun callApkBuilder(
+        tmpDir: File,
+        outApk: File,
+        appConfig: ApkBuilder.AppConfig,
+        signConfig: ApkSigner.SignConfig,
+        templatePath: String
+    ): ApkBuilder {
+        val templateApk = ApkBuilderPluginHelper.openTemplateApk(this, templatePath)
+        return ApkBuilder(templateApk, outApk, tmpDir)
             .setProgressCallback(this)
             .prepare()
             .withConfig(appConfig)
             .build()
-            .sign()
+            .sign(signConfig)
             .cleanWorkspace()
     }
 
-    private fun showProgressDialog() {
-        progressDialog = MaterialDialog.Builder(this)
-            .progress(true, 100)
-            .content(R.string.text_on_progress)
-            .cancelable(false)
-            .show()
-    }
-
     private fun onBuildFailed(error: Throwable) {
-        progressDialog?.dismiss()
-        progressDialog = null
-        Toast.makeText(this, "${getString(R.string.text_build_failed)}${error.message}", Toast.LENGTH_SHORT).show()
+        val message = translateErrorMessage(error)
+        setStepError(binding.iconPrepare, binding.textPrepare, message)
+        binding.fab.show()
         Log.e(LOG_TAG, "Build failed", error)
     }
 
-    private fun onBuildSuccessful(outApk: File) {
-        progressDialog?.dismiss()
-        progressDialog = null
-        MaterialDialog.Builder(this)
-            .title(R.string.text_build_successfully)
-            .content(getString(R.string.format_build_successfully, outApk.path))
-            .positiveText(R.string.text_install)
-            .negativeText(R.string.cancel)
-            .onPositive { _, _ ->
-                IntentUtil.installApkOrToast(this, outApk.path, AppFileProvider.AUTHORITY)
+    private fun translateErrorMessage(error: Throwable): String {
+        val originalMessage = error.message ?: return getString(R.string.text_build_error_unknown)
+        return when {
+            originalMessage.contains("PKCS12", ignoreCase = true) ||
+            originalMessage.contains("wrong password", ignoreCase = true) ||
+            originalMessage.contains("mac invalid", ignoreCase = true) -> {
+                getString(R.string.text_keystore_password_error)
             }
-            .show()
+            originalMessage.contains("PrivateKey", ignoreCase = true) ||
+            originalMessage.contains("alias", ignoreCase = true) -> {
+                getString(R.string.text_key_alias_error)
+            }
+            originalMessage.contains("Template APK not found", ignoreCase = true) -> {
+                getString(R.string.text_template_not_found)
+            }
+            else -> originalMessage
+        }
+    }
+
+    private fun onBuildSuccessful(outApk: File) {
+        binding.buildSuccessContent.visibility = View.VISIBLE
+        binding.buildResultPath.text = getString(R.string.format_build_successfully, outApk.path)
+        binding.btnInstall.tag = outApk
+        binding.fab.show()
     }
 
     override fun onPrepare(builder: ApkBuilder) {
-        progressDialog?.setContent(R.string.apk_builder_prepare)
+        runOnUiThread {
+            setStepSuccess(binding.iconPrepare)
+            setStepPending(binding.iconBuild)
+        }
     }
 
     override fun onBuild(builder: ApkBuilder) {
-        progressDialog?.setContent(R.string.apk_builder_build)
+        runOnUiThread {
+            setStepSuccess(binding.iconBuild)
+            setStepPending(binding.iconSign)
+        }
     }
 
     override fun onSign(builder: ApkBuilder) {
-        progressDialog?.setContent(R.string.apk_builder_package)
+        runOnUiThread {
+            setStepSuccess(binding.iconSign)
+            setStepPending(binding.iconClean)
+        }
     }
 
     override fun onClean(builder: ApkBuilder) {
-        progressDialog?.setContent(R.string.apk_builder_clean)
+        runOnUiThread {
+            setStepSuccess(binding.iconClean)
+        }
     }
 
     @SuppressLint("CheckResult")
