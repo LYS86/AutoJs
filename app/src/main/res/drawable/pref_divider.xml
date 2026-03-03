@@ -8,7 +8,7 @@
                 android:width="100dp"
                 android:height="0.9dp"/>
 
-            <solid android:color="#f3f5f9"/>
+            <solid android:color="@color/pref_divider"/>
 
         </shape>
     </item>
