@@ -84,7 +84,7 @@
         <activity
             android:name=".ui.edit.EditActivity"
             android:configChanges="orientation|screenSize"
-            android:launchMode="standard"
+            android:launchMode="singleTask"
             android:multiprocess="true"
             android:taskAffinity="org.autojs.autojs.edit"
             android:theme="@style/EditorTheme">

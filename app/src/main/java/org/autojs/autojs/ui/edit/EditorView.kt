@@ -221,20 +221,15 @@ class EditorView : FrameLayout, CodeCompletionBar.OnHintClickListener, Functions
     @SuppressLint("CheckResult")
     fun handleIntent(intent: Intent): Observable<String> {
         name = intent.getStringExtra(EXTRA_NAME)
+        uri = null
         return handleText(intent)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext { _ ->
                 readOnly = intent.getBooleanExtra(EXTRA_READ_ONLY, false)
                 val saveEnabled = intent.getBooleanExtra(EXTRA_SAVE_ENABLED, true)
-                if (readOnly || !saveEnabled) {
-                    findViewById<View>(R.id.save).visibility = GONE
-                }
-                if (!intent.getBooleanExtra(EXTRA_RUN_ENABLED, true)) {
-                    findViewById<View>(R.id.run).visibility = GONE
-                }
-                if (readOnly) {
-                    editor.setReadOnly(true)
-                }
+                findViewById<View>(R.id.save).visibility = if (readOnly || !saveEnabled) GONE else VISIBLE
+                findViewById<View>(R.id.run).visibility = if (intent.getBooleanExtra(EXTRA_RUN_ENABLED, true)) VISIBLE else GONE
+                editor.setReadOnly(readOnly)
             }
     }
 

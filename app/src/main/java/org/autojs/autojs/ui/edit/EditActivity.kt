@@ -50,6 +50,46 @@ class EditActivity : BaseActivity(),
         setUpViews()
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let {
+            setIntent(it)
+            if (binding.editorView.isTextChanged) {
+                showSwitchFileConfirmDialog(it)
+            } else {
+                handleNewIntent(it)
+            }
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    private fun handleNewIntent(intent: Intent) {
+        binding.editorView.handleIntent(intent)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(Observers.emptyConsumer()) { ex ->
+                onLoadFileError(ex.message)
+            }
+        setUpToolbar()
+    }
+
+    private fun showSwitchFileConfirmDialog(newIntent: Intent) {
+        val newName = newIntent.getStringExtra(EditorView.EXTRA_NAME)
+            ?: newIntent.data?.lastPathSegment
+            ?: getString(R.string.text_new_script)
+        ThemeColorMaterialDialogBuilder(this)
+            .title(R.string.text_alert)
+            .content(getString(R.string.edit_switch_file_warn, newName))
+            .positiveText(R.string.text_cancel)
+            .negativeText(R.string.text_save_and_switch)
+            .neutralText(R.string.text_switch_directly)
+            .onNegative { _, _ ->
+                binding.editorView.saveFile()
+                handleNewIntent(newIntent)
+            }
+            .onNeutral { _, _ -> handleNewIntent(newIntent) }
+            .show()
+    }
+
     @SuppressLint("CheckResult")
     private fun setUpViews() {
         binding.editorView.handleIntent(intent)

@@ -19,6 +19,10 @@
     <string name="text_run">运行</string>
     <string name="text_alert">提示</string>
     <string name="edit_exit_without_save_warn">内容尚未保存，您确定要退出吗？</string>
+    <string name="edit_switch_file_warn">当前文件未保存，是否切换到 %s？</string>
+    <string name="text_save_and_switch">保存并切换</string>
+    <string name="text_switch_directly">直接切换</string>
+    <string name="text_new_script">新脚本</string>
     <string name="text_save_and_exit">保存并退出</string>
     <string name="text_exit_directly">直接退出</string>
     <string name="text_setting">设置</string>
