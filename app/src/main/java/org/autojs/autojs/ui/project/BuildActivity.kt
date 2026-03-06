@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 import org.autojs.autojs.build.ApkSigner
 import com.stardust.autojs.project.ProjectConfig
@@ -265,7 +266,7 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
     }
 
     private fun resetBuildSteps() {
-        val defaultColor = resources.getColor(android.R.color.tab_indicator_text, null)
+        val defaultColor = ContextCompat.getColor(this, android.R.color.tab_indicator_text)
         setStepPending(binding.iconPrepare)
         setStepPending(binding.iconBuild)
         setStepPending(binding.iconSign)
@@ -291,7 +292,7 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
     private fun setStepError(icon: ImageView, text: TextView, message: String) {
         icon.setImageResource(R.drawable.ic_build_step_error)
         text.text = message
-        text.setTextColor(resources.getColor(android.R.color.holo_red_dark, null))
+        text.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
     }
 
     private fun createAppConfig(): ApkBuilder.AppConfig {

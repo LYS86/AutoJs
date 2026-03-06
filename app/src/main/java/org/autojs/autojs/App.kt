@@ -9,6 +9,7 @@ import android.net.Uri
 import androidx.multidex.MultiDexApplication
 import android.view.View
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
@@ -71,7 +72,11 @@ class App : MultiDexApplication() {
     }
 
     private fun init() {
-        ThemeColorManagerCompat.init(this, ThemeColor(resources.getColor(R.color.colorPrimary), resources.getColor(R.color.colorPrimaryDark), resources.getColor(R.color.colorAccent)))
+        ThemeColorManagerCompat.init(this, ThemeColor(
+            ContextCompat.getColor(this, R.color.colorPrimary),
+            ContextCompat.getColor(this, R.color.colorPrimaryDark),
+            ContextCompat.getColor(this, R.color.colorAccent)
+        ))
         AutoJs.initInstance(this)
         if (Pref.isRunningVolumeControlEnabled()) {
             GlobalKeyObserver.init()
