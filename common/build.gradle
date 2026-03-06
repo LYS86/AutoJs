@@ -18,10 +18,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    lintOptions {
+    namespace 'com.stardust'
+    lint {
         abortOnError false
     }
-    namespace 'com.stardust'
 }
 
 dependencies {

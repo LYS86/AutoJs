@@ -30,11 +30,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         encoding = 'utf-8'
     }
-    lintOptions {
-        abortOnError false
-        disable 'MissingTranslation'
-        disable 'ExtraTranslation'
-    }
 
     buildFeatures {
         viewBinding true
@@ -66,6 +61,10 @@ android {
         }
     }
     namespace 'org.autojs.autojs'
+    lint {
+        abortOnError false
+        disable 'MissingTranslation', 'ExtraTranslation'
+    }
 
 }
 

@@ -22,10 +22,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    lintOptions {
-        isAbortOnError = false
-    }
     namespace = "com.stardust.autojs.apkbuilder"
+    lint {
+        abortOnError = false
+    }
 }
 
 dependencies {

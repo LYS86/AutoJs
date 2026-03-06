@@ -23,10 +23,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    lintOptions {
+    namespace 'com.stardust.autojs'
+    lint {
         abortOnError false
     }
-    namespace 'com.stardust.autojs'
 }
 
 dependencies {
