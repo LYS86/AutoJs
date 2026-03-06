@@ -25,6 +25,7 @@ android {
     lintOptions {
         isAbortOnError = false
     }
+    namespace = "com.stardust.autojs.apkbuilder"
 }
 
 dependencies {

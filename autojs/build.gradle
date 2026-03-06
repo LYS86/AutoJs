@@ -26,6 +26,7 @@ android {
     lintOptions {
         abortOnError false
     }
+    namespace 'com.stardust.autojs'
 }
 
 dependencies {
