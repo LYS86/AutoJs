@@ -55,6 +55,7 @@ class ScriptCanvasView(context: Context, private val mScriptRuntime: ScriptRunti
                 try {
                     while (mDrawing) {
                         canvas = lockCanvas()
+                        if (canvas == null) continue
                         scriptCanvas.setCanvas(canvas)
                         emit("draw", scriptCanvas, this@ScriptCanvasView)
                         unlockCanvasAndPost(canvas)
