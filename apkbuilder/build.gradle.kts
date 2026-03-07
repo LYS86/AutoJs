@@ -1,18 +1,18 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
-    compileSdkVersion(Versions.compile)
+    compileSdk = libs.versions.compileSdk.get().toInt()
+    namespace = "com.stardust.autojs.apkbuilder"
 
     defaultConfig {
-        minSdkVersion(Versions.mini)
-        targetSdkVersion(Versions.target)
+        minSdk = libs.versions.minSdk.get().toInt()
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = false
         }
     }
@@ -22,11 +22,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    namespace = "com.stardust.autojs.apkbuilder"
     lint {
         abortOnError = false
     }
-}
-
-dependencies {
 }
