@@ -120,7 +120,7 @@ class EditActivity : BaseActivity(),
     }
 
     private fun setUpToolbar() {
-        setToolbarAsBack(this, R.id.toolbar, binding.editorView.name)
+        setToolbarAsBack(binding.editorView.name.orEmpty())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

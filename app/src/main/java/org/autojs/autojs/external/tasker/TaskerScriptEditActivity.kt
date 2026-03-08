@@ -32,7 +32,7 @@ class TaskerScriptEditActivity : BaseActivity() {
                 Toast.makeText(this, ex.message, Toast.LENGTH_LONG).show()
                 finish()
             }
-        setToolbarAsBack(editorView.name)
+        setToolbarAsBack(editorView.name.orEmpty())
     }
 
     override fun finish() {

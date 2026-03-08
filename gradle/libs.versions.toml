@@ -57,7 +57,7 @@ androidx-annotation = { group = "androidx.annotation", name = "annotation", vers
 androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "androidx-multidex" }
 androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk7", version.ref = "kotlin" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 rhino = { group = "org.mozilla", name = "rhino", version.ref = "rhino" }
 eventbus = { group = "org.greenrobot", name = "eventbus", version.ref = "eventbus" }
 zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "zip4j" }
