@@ -36,7 +36,6 @@ import org.autojs.autojs.ui.log.LogActivity
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
 import org.autojs.autojs.ui.main.task.TaskManagerFragment
 import org.autojs.autojs.ui.settings.SettingsActivity
-import org.autojs.autojs.ui.update.VersionGuard
 import org.autojs.autojs.ui.widget.CommonMarkdownView
 import org.autojs.autojs.ui.widget.SearchViewItem
 import org.greenrobot.eventbus.EventBus
@@ -51,7 +50,6 @@ class MainActivity : BaseActivity(),
     private var pagerAdapter: FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter? = null
     private val activityResultMediator = OnActivityResultDelegate.Mediator()
     private val requestPermissionCallbacks = RequestPermissionCallbacks()
-    private var versionGuard: VersionGuard? = null
     private val backPressObserver = BackPressedHandler.Observer()
     private var searchViewItem: SearchViewItem? = null
     private var logMenuItem: MenuItem? = null
@@ -63,7 +61,6 @@ class MainActivity : BaseActivity(),
         setContentView(binding.root)
 
         checkPermissions()
-        versionGuard = VersionGuard(this)
         showAnnunciationIfNeeded()
         setUpViews()
     }
@@ -168,11 +165,6 @@ class MainActivity : BaseActivity(),
         ForegroundService.stop(this)
         stopService(Intent(this, FloatyService::class.java))
         AutoJs.getInstance().scriptEngineService.stopAll()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        versionGuard?.checkForDeprecatesAndUpdates()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
