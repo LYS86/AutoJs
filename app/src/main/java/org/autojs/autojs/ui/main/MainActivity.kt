@@ -65,7 +65,6 @@ class MainActivity : BaseActivity(),
         checkPermissions()
         versionGuard = VersionGuard(this)
         showAnnunciationIfNeeded()
-        applyDayNightMode()
         setUpViews()
     }
 

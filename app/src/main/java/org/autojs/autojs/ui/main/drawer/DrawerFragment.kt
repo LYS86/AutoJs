@@ -30,12 +30,12 @@ import org.autojs.autojs.pluginclient.DevPluginService
 import org.autojs.autojs.tool.AccessibilityServiceTool
 import org.autojs.autojs.tool.Observers
 import org.autojs.autojs.tool.WifiTool
-import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.common.NotAskAgainDialog
 import org.autojs.autojs.ui.floating.CircularMenu
 import org.autojs.autojs.ui.floating.FloatyWindowManger
 import org.autojs.autojs.ui.settings.SettingsActivity
 import org.autojs.autojs.ui.update.UpdateInfoDialogBuilder
+import org.autojs.autojs.theme.ThemeUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.Arrays
@@ -124,7 +124,7 @@ class DrawerFragment : androidx.fragment.app.Fragment() {
             DrawerMenuGroup(R.string.text_others),
             connectionItem,
             DrawerMenuItem(R.drawable.ic_personalize, R.string.text_theme_color, this::openThemeColorSettings),
-            DrawerMenuItem(R.drawable.ic_night_mode, R.string.text_night_mode, R.string.key_night_mode, this::toggleNightMode),
+            DrawerMenuItem(R.drawable.ic_night_mode, R.string.text_night_mode) { ThemeUtils.showDialog(it.itemView.context) },
             checkForUpdatesItem
         )))
         binding.drawerMenu.adapter = drawerMenuAdapter
@@ -194,10 +194,6 @@ class DrawerFragment : androidx.fragment.app.Fragment() {
     @Suppress("UNUSED_PARAMETER")
     fun openThemeColorSettings(_holder: DrawerMenuItemViewHolder) {
         activity?.let { SettingsActivity.selectThemeColor(it) }
-    }
-
-    fun toggleNightMode(holder: DrawerMenuItemViewHolder) {
-        (activity as? BaseActivity)?.setNightModeEnabled(holder.getSwitchCompat().isChecked)
     }
 
     @SuppressLint("CheckResult")

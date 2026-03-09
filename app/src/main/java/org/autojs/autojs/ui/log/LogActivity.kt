@@ -15,7 +15,6 @@ class LogActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLogBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        applyDayNightMode()
         setupViews()
     }
 

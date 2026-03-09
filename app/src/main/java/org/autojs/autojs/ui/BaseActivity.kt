@@ -9,16 +9,15 @@ import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.stardust.app.GlobalAppContext
 import com.stardust.theme.ThemeColorManager
-import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import androidx.core.view.size
 import androidx.core.view.get
+import org.autojs.autojs.theme.ThemeUtils
 
 abstract class BaseActivity : AppCompatActivity() {
 
@@ -26,22 +25,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    }
-
-    protected fun applyDayNightMode() {
-        GlobalAppContext.post {
-            if (Pref.isNightModeEnabled()) {
-                setNightModeEnabled(Pref.isNightModeEnabled())
-            }
-        }
-    }
-
-    fun setNightModeEnabled(enabled: Boolean) {
-        val mode = if (enabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        delegate.setLocalNightMode(mode)
-        if (delegate.applyDayNight()) {
-            recreate()
-        }
+//        ThemeUtils.applyDayNightMode()
     }
 
     override fun onStart() {
@@ -83,7 +67,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        if (shouldApplyDayNightModeForOptionsMenu && Pref.isNightModeEnabled()) {
+        if (shouldApplyDayNightModeForOptionsMenu && ThemeUtils.isDarkMode(this)) {
             repeat(menu.size) { i ->
                 menu[i].icon?.apply {
                     mutate()
