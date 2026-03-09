@@ -17,13 +17,11 @@ import com.stardust.autojs.core.permission.OnRequestPermissionsResultCallback
 import com.stardust.autojs.core.permission.PermissionRequestProxyActivity
 import com.stardust.autojs.core.permission.RequestPermissionCallbacks
 import com.stardust.enhancedfloaty.FloatyService
-import com.stardust.pio.PFiles
 import com.stardust.theme.ThemeColorManager
 import com.stardust.util.BackPressedHandler
 import com.stardust.util.DeveloperUtils
 import com.stardust.util.DrawerAutoClose
 import org.autojs.autojs.BuildConfig
-import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.databinding.ActivityMainBinding
@@ -36,7 +34,6 @@ import org.autojs.autojs.ui.log.LogActivity
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
 import org.autojs.autojs.ui.main.task.TaskManagerFragment
 import org.autojs.autojs.ui.settings.SettingsActivity
-import org.autojs.autojs.ui.widget.CommonMarkdownView
 import org.autojs.autojs.ui.widget.SearchViewItem
 import org.greenrobot.eventbus.EventBus
 
@@ -61,7 +58,6 @@ class MainActivity : BaseActivity(),
         setContentView(binding.root)
 
         checkPermissions()
-        showAnnunciationIfNeeded()
         setUpViews()
     }
 
@@ -82,19 +78,6 @@ class MainActivity : BaseActivity(),
         findViewById<View>(R.id.exit)?.setOnClickListener {
             exitCompletely()
         }
-    }
-
-    private fun showAnnunciationIfNeeded() {
-        if (!Pref.shouldShowAnnunciation()) {
-            return
-        }
-        CommonMarkdownView.DialogBuilder(this)
-            .padding(36, 0, 36, 0)
-            .markdown(PFiles.read(resources.openRawResource(R.raw.annunciation)))
-            .title(R.string.text_annunciation)
-            .positiveText(R.string.ok)
-            .canceledOnTouchOutside(false)
-            .show()
     }
 
     private fun registerBackPressHandlers() {

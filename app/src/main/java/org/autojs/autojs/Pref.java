@@ -21,7 +21,7 @@ public class Pref {
 
     private static final SharedPreferences DISPOSABLE_BOOLEAN = GlobalAppContext.get().getSharedPreferences("DISPOSABLE_BOOLEAN", Context.MODE_PRIVATE);
     private static final String KEY_SERVER_ADDRESS = "KEY_SERVER_ADDRESS";
-    private static final String KEY_SHOULD_SHOW_ANNUNCIATION = "KEY_SHOULD_SHOW_ANNUNCIATION";
+
     private static final String KEY_FLOATING_MENU_SHOWN = "KEY_FLOATING_MENU_SHOWN";
     private static final String KEY_EDITOR_THEME = "editor.theme";
     private static final String KEY_EDITOR_TEXT_SIZE = "editor.textSize";
@@ -92,10 +92,6 @@ public class Pref {
 
     public static void saveServerAddress(String address) {
         def().edit().putString(KEY_SERVER_ADDRESS, address).apply();
-    }
-
-    public static boolean shouldShowAnnunciation() {
-        return getDisposableBoolean(KEY_SHOULD_SHOW_ANNUNCIATION, true);
     }
 
     private static boolean isFirstDay() {
