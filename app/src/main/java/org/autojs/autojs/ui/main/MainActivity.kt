@@ -16,24 +16,19 @@ import com.stardust.app.OnActivityResultDelegate
 import com.stardust.autojs.core.permission.OnRequestPermissionsResultCallback
 import com.stardust.autojs.core.permission.PermissionRequestProxyActivity
 import com.stardust.autojs.core.permission.RequestPermissionCallbacks
-import com.stardust.enhancedfloaty.FloatyService
 import com.stardust.theme.ThemeColorManager
 import com.stardust.util.BackPressedHandler
 import com.stardust.util.DeveloperUtils
 import com.stardust.util.DrawerAutoClose
 import org.autojs.autojs.BuildConfig
 import org.autojs.autojs.R
-import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.databinding.ActivityMainBinding
-import org.autojs.autojs.external.foreground.ForegroundService
 import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.doc.DocsFragment
-import org.autojs.autojs.ui.floating.FloatyWindowManger
 import org.autojs.autojs.ui.log.LogActivity
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment
 import org.autojs.autojs.ui.main.task.TaskManagerFragment
-import org.autojs.autojs.ui.settings.SettingsActivity
 import org.autojs.autojs.ui.widget.SearchViewItem
 import org.greenrobot.eventbus.EventBus
 
@@ -64,20 +59,10 @@ class MainActivity : BaseActivity(),
     private fun setUpViews() {
         setUpToolbar()
         setUpTabViewPager()
-        setUpDrawerButtons()
         window.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         registerBackPressHandlers()
         ThemeColorManager.addViewBackground(findViewById(R.id.app_bar))
-    }
-
-    private fun setUpDrawerButtons() {
-        findViewById<View>(R.id.setting)?.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
-        }
-        findViewById<View>(R.id.exit)?.setOnClickListener {
-            exitCompletely()
-        }
     }
 
     private fun registerBackPressHandlers() {
@@ -140,14 +125,6 @@ class MainActivity : BaseActivity(),
                 previousFragment?.onPageShow()
             }
         })
-    }
-
-    fun exitCompletely() {
-        finish()
-        FloatyWindowManger.hideCircularMenu()
-        ForegroundService.stop(this)
-        stopService(Intent(this, FloatyService::class.java))
-        AutoJs.getInstance().scriptEngineService.stopAll()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

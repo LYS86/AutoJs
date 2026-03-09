@@ -10,18 +10,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.stardust.app.GlobalAppContext
 import com.stardust.app.isOpPermissionGranted
 import com.stardust.notification.NotificationListenerService
 import com.stardust.util.IntentUtil
+import com.stardust.enhancedfloaty.FloatyService
 import com.stardust.view.accessibility.AccessibilityService
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
+import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.databinding.FragmentDrawerBinding
 import org.autojs.autojs.external.foreground.ForegroundService
 import org.autojs.autojs.network.VersionService
@@ -40,7 +43,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.Arrays
 
-class DrawerFragment : androidx.fragment.app.Fragment() {
+class DrawerFragment : Fragment() {
 
     private var _binding: FragmentDrawerBinding? = null
     private val binding get() = _binding!!
@@ -94,6 +97,7 @@ class DrawerFragment : androidx.fragment.app.Fragment() {
 
     private fun setUpViews() {
         initMenuItems()
+        setUpBottomButtons()
         if (Pref.isFloatingMenuShown()) {
             val success = FloatyWindowManger.showCircularMenuIfNeeded()
             setChecked(floatingWindowItem, success)
@@ -106,6 +110,23 @@ class DrawerFragment : androidx.fragment.app.Fragment() {
             ForegroundService.start(GlobalAppContext.get())
             setChecked(foregroundServiceItem, true)
         }
+    }
+
+    private fun setUpBottomButtons() {
+        binding.setting.setOnClickListener {
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+        }
+        binding.exit.setOnClickListener {
+            exitCompletely()
+        }
+    }
+
+    private fun exitCompletely() {
+        requireActivity().finish()
+        FloatyWindowManger.hideCircularMenu()
+        ForegroundService.stop(requireContext())
+        requireContext().stopService(Intent(requireContext(), FloatyService::class.java))
+        AutoJs.getInstance().scriptEngineService.stopAll()
     }
 
     private fun initMenuItems() {
