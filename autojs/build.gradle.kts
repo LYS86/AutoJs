@@ -37,6 +37,7 @@ dependencies {
 
     api(libs.rhino)
     implementation(files("libs/dx.jar"))
+    implementation(libs.kotlinx.coroutines)
 
     api(libs.eventbus)
     api(libs.zip4j)

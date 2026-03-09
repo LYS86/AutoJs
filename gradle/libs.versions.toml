@@ -6,6 +6,7 @@ appVersionCode = "461"
 appVersionName = "4.1.1 Alpha2"
 agp = "7.4.2"
 kotlin = "1.6.21"
+coroutines = "1.6.4"
 androidx-appcompat = "1.0.2"
 androidx-core = "1.3.2"
 androidx-browser = "1.3.0"
@@ -58,6 +59,7 @@ androidx-multidex = { group = "androidx.multidex", name = "multidex", version.re
 androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 rhino = { group = "org.mozilla", name = "rhino", version.ref = "rhino" }
 eventbus = { group = "org.greenrobot", name = "eventbus", version.ref = "eventbus" }
 zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "zip4j" }

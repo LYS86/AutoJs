@@ -61,6 +61,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.kotlinx.coroutines)
     implementation(libs.commons.io)
     androidTestImplementation(libs.androidx.espresso) {
         exclude(group = "com.android.support", module = "support-annotations")
