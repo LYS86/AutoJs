@@ -8,10 +8,12 @@ import android.view.Menu
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import com.google.android.material.snackbar.Snackbar
 import com.stardust.app.GlobalAppContext
 import com.stardust.theme.ThemeColorManager
 import org.autojs.autojs.R
@@ -61,6 +63,13 @@ abstract class BaseActivity : AppCompatActivity() {
         setToolbarAsBack(this, R.id.toolbar, title)
     }
 
+    protected fun setToolbar(@StringRes id: Int): Toolbar {
+        val toolbar = WindowCompat.requireViewById<Toolbar>(window, R.id.toolbar)
+        toolbar.title = getString(id)
+        setSupportActionBar(toolbar)
+        return toolbar
+    }
+
     @CallSuper
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -77,6 +86,18 @@ abstract class BaseActivity : AppCompatActivity() {
             shouldApplyDayNightModeForOptionsMenu = false
         }
         return super.onPrepareOptionsMenu(menu)
+    }
+
+    protected fun showSnackbar(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
+        WindowCompat.requireViewById<View>(window, android.R.id.content).let {
+            Snackbar.make(it, message, duration).show()
+        }
+    }
+
+    protected fun showSnackbar(@StringRes messageRes: Int, duration: Int = Snackbar.LENGTH_SHORT) {
+        WindowCompat.requireViewById<View>(window, android.R.id.content).let {
+            Snackbar.make(it, messageRes, duration).show()
+        }
     }
 
     companion object {

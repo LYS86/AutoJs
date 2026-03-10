@@ -4,11 +4,13 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
+import androidx.core.view.WindowCompat
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.stardust.app.FragmentPagerAdapterBuilder
@@ -17,9 +19,7 @@ import com.stardust.autojs.core.permission.OnRequestPermissionsResultCallback
 import com.stardust.autojs.core.permission.PermissionRequestProxyActivity
 import com.stardust.autojs.core.permission.RequestPermissionCallbacks
 import com.stardust.theme.ThemeColorManager
-import com.stardust.util.BackPressedHandler
 import com.stardust.util.DeveloperUtils
-import com.stardust.util.DrawerAutoClose
 import org.autojs.autojs.BuildConfig
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ActivityMainBinding
@@ -34,7 +34,6 @@ import org.greenrobot.eventbus.EventBus
 
 class MainActivity : BaseActivity(),
     OnActivityResultDelegate.DelegateHost,
-    BackPressedHandler.HostActivity,
     PermissionRequestProxyActivity {
 
     private lateinit var binding: ActivityMainBinding
@@ -42,10 +41,10 @@ class MainActivity : BaseActivity(),
     private var pagerAdapter: FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter? = null
     private val activityResultMediator = OnActivityResultDelegate.Mediator()
     private val requestPermissionCallbacks = RequestPermissionCallbacks()
-    private val backPressObserver = BackPressedHandler.Observer()
     private var searchViewItem: SearchViewItem? = null
     private var logMenuItem: MenuItem? = null
     private var docsSearchItemExpanded = false
+    private var lastBackPressedTime = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,15 +60,47 @@ class MainActivity : BaseActivity(),
         setUpTabViewPager()
         window.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        registerBackPressHandlers()
-        ThemeColorManager.addViewBackground(findViewById(R.id.app_bar))
+        setupBackPressedDispatcher()
+        ThemeColorManager.addViewBackground(WindowCompat.requireViewById(window, R.id.app_bar))
     }
 
-    private fun registerBackPressHandlers() {
-        backPressObserver.registerHandler(DrawerAutoClose(binding.drawerLayout, Gravity.START))
-        backPressObserver.registerHandler(
-            BackPressedHandler.DoublePressExit(this, R.string.text_press_again_to_exit)
-        )
+    private fun setupBackPressedDispatcher() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (handleDrawerBackPress()) return
+                if (handleFragmentBackPress()) return
+                handleDoublePressExit()
+            }
+        })
+    }
+
+    private fun handleDrawerBackPress(): Boolean {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            return true
+        }
+        return false
+    }
+
+    private fun handleFragmentBackPress(): Boolean {
+        val adapter = pagerAdapter ?: return false
+        val fragment = adapter.getStoredFragment(binding.viewpager.currentItem)
+        if (fragment is ViewPagerFragment) {
+            if (fragment.onBackPressed(this)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun handleDoublePressExit() {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastBackPressedTime < 1000) {
+            finishAffinity()
+        } else {
+            lastBackPressedTime = currentTime
+            showSnackbar(R.string.text_press_again_to_exit)
+        }
     }
 
     private fun checkPermissions() {
@@ -80,9 +111,7 @@ class MainActivity : BaseActivity(),
     }
 
     private fun setUpToolbar() {
-        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        toolbar.setTitle(R.string.app_name)
+        val toolbar = setToolbar(R.string.app_name)
         val drawerToggle = ActionBarDrawerToggle(
             this,
             binding.drawerLayout,
@@ -95,7 +124,7 @@ class MainActivity : BaseActivity(),
     }
 
     private fun setUpTabViewPager() {
-        val tabLayout = findViewById<TabLayout>(R.id.tab)
+        val tabLayout = WindowCompat.requireViewById<TabLayout>(window, R.id.tab)
         pagerAdapter = FragmentPagerAdapterBuilder(this)
             .add(MyScriptListFragment(), R.string.text_file)
             .add(DocsFragment(), R.string.text_tutorial)
@@ -166,29 +195,12 @@ class MainActivity : BaseActivity(),
         return activityResultMediator
     }
 
-    override fun onBackPressed() {
-        val adapter = pagerAdapter ?: return
-        val fragment = adapter.getStoredFragment(binding.viewpager.currentItem)
-        if (fragment is BackPressedHandler) {
-            if (fragment.onBackPressed(this)) {
-                return
-            }
-        }
-        if (!backPressObserver.onBackPressed(this)) {
-            super.onBackPressed()
-        }
-    }
-
     override fun addRequestPermissionsCallback(callback: OnRequestPermissionsResultCallback) {
         requestPermissionCallbacks.addCallback(callback)
     }
 
     override fun removeRequestPermissionsCallback(callback: OnRequestPermissionsResultCallback): Boolean {
         return requestPermissionCallbacks.removeCallback(callback)
-    }
-
-    override fun getBackPressedObserver(): BackPressedHandler.Observer {
-        return backPressObserver
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
