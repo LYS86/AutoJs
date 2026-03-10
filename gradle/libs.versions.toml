@@ -1,7 +1,7 @@
 [versions]
 compileSdk = "33"
 targetSdk = "28"
-minSdk = "17"
+minSdk = "21"
 appVersionCode = "461"
 appVersionName = "4.1.1 Alpha2"
 agp = "7.4.2"
@@ -48,6 +48,7 @@ mutabletheme = "1.0.0"
 enhancedfloaty = "0.31"
 roundedimageview = "2.3.0"
 settingscompat = "1.1.5"
+splashscreen = "1.0.1"
 
 [libraries]
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
@@ -100,6 +101,7 @@ mutabletheme = { group = "com.github.hyb1996", name = "MutableTheme", version.re
 enhancedfloaty = { group = "com.github.hyb1996", name = "EnhancedFloaty", version.ref = "enhancedfloaty" }
 roundedimageview = { group = "com.makeramen", name = "roundedimageview", version.ref = "roundedimageview" }
 settingscompat = { group = "com.github.hyb1996", name = "settingscompat", version.ref = "settingscompat" }
+splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 
 [bundles]
 retrofit = ["retrofit", "retrofit-converter-gson", "retrofit-rxjava2-adapter"]

@@ -114,6 +114,7 @@ dependencies {
     debugImplementation(libs.leakcanary.fragment)
 
     implementation(libs.timber)
+    implementation(libs.splashscreen)
 
     implementation(project(":automator"))
     implementation(project(":common"))
