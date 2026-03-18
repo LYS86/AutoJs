@@ -27,8 +27,6 @@ import org.autojs.autojs.R
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.databinding.FragmentDrawerBinding
 import org.autojs.autojs.external.foreground.ForegroundService
-import org.autojs.autojs.network.VersionService
-import org.autojs.autojs.network.entity.VersionInfo
 import org.autojs.autojs.pluginclient.DevPluginService
 import org.autojs.autojs.tool.AccessibilityServiceTool
 import org.autojs.autojs.tool.Observers
@@ -37,8 +35,8 @@ import org.autojs.autojs.ui.common.NotAskAgainDialog
 import org.autojs.autojs.ui.floating.CircularMenu
 import org.autojs.autojs.ui.floating.FloatyWindowManger
 import org.autojs.autojs.ui.settings.SettingsActivity
-import org.autojs.autojs.ui.update.UpdateInfoDialogBuilder
 import org.autojs.autojs.theme.ThemeUtils
+import com.stardust.autojs.util.Browser
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.Arrays
@@ -271,32 +269,8 @@ class DrawerFragment : Fragment() {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    @SuppressLint("CheckResult")
     fun checkForUpdates(_holder: DrawerMenuItemViewHolder) {
-        setProgress(checkForUpdatesItem, true)
-        VersionService.getInstance().checkForUpdates()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : io.reactivex.Observer<VersionInfo> {
-                override fun onSubscribe(d: io.reactivex.disposables.Disposable) {}
-
-                override fun onNext(versionInfo: VersionInfo) {
-                    if (activity == null) return
-                    if (versionInfo.isNewer) {
-                        UpdateInfoDialogBuilder(requireActivity(), versionInfo).show()
-                    } else {
-                        Toast.makeText(GlobalAppContext.get(), R.string.text_is_latest_version, Toast.LENGTH_SHORT).show()
-                    }
-                    setProgress(checkForUpdatesItem, false)
-                }
-
-                override fun onError(e: Throwable) {
-                    e.printStackTrace()
-                    Toast.makeText(GlobalAppContext.get(), R.string.text_check_update_error, Toast.LENGTH_SHORT).show()
-                    setProgress(checkForUpdatesItem, false)
-                }
-
-                override fun onComplete() {}
-            })
+        Browser.openUrl(requireContext(), getString(R.string.my_github) + "/releases")
     }
 
     override fun onResume() {

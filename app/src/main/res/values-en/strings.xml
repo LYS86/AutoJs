@@ -94,13 +94,6 @@
     <string name="text_need_to_enable_accessibility_service">Need to enable Accessibility Service</string>
     <string name="text_refresh">Refresh</string>
     <string name="notice_no_running_script"><![CDATA[No running script φ(>ω<*)]]></string>
-    <string name="text_checking_update">Checking for updates</string>
-    <string name="text_new_version">New Version</string>
-    <string name="text_is_latest_version">No newer version found</string>
-    <string name="text_release_notes">Release Notes</string>
-
-    <string name="text_processing">Processing</string>
-    <string name="text_pre_execute_script">Pre-execute script</string>
     <string name="text_check_for_updates">Check for updates</string>
     <string name="theme_color_pink">Red</string>
     <string name="theme_color_purple">Purple</string>
@@ -127,12 +120,9 @@
     <string name="text_clear_pre_execute_script">Clear pre-execute script</string>
     <string name="text_clear_file_selection">Reset</string>
     <string name="summary_pre_execute_script">Executed before the script file is executed</string>
-    <string name="text_check_update_error">Check for updates failed</string>
-    <string name="text_download_url">Download</string>
-    <string name="text_directly_download">Download now</string>
-    <string name="text_download_failed">Download failed</string>
-    <string name="text_do_not_ask_again_for_this_version">Do not ask again for this version</string>
     <string name="text_code_beautify">Beautify code</string>
+    <string name="text_processing">Processing</string>
+    <string name="text_pre_execute_script">Pre-execute script</string>
     <string name="text_guard_mode">Protection mode</string>
     <string name="summary_guard_mode">Prevent automation of scripts when Auto.js in the front</string>
     <string name="text_layout_inspector_is_dumping">Inspecting layout...</string>

@@ -118,11 +118,6 @@
 
         <Preference
             android:layout="@layout/preference_custom"
-            android:title="@string/text_check_for_updates"
-            />
-
-        <Preference
-            android:layout="@layout/preference_custom"
             android:title="@string/text_issue_report"
             />
 

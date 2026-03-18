@@ -108,16 +108,7 @@
     <string name="text_clear_pre_execute_script">清空预执行脚本</string>
     <string name="text_clear_file_selection">重置脚本文件选择</string>
     <string name="summary_pre_execute_script">将在脚本文件执行前执行</string>
-    <string name="text_checking_update">正在检查更新</string>
-    <string name="text_new_version">新版本</string>
-    <string name="text_check_update_error">检查更新失败Orz</string>
     <string name="text_check_for_updates">检查更新</string>
-    <string name="text_is_latest_version">已经是最新版本</string>
-    <string name="text_release_notes">更新日志</string>
-    <string name="text_download_url">下载地址</string>
-    <string name="text_directly_download">直接下载</string>
-    <string name="text_download_failed">下载失败</string>
-    <string name="text_do_not_ask_again_for_this_version">此版本不再提示</string>
     <string name="text_code_beautify">格式化代码</string>
     <string name="text_processing">处理中</string>
     <string name="text_guard_mode">保护模式</string>

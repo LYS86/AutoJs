@@ -79,8 +79,6 @@ dependencies {
         exclude(group = "com.android.support")
     }
 
-    implementation(libs.bundles.commonmark)
-
     implementation(libs.multi.level.listview)
     implementation(libs.licensesdialog)
     implementation(libs.expandablerecyclerview)

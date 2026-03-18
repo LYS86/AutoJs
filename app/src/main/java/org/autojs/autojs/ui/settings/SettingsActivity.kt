@@ -16,7 +16,6 @@ import de.psdev.licensesdialog.licenses.License
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ActivitySettingsBinding
 import org.autojs.autojs.ui.BaseActivity
-import org.autojs.autojs.ui.update.UpdateCheckDialog
 
 class SettingsActivity : BaseActivity() {
 
@@ -88,7 +87,6 @@ class SettingsActivity : BaseActivity() {
             super.onStart()
             actionMap = MapBuilder<String, Runnable>()
                 .put(getString(R.string.text_theme_color)) { selectThemeColor(activity) }
-                .put(getString(R.string.text_check_for_updates)) { UpdateCheckDialog(activity).show() }
                 .put(getString(R.string.text_issue_report)) { Browser.openUrl(activity, getString(R.string.my_github) + "/issues") }
                 .put(getString(R.string.text_about_me_and_repo)) { Browser.openUrl(activity, getString(R.string.my_github)) }
                 .put(getString(R.string.text_licenses)) { showLicenseDialog() }
