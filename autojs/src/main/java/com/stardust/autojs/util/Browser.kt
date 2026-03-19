@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
+import timber.log.Timber
 
 object Browser {
 
@@ -17,7 +18,8 @@ object Browser {
         try {
             CustomTabsIntent.Builder().setColorScheme(CustomTabsIntent.COLOR_SCHEME_SYSTEM)
                 .setUrlBarHidingEnabled(true).build().launchUrl(context, url.toUri())
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Timber.e(e)
             openWithBrowser(context, url)
         }
     }

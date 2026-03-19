@@ -74,4 +74,5 @@ dependencies {
 
     api(libs.androidx.core.ktx)
     api(libs.androidx.browser)
+    implementation(libs.timber)
 }
