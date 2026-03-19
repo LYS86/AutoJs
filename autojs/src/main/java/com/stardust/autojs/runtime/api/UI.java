@@ -1,6 +1,7 @@
 package com.stardust.autojs.runtime.api;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 
@@ -110,8 +111,8 @@ public class UI extends ProxyObject {
     private class Drawables extends com.stardust.autojs.core.ui.inflater.util.Drawables {
 
         @Override
-        public Drawable decodeImage(String path) {
-            return super.decodeImage(mRuntime.files.path(path));
+        public Drawable decodeImage(Resources resources, String path) {
+            return super.decodeImage(resources, mRuntime.files.path(path));
         }
     }
 

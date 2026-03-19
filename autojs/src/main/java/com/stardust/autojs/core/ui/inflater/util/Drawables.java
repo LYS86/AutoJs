@@ -9,14 +9,15 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.stardust.autojs.core.ui.inflater.ImageLoader;
+import androidx.core.content.res.ResourcesCompat;
 
-import java.net.URL;
+import com.stardust.autojs.core.ui.inflater.image.ImageLoader;
+import com.stardust.autojs.core.ui.inflater.image.SimpleImageLoader;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,17 +28,16 @@ import java.util.regex.Pattern;
 public class Drawables {
 
     private static final Pattern DATA_PATTERN = Pattern.compile("data:(\\w+/\\w+);base64,(.+)");
-    private static ImageLoader sDefaultImageLoader = new DefaultImageLoader();
-    private ImageLoader mImageLoader = sDefaultImageLoader;
+    private final ImageLoader mImageLoader;
 
-    public static void setDefaultImageLoader(ImageLoader defaultImageLoader) {
-        if (defaultImageLoader == null)
-            throw new NullPointerException();
-        sDefaultImageLoader = defaultImageLoader;
+    public Drawables() {
+        mImageLoader = new SimpleImageLoader();
     }
 
-    public static ImageLoader getDefaultImageLoader() {
-        return sDefaultImageLoader;
+    public Drawables(ImageLoader imageLoader) {
+        if (imageLoader == null)
+            throw new NullPointerException("imageLoader cannot be null");
+        mImageLoader = imageLoader;
     }
 
     public Drawable parse(Context context, String value) {
@@ -49,7 +49,7 @@ public class Drawables {
             return loadAttrResources(context, value);
         }
         if (value.startsWith("file://")) {
-            return decodeImage(value.substring(7));
+            return decodeImage(resources, value.substring(7));
         }
         return loadDrawableResources(context, value);
     }
@@ -59,7 +59,7 @@ public class Drawables {
                 context.getPackageName());
         if (resId == 0)
             throw new Resources.NotFoundException("drawable not found: " + value);
-        return context.getResources().getDrawable(resId);
+        return ResourcesCompat.getDrawable(context.getResources(), resId, null);
     }
 
     public Drawable loadAttrResources(Context context, String value) {
@@ -71,8 +71,8 @@ public class Drawables {
         return drawable;
     }
 
-    public Drawable decodeImage(String path) {
-        return new BitmapDrawable(BitmapFactory.decodeFile(path));
+    public Drawable decodeImage(Resources resources, String path) {
+        return new BitmapDrawable(resources, BitmapFactory.decodeFile(path));
     }
 
     public Drawable parse(View view, String name) {
@@ -119,62 +119,11 @@ public class Drawables {
         if (value.startsWith("http://") || value.startsWith("https://")) {
             loadIntoBackground(view, Uri.parse(value));
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                view.setBackground(parse(view, value));
-            } else {
-                view.setBackgroundDrawable(parse(view, value));
-            }
+            view.setBackground(parse(view, value));
         }
-    }
-
-    public void setImageLoader(ImageLoader imageLoader) {
-        mImageLoader = imageLoader;
     }
 
     public ImageLoader getImageLoader() {
         return mImageLoader;
     }
-
-    private static class DefaultImageLoader implements ImageLoader {
-
-        @Override
-        public void loadInto(final ImageView view, Uri uri) {
-            load(view, uri, view::setImageDrawable);
-        }
-
-        @Override
-        public void loadIntoBackground(final View view, Uri uri) {
-            load(view, uri, view::setBackground);
-        }
-
-        @Override
-        public Drawable load(View view, Uri uri) {
-            try {
-                URL url = new URL(uri.toString());
-                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                return new BitmapDrawable(view.getResources(), bmp);
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
-        @Override
-        public void load(View view, Uri uri, final DrawableCallback callback) {
-            load(view, uri, (BitmapCallback) bitmap -> callback.onLoaded(new BitmapDrawable(view.getResources(), bitmap)));
-        }
-
-        @Override
-        public void load(final View view, final Uri uri, final BitmapCallback callback) {
-            new Thread(() -> {
-                try {
-                    URL url = new URL(uri.toString());
-                    final Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    view.post(() -> callback.onLoaded(bmp));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
-    }
 }
-
