@@ -84,6 +84,7 @@ public class TimedTaskScheduler {
         });
         new JobRequest.Builder(JOB_TAG_CHECK_TASKS)
                 .setPeriodic(TimeUnit.MINUTES.toMillis(20))
+                .setUpdateCurrent(true)
                 .build()
                 .scheduleAsync();
         checkTasks(context, true);
