@@ -108,7 +108,7 @@ class SettingsActivity : BaseActivity() {
                 .setNotices(R.raw.licenses)
                 .setIncludeOwnLicense(true)
                 .build()
-                .showAppCompat()
+                .show()
         }
 
         class MozillaPublicLicense20 : License() {

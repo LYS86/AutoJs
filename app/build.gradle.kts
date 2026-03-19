@@ -87,7 +87,9 @@ dependencies {
 
     implementation(project(":apkbuilder"))
     implementation(libs.apksig)
-    implementation(libs.spongycastle)
+    implementation(libs.spongycastle) {
+        exclude(group = "junit", module = "junit")
+    }
 
     implementation(libs.bundles.rxjava)
     implementation(libs.bundles.retrofit)
