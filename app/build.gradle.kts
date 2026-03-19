@@ -110,8 +110,6 @@ dependencies {
     implementation(libs.android.job)
 
     debugImplementation(libs.leakcanary)
-    releaseImplementation(libs.leakcanary.no.op)
-    debugImplementation(libs.leakcanary.fragment)
 
     implementation(libs.timber)
     implementation(libs.splashscreen)
