@@ -49,7 +49,7 @@ public class ScriptWidget extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget, PendingIntent.getActivity(context, requestCode,
                 new Intent(context, RunIntentActivity.class)
                         .putExtra(ScriptIntents.EXTRA_KEY_PATH, path)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), PendingIntent.FLAG_UPDATE_CURRENT));
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
         views.setTextViewText(R.id.name, name);
         appWidgetManager.updateAppWidget(widgetId, views);
         ScriptWidgets.setPathForAppWidgetId(widgetId, path);

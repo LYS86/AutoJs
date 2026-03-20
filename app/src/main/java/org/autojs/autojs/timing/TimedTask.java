@@ -192,7 +192,7 @@ public class TimedTask extends BaseModel {
 
     public PendingIntent createPendingIntent(Context context) {
         return PendingIntent.getBroadcast(context, (int) ((REQUEST_CODE + 1 + getId()) % 65535),
-                createIntent(), PendingIntent.FLAG_UPDATE_CURRENT);
+                createIntent(), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     @Override
