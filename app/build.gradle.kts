@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.androidx.webkit)
     implementation(libs.material)
     implementation(libs.androidx.multidex)
 

@@ -14,6 +14,7 @@ androidx-cardview = "1.0.0"
 androidx-annotation = "1.0.0"
 androidx-multidex = "2.0.0"
 androidx-swiperefreshlayout = "1.1.0"
+androidx-webkit = "1.7.0"
 androidx-espresso = "3.1.1-alpha01"
 material = "1.9.0"
 rhino = "1.7.15"
@@ -58,6 +59,7 @@ androidx-cardview = { group = "androidx.cardview", name = "cardview", version.re
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "androidx-multidex" }
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "androidx-swiperefreshlayout" }
+androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "androidx-webkit" }
 androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
