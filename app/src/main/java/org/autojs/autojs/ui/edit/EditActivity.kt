@@ -169,12 +169,6 @@ class EditActivity : BaseActivity(),
         return super.startActionMode(callback)
     }
 
-    override fun onBackPressed() {
-        if (binding.editorView.onBackPressed().not()) {
-            super.onBackPressed()
-        }
-    }
-
     override fun finish() {
         if (binding.editorView.isTextChanged) {
             showExitConfirmDialog()

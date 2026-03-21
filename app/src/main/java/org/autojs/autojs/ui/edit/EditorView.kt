@@ -18,8 +18,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.afollestad.materialdialogs.MaterialDialog
@@ -58,7 +56,6 @@ import org.autojs.autojs.ui.edit.toolbar.NormalToolbarFragment
 import org.autojs.autojs.ui.edit.toolbar.SearchToolbarFragment
 import org.autojs.autojs.ui.edit.toolbar.ToolbarFragment
 import org.autojs.autojs.ui.log.LogActivity
-import org.autojs.autojs.ui.widget.EWebView
 import org.autojs.autojs.ui.widget.SimpleTextWatcher
 import java.io.File
 
@@ -85,8 +82,6 @@ class EditorView : FrameLayout, CodeCompletionBar.OnHintClickListener, Functions
     private val functionsKeyboard: FunctionsKeyboardView get() = binding.functionsKeyboard
     private val _debugBar: DebugBar get() = binding.debugBar
     val debugBar: DebugBar get() = _debugBar
-    private val docsWebView: EWebView get() = binding.docs
-    private val drawerLayout: DrawerLayout get() = binding.drawerLayout
 
     private var _name: String? = null
     var name: String?
@@ -146,8 +141,6 @@ class EditorView : FrameLayout, CodeCompletionBar.OnHintClickListener, Functions
         setUpInputMethodEnhancedBar()
         setUpFunctionsKeyboard()
         setMenuItemStatus(R.id.save, false)
-        docsWebView.webView.settings.displayZoomControls = true
-        docsWebView.webView.loadUrl(Pref.getDocumentationUrl() + "index.html")
         Themes.getCurrent(context)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { setTheme(it) }
@@ -299,18 +292,6 @@ class EditorView : FrameLayout, CodeCompletionBar.OnHintClickListener, Functions
         symbolBar.setTextColor(textColor)
         showFunctionsButton.setColorFilter(textColor)
         invalidate()
-    }
-
-    fun onBackPressed(): Boolean {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            if (docsWebView.webView.canGoBack()) {
-                docsWebView.webView.goBack()
-            } else {
-                drawerLayout.closeDrawer(GravityCompat.START)
-            }
-            return true
-        }
-        return false
     }
 
     override fun onToolbarMenuItemClick(id: Int) {
