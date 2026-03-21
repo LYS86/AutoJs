@@ -1,13 +1,15 @@
 package org.autojs.autojs.theme
 
+import android.app.UiModeManager
 import android.content.Context
 import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
-import com.afollestad.materialdialogs.MaterialDialog
 import com.stardust.app.GlobalAppContext
 import org.autojs.autojs.PrefV2
 import org.autojs.autojs.R
-import timber.log.Timber
+import org.autojs.autojs.theme.dialog.MaterialAlertDialog
 
 object ThemeUtils {
 
@@ -15,40 +17,59 @@ object ThemeUtils {
     private const val MODE_NIGHT = AppCompatDelegate.MODE_NIGHT_YES
     private const val MODE_DAY = AppCompatDelegate.MODE_NIGHT_NO
 
-    private var nightMode by PrefV2.int("night_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-
-    fun applyDayNightMode() {
-        AppCompatDelegate.setDefaultNightMode(nightMode)
-//        syncThemeColor()
+    private var nightMode by PrefV2.int("night_mode", MODE_FOLLOW_SYSTEM)
+    private val uiModeManager by lazy {
+        (GlobalAppContext.get().getSystemService(Context.UI_MODE_SERVICE) as UiModeManager)
     }
 
-    fun showDialog(context: Context) {
-        val options = arrayOf(
-            context.getString(R.string.theme_follow_system),
-            context.getString(R.string.theme_light),
-            context.getString(R.string.theme_dark)
-        )
-        val modeValues = intArrayOf(MODE_FOLLOW_SYSTEM, MODE_DAY, MODE_NIGHT)
-        val currentMode = modeValues.indexOf(AppCompatDelegate.getDefaultNightMode())
-        MaterialDialog.Builder(context)
-            .title(R.string.theme_setting)
-            .items(*options)
-            .itemsCallbackSingleChoice(currentMode) { _, _, which, _ ->
-                val mode = modeValues[which]
-                nightMode = mode
-                applyDayNightMode()
-                true
-            }
-            .positiveText(android.R.string.ok)
-            .negativeText(android.R.string.cancel)
-            .show()
+    fun showCompat(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            showUiModeThemeDialog(context)
+        } else {
+            showAppCompatThemeDialog(context)
+        }
     }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun showUiModeThemeDialog(context: Context) {
+        val options = getThemeOptions(context)
+        MaterialAlertDialog(context).setTitle(R.string.theme_setting)
+            .setItems(options) { dialog, which ->
+                val mode = when (which) {
+                    0 -> UiModeManager.MODE_NIGHT_AUTO
+                    1 -> UiModeManager.MODE_NIGHT_NO
+                    else -> UiModeManager.MODE_NIGHT_YES
+                }
+                uiModeManager.setApplicationNightMode(mode)
+                dialog.dismiss()
+            }.setCancelable(false).show()
+    }
+
+    fun showAppCompatThemeDialog(context: Context) {
+        val options = getThemeOptions(context)
+        MaterialAlertDialog(context).setTitle(R.string.theme_setting)
+            .setItems(options) { dialog, which ->
+                val mode = when (which) {
+                    0 -> MODE_FOLLOW_SYSTEM
+                    1 -> MODE_DAY
+                    else -> MODE_NIGHT
+                }
+                AppCompatDelegate.setDefaultNightMode(mode)
+                dialog.dismiss()
+            }.setCancelable(false).show()
+
+    }
+
+    private fun getThemeOptions(context: Context) = arrayOf(
+        context.getString(R.string.theme_follow_system),
+        context.getString(R.string.theme_light),
+        context.getString(R.string.theme_dark),
+    )
 
     fun isDarkMode(context: Context): Boolean {
-        val currentNightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        return currentNightMode == Configuration.UI_MODE_NIGHT_YES.also {
-            Timber.d("isDarkMode: $it")
-        }
+        val currentNightMode =
+            context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return currentNightMode == Configuration.UI_MODE_NIGHT_YES
     }
 
     private fun syncThemeColor() {

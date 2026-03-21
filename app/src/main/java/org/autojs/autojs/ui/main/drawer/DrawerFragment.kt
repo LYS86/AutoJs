@@ -128,24 +128,38 @@ class DrawerFragment : Fragment() {
     }
 
     private fun initMenuItems() {
-        drawerMenuAdapter = DrawerMenuAdapter(ArrayList(Arrays.asList(
-            DrawerMenuGroup(R.string.text_service),
-            accessibilityServiceItem,
-            stableModeItem,
-            notificationPermissionItem,
-            foregroundServiceItem,
-            usageStatsPermissionItem,
+        drawerMenuAdapter = DrawerMenuAdapter(
+            listOf(
+                DrawerMenuGroup(R.string.text_service),
+                accessibilityServiceItem,
+                stableModeItem,
+                notificationPermissionItem,
+                foregroundServiceItem,
+                usageStatsPermissionItem,
 
-            DrawerMenuGroup(R.string.text_script_record),
-            floatingWindowItem,
-            DrawerMenuItem(R.drawable.ic_volume, R.string.text_volume_down_control, R.string.key_use_volume_control_record, null),
+                DrawerMenuGroup(R.string.text_script_record),
+                floatingWindowItem,
+                DrawerMenuItem(
+                    R.drawable.ic_volume,
+                    R.string.text_volume_down_control,
+                    R.string.key_use_volume_control_record,
+                    null
+                ),
 
-            DrawerMenuGroup(R.string.text_others),
-            connectionItem,
-            DrawerMenuItem(R.drawable.ic_personalize, R.string.text_theme_color, this::openThemeColorSettings),
-            DrawerMenuItem(R.drawable.ic_night_mode, R.string.text_night_mode) { ThemeUtils.showDialog(it.itemView.context) },
-            checkForUpdatesItem
-        )))
+                DrawerMenuGroup(R.string.text_others),
+                connectionItem,
+                DrawerMenuItem(
+                    R.drawable.ic_personalize,
+                    R.string.text_theme_color,
+                    this::openThemeColorSettings
+                ),
+                DrawerMenuItem(
+                    R.drawable.ic_night_mode,
+                    R.string.theme_setting
+                ) { ThemeUtils.showCompat(it.itemView.context) },
+                checkForUpdatesItem
+            )
+        )
         binding.drawerMenu.adapter = drawerMenuAdapter
         binding.drawerMenu.layoutManager = LinearLayoutManager(requireContext())
     }

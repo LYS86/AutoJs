@@ -46,7 +46,7 @@ dependencies {
         exclude(group = "com.android.support")
     }
 
-    api(libs.material)
+    implementation(libs.material)
     api(libs.enhancedfloaty)
     api(libs.roundedimageview)
 
