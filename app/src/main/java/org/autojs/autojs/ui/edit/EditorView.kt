@@ -45,7 +45,7 @@ import org.autojs.autojs.model.indices.Module
 import org.autojs.autojs.model.indices.Property
 import org.autojs.autojs.model.script.Scripts
 import org.autojs.autojs.tool.Observers
-import org.autojs.autojs.ui.doc.ManualDialog
+import org.autojs.autojs.ui.doc.ManualDialogFragment
 import org.autojs.autojs.ui.edit.completion.CodeCompletionBar
 import org.autojs.autojs.ui.edit.debug.DebugBar
 import org.autojs.autojs.ui.edit.editor.CodeEditor
@@ -543,14 +543,9 @@ class EditorView : FrameLayout, CodeCompletionBar.OnHintClickListener, Functions
 
     private fun showManual(url: String, title: String) {
         val absUrl = Pref.getDocumentationUrl() + url
-        ManualDialog(context)
-            .title(title)
-            .url(absUrl)
-            .pinToLeft {
-                docsWebView.webView.loadUrl(absUrl)
-                drawerLayout.openDrawer(GravityCompat.START)
-            }
-            .show()
+        ManualDialogFragment()
+            .setUrl(absUrl)
+            .show(activity.supportFragmentManager)
     }
 
     override fun onModuleLongClick(module: Module) {
