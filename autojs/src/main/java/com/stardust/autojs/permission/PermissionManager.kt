@@ -12,7 +12,8 @@ import androidx.core.net.toUri
 
 object PermissionManager {
 
-    private var pendingCallback: ((Boolean) -> Unit)? = null
+    internal var pendingCallback: ((Boolean) -> Unit)? = null
+    internal var pendingMultipleCallback: ((Map<String, Boolean>) -> Unit)? = null
 
     @JvmStatic
     fun checkCompat(context: Context, permission: String): Boolean {
@@ -21,6 +22,22 @@ object PermissionManager {
             else -> ContextCompat.checkSelfPermission(
                 context, permission
             ) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    @JvmStatic
+    fun getPermissionsNeedToRequest(context: Context, permissions: Array<String>): Array<String> {
+        return permissions
+            .map { normalizePermission(it) }
+            .filter { !checkCompat(context, it) }
+            .toTypedArray()
+    }
+
+    private fun normalizePermission(permission: String): String {
+        return if (permission.startsWith("android.permission.")) {
+            permission
+        } else {
+            "android.permission.${permission.uppercase()}"
         }
     }
 
@@ -36,6 +53,24 @@ object PermissionManager {
     }
 
     @JvmStatic
+    @JvmOverloads
+    fun requestRuntimeMultiple(
+        context: Context,
+        permissions: Array<String>,
+        callback: ((Map<String, Boolean>) -> Unit)? = null
+    ) {
+        val needRequest = permissions.filter { !checkCompat(context, it) }.toTypedArray()
+
+        if (needRequest.isEmpty()) {
+            callback?.invoke(permissions.associateWith { true })
+            return
+        }
+
+        pendingMultipleCallback = callback
+        context.startActivity(runtimeMultipleIntent(context, needRequest))
+    }
+
+    @JvmStatic
     fun requestSpecial(context: Context, permission: String) {
         context.startActivity(specialIntent(context, permission))
     }
@@ -44,6 +79,13 @@ object PermissionManager {
         return Intent(
             context, PermissionActivity::class.java
         ).putExtra(PermissionActivity.EXTRA_PERMISSION, permission)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
+    private fun runtimeMultipleIntent(context: Context, permissions: Array<String>): Intent {
+        return Intent(
+            context, PermissionActivity::class.java
+        ).putExtra(PermissionActivity.EXTRA_PERMISSIONS, permissions)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
@@ -71,6 +113,11 @@ object PermissionManager {
     internal fun onResult(granted: Boolean) {
         pendingCallback?.invoke(granted)
         pendingCallback = null
+    }
+
+    internal fun onMultipleResult(result: Map<String, Boolean>) {
+        pendingMultipleCallback?.invoke(result)
+        pendingMultipleCallback = null
     }
 
     fun revoke(context: Context, permission: String) {

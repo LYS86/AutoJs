@@ -11,7 +11,7 @@ import com.stardust.autojs.ScriptEngineService;
 import com.stardust.autojs.annotation.ScriptVariable;
 import com.stardust.autojs.core.accessibility.AccessibilityBridge;
 import com.stardust.autojs.core.image.Colors;
-import com.stardust.autojs.core.permission.Permissions;
+import com.stardust.autojs.permission.PermissionManager;
 import com.stardust.autojs.rhino.AndroidClassLoader;
 import com.stardust.autojs.rhino.TopLevelScope;
 import com.stardust.autojs.rhino.continuation.Continuation;
@@ -338,10 +338,10 @@ public class ScriptRuntime {
             return;
         }
         Context context = uiHandler.getContext();
-        permissions = Permissions.getPermissionsNeedToRequest(context, permissions);
+        permissions = PermissionManager.getPermissionsNeedToRequest(context, permissions);
         if (permissions.length == 0)
             return;
-        Permissions.requestPermissions(context, permissions);
+        PermissionManager.requestRuntimeMultiple(context, permissions);
     }
 
     public void loadJar(String path) {

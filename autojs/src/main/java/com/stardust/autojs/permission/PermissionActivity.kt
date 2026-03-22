@@ -8,22 +8,36 @@ class PermissionActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_PERMISSION = "permission"
+        const val EXTRA_PERMISSIONS = "permissions"
     }
 
-    private val launcher =
+    private val singleLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             PermissionManager.onResult(isGranted)
+            finish()
+        }
+
+    private val multipleLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            PermissionManager.onMultipleResult(result)
             finish()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val permission = intent.getStringExtra(EXTRA_PERMISSION) ?: run {
-            finish()
+        val permissions = intent.getStringArrayExtra(EXTRA_PERMISSIONS)
+        if (!permissions.isNullOrEmpty()) {
+            multipleLauncher.launch(permissions)
             return
         }
 
-        launcher.launch(permission)
+        val permission = intent.getStringExtra(EXTRA_PERMISSION)
+        if (permission != null) {
+            singleLauncher.launch(permission)
+            return
+        }
+
+        finish()
     }
 }
