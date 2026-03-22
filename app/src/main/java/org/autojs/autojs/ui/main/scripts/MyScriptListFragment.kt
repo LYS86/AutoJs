@@ -1,14 +1,18 @@
 package org.autojs.autojs.ui.main.scripts
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.stardust.app.GlobalAppContext
+import com.stardust.autojs.permission.PermissionManager
 import com.stardust.util.IntentUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.autojs.autojs.Pref
+import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentMyScriptListBinding
 import org.autojs.autojs.external.fileprovider.AppFileProvider
 import org.autojs.autojs.model.explorer.ExplorerDirPage
@@ -48,6 +52,7 @@ class MyScriptListFragment : ViewPagerFragment, FloatingActionMenu.OnFloatingAct
     override fun onViewCreated(view: android.view.View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpViews()
+        checkAndRequestPermissions()
     }
 
     private fun setUpViews() {
@@ -63,6 +68,35 @@ class MyScriptListFragment : ViewPagerFragment, FloatingActionMenu.OnFloatingAct
                 }
             }
         })
+    }
+
+    private fun checkAndRequestPermissions() {
+        if (hasStoragePermission()) {
+            refreshAll()
+            return
+        }
+        showInfo()
+    }
+
+    private fun showInfo() {
+        Snackbar.make(binding.root, R.string.text_no_storage_permission, Snackbar.LENGTH_SHORT)
+            .setAction(R.string.text_request_permission) {
+                PermissionManager.requestRuntime(
+                    requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) { granted ->
+                    if (granted) Explorers.workspace().refreshAll()
+                }
+            }.show()
+    }
+
+    private fun hasStoragePermission(): Boolean {
+        return PermissionManager.checkCompat(
+            requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+    }
+
+    private fun refreshAll() {
+        Explorers.workspace().refreshAll()
     }
 
     override fun onFabClick(fab: FloatingActionButton) {

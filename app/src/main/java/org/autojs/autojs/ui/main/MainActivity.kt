@@ -1,6 +1,5 @@
 package org.autojs.autojs.ui.main
 
-import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -20,7 +19,6 @@ import com.stardust.util.DeveloperUtils
 import org.autojs.autojs.BuildConfig
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ActivityMainBinding
-import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.doc.DocsFragment
 import org.autojs.autojs.ui.log.LogActivity
@@ -46,8 +44,6 @@ class MainActivity : BaseActivity(),
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        checkPermissions()
         setUpViews()
     }
 
@@ -96,14 +92,6 @@ class MainActivity : BaseActivity(),
         } else {
             lastBackPressedTime = currentTime
             showSnackbar(R.string.text_press_again_to_exit)
-        }
-    }
-
-    private fun checkPermissions() {
-        requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) { granted ->
-            if (granted) {
-                Explorers.workspace().refreshAll()
-            }
         }
     }
 

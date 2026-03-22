@@ -138,4 +138,6 @@
     <string name="theme_follow_system">Follow System</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+    <string name="text_no_storage_permission">No storage permission, cannot read script files</string>
+    <string name="text_request_permission">Request Permission</string>
 </resources>

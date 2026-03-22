@@ -381,4 +381,6 @@
     <string name="theme_follow_system">跟随系统</string>
     <string name="theme_light">浅色模式</string>
     <string name="theme_dark">深色模式</string>
+    <string name="text_no_storage_permission">无存储权限，无法读取脚本文件</string>
+    <string name="text_request_permission">申请权限</string>
 </resources>
