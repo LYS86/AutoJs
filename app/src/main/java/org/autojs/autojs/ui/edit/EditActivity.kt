@@ -12,9 +12,6 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import com.stardust.app.OnActivityResultDelegate
-import com.stardust.autojs.core.permission.OnRequestPermissionsResultCallback
-import com.stardust.autojs.core.permission.PermissionRequestProxyActivity
-import com.stardust.autojs.core.permission.RequestPermissionCallbacks
 import com.stardust.autojs.execution.ScriptExecution
 import com.stardust.pio.PFiles
 import io.reactivex.Observable
@@ -33,12 +30,10 @@ import androidx.core.view.get
 import androidx.core.view.size
 
 class EditActivity : BaseActivity(),
-    OnActivityResultDelegate.DelegateHost,
-    PermissionRequestProxyActivity {
+    OnActivityResultDelegate.DelegateHost {
 
     private lateinit var binding: ActivityEditBinding
     private val mediator = OnActivityResultDelegate.Mediator()
-    private val requestPermissionCallbacks = RequestPermissionCallbacks()
     private var editorMenu: EditorMenu? = null
     private var newTask = false
 
@@ -265,23 +260,6 @@ class EditActivity : BaseActivity(),
                     { it.printStackTrace() }
                 )
         }
-    }
-
-    override fun addRequestPermissionsCallback(callback: OnRequestPermissionsResultCallback) {
-        requestPermissionCallbacks.addCallback(callback)
-    }
-
-    override fun removeRequestPermissionsCallback(callback: OnRequestPermissionsResultCallback): Boolean {
-        return requestPermissionCallbacks.removeCallback(callback)
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        requestPermissionCallbacks.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     companion object {

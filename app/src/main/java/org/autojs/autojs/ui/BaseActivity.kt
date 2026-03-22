@@ -1,34 +1,24 @@
 package org.autojs.autojs.ui
 
-import android.content.pm.PackageManager
 import android.graphics.PorterDuff
-import android.os.Build
-import android.os.Bundle
 import android.view.Menu
 import android.view.View
-import androidx.annotation.CallSuper
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.get
+import androidx.core.view.size
 import com.google.android.material.snackbar.Snackbar
-import com.stardust.app.GlobalAppContext
+import com.stardust.autojs.permission.PermissionManager
 import com.stardust.theme.ThemeColorManager
 import org.autojs.autojs.R
-import androidx.core.view.size
-import androidx.core.view.get
 import org.autojs.autojs.theme.ThemeUtils
 
 abstract class BaseActivity : AppCompatActivity() {
 
     private var shouldApplyDayNightModeForOptionsMenu = true
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        ThemeUtils.applyDayNightMode()
-    }
 
     override fun onStart() {
         super.onStart()
@@ -36,27 +26,6 @@ abstract class BaseActivity : AppCompatActivity() {
         if (flags and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN == 0) {
             ThemeColorManager.addActivityStatusBar(this)
         }
-    }
-
-    protected fun checkPermission(vararg permissions: String): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val requestPermissions = getRequestPermissions(permissions)
-            if (requestPermissions.isNotEmpty()) {
-                requestPermissions(requestPermissions, PERMISSION_REQUEST_CODE)
-                false
-            } else {
-                true
-            }
-        } else {
-            val grantResults = IntArray(permissions.size)
-            onRequestPermissionsResult(PERMISSION_REQUEST_CODE, permissions as Array<String>, grantResults)
-            false
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun getRequestPermissions(permissions: Array<out String>): Array<String> {
-        return permissions.filter { checkSelfPermission(it) == PackageManager.PERMISSION_DENIED }.toTypedArray()
     }
 
     fun setToolbarAsBack(title: String) {
@@ -70,9 +39,12 @@ abstract class BaseActivity : AppCompatActivity() {
         return toolbar
     }
 
-    @CallSuper
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    protected fun checkPermission(permission: String): Boolean {
+        return PermissionManager.checkCompat(this, permission)
+    }
+
+    protected fun requestPermission(permission: String, callback: (Boolean) -> Unit) {
+        PermissionManager.requestRuntime(this, permission, callback)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
@@ -80,7 +52,10 @@ abstract class BaseActivity : AppCompatActivity() {
             repeat(menu.size) { i ->
                 menu[i].icon?.apply {
                     mutate()
-                    setColorFilter(ContextCompat.getColor(this@BaseActivity, R.color.toolbar), PorterDuff.Mode.SRC_ATOP)
+                    setColorFilter(
+                        ContextCompat.getColor(this@BaseActivity, R.color.toolbar),
+                        PorterDuff.Mode.SRC_ATOP
+                    )
                 }
             }
             shouldApplyDayNightModeForOptionsMenu = false
@@ -101,8 +76,6 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val PERMISSION_REQUEST_CODE = 11186
-
         fun setToolbarAsBack(activity: AppCompatActivity, id: Int, title: String) {
             val toolbar = WindowCompat.requireViewById<Toolbar>(activity.window, id)
             toolbar.title = title

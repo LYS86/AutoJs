@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi;
 public class PermissionRequestActivity extends Activity {
 
     public static final String EXTRA_PERMISSIONS = "permissions";
+    private static final int REQUEST_CODE = 18777;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -20,7 +21,7 @@ public class PermissionRequestActivity extends Activity {
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(permissions, Permissions.REQUEST_CODE);
+            requestPermissions(permissions, REQUEST_CODE);
         }
     }
 

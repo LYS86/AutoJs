@@ -2,7 +2,6 @@ package org.autojs.autojs.ui.main
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -16,9 +15,6 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.stardust.app.FragmentPagerAdapterBuilder
 import com.stardust.app.OnActivityResultDelegate
-import com.stardust.autojs.core.permission.OnRequestPermissionsResultCallback
-import com.stardust.autojs.core.permission.PermissionRequestProxyActivity
-import com.stardust.autojs.core.permission.RequestPermissionCallbacks
 import com.stardust.theme.ThemeColorManager
 import com.stardust.util.DeveloperUtils
 import org.autojs.autojs.BuildConfig
@@ -34,14 +30,12 @@ import org.autojs.autojs.ui.widget.SearchViewItem
 import org.greenrobot.eventbus.EventBus
 
 class MainActivity : BaseActivity(),
-    OnActivityResultDelegate.DelegateHost,
-    PermissionRequestProxyActivity {
+    OnActivityResultDelegate.DelegateHost {
 
     private lateinit var binding: ActivityMainBinding
 
     private var pagerAdapter: FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter? = null
     private val activityResultMediator = OnActivityResultDelegate.Mediator()
-    private val requestPermissionCallbacks = RequestPermissionCallbacks()
     private var searchViewItem: SearchViewItem? = null
     private var logMenuItem: MenuItem? = null
     private var docsSearchItemExpanded = false
@@ -106,10 +100,11 @@ class MainActivity : BaseActivity(),
     }
 
     private fun checkPermissions() {
-        checkPermission(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
+        requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) { granted ->
+            if (granted) {
+                Explorers.workspace().refreshAll()
+            }
+        }
     }
 
     private fun setUpToolbar() {
@@ -162,30 +157,6 @@ class MainActivity : BaseActivity(),
         activityResultMediator.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestPermissionCallbacks.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
-            return
-        }
-        if (getGrantResult(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                permissions,
-                grantResults
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            Explorers.workspace().refreshAll()
-        }
-    }
-
-    private fun getGrantResult(permission: String, permissions: Array<out String>, grantResults: IntArray): Int {
-        val i = permissions.indexOf(permission)
-        return if (i < 0) 2 else grantResults[i]
-    }
-
     override fun onStart() {
         super.onStart()
         if (!BuildConfig.DEBUG) {
@@ -195,14 +166,6 @@ class MainActivity : BaseActivity(),
 
     override fun getOnActivityResultDelegateMediator(): OnActivityResultDelegate.Mediator {
         return activityResultMediator
-    }
-
-    override fun addRequestPermissionsCallback(callback: OnRequestPermissionsResultCallback) {
-        requestPermissionCallbacks.addCallback(callback)
-    }
-
-    override fun removeRequestPermissionsCallback(callback: OnRequestPermissionsResultCallback): Boolean {
-        return requestPermissionCallbacks.removeCallback(callback)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
