@@ -1,8 +1,10 @@
 package org.autojs.autojs.ui.main.scripts
 
-import android.Manifest
+import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,6 +31,7 @@ import org.autojs.autojs.ui.project.ProjectConfigActivity
 import org.autojs.autojs.ui.viewmodel.ExplorerItemList
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import timber.log.Timber
 
 class MyScriptListFragment : ViewPagerFragment, FloatingActionMenu.OnFloatingActionButtonClickListener {
 
@@ -81,17 +84,30 @@ class MyScriptListFragment : ViewPagerFragment, FloatingActionMenu.OnFloatingAct
     private fun showInfo() {
         Snackbar.make(binding.root, R.string.text_no_storage_permission, Snackbar.LENGTH_SHORT)
             .setAction(R.string.text_request_permission) {
-                PermissionManager.requestRuntime(
-                    requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) { granted ->
-                    if (granted) Explorers.workspace().refreshAll()
-                }
+                requestStoragePermission()
             }.show()
     }
 
+    private fun requestStoragePermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            PermissionManager.requestRuntime(
+                requireContext(), WRITE_EXTERNAL_STORAGE
+            ) { granted ->
+                if (granted) Explorers.workspace().refreshAll()
+            }
+        } else {
+            PermissionManager.requestSpecial(
+                requireContext(),
+                MANAGE_EXTERNAL_STORAGE
+            ) { granted ->
+                Timber.d("requestSpecial: $granted")
+                if (granted) Explorers.workspace().refreshAll()
+            }
+        }
+    }
     private fun hasStoragePermission(): Boolean {
         return PermissionManager.checkCompat(
-            requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+            requireContext(), MANAGE_EXTERNAL_STORAGE
         )
     }
 

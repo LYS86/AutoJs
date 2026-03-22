@@ -1,5 +1,6 @@
 package com.stardust.autojs.permission
 
+import android.Manifest
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
 import android.content.Context
 import android.content.Intent
@@ -9,16 +10,18 @@ import android.os.Environment
 import android.provider.Settings
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import timber.log.Timber
 
 object PermissionManager {
 
     internal var pendingCallback: ((Boolean) -> Unit)? = null
     internal var pendingMultipleCallback: ((Map<String, Boolean>) -> Unit)? = null
+    internal var pendingSpecialCallback: ((Boolean) -> Unit)? = null
 
     @JvmStatic
     fun checkCompat(context: Context, permission: String): Boolean {
         return when (permission) {
-            MANAGE_EXTERNAL_STORAGE -> hasStorage()
+            MANAGE_EXTERNAL_STORAGE -> hasStorage(context)
             else -> ContextCompat.checkSelfPermission(
                 context, permission
             ) == PackageManager.PERMISSION_GRANTED
@@ -27,9 +30,7 @@ object PermissionManager {
 
     @JvmStatic
     fun getPermissionsNeedToRequest(context: Context, permissions: Array<String>): Array<String> {
-        return permissions
-            .map { normalizePermission(it) }
-            .filter { !checkCompat(context, it) }
+        return permissions.map { normalizePermission(it) }.filter { !checkCompat(context, it) }
             .toTypedArray()
     }
 
@@ -71,7 +72,12 @@ object PermissionManager {
     }
 
     @JvmStatic
-    fun requestSpecial(context: Context, permission: String) {
+    fun requestSpecial(
+        context: Context,
+        permission: String,
+        callback: ((Boolean) -> Unit)? = null
+    ) {
+        pendingSpecialCallback = callback
         context.startActivity(specialIntent(context, permission))
     }
 
@@ -90,24 +96,10 @@ object PermissionManager {
     }
 
     private fun specialIntent(context: Context, permission: String): Intent {
-        return when (permission) {
-            MANAGE_EXTERNAL_STORAGE -> manageStorageIntent(context)
-            else -> appSettingsIntent(context)
-        }
-    }
-
-    private fun manageStorageIntent(context: Context): Intent {
         return Intent(
-            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-            "package:${context.packageName}".toUri()
-        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
-
-    private fun appSettingsIntent(context: Context): Intent {
-        return Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = "package:${context.packageName}".toUri()
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
+            context, PermissionActivity::class.java
+        ).putExtra(PermissionActivity.EXTRA_SPECIAL_PERMISSION, permission)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
     internal fun onResult(granted: Boolean) {
@@ -120,16 +112,62 @@ object PermissionManager {
         pendingMultipleCallback = null
     }
 
+    internal fun onSpecialResult(granted: Boolean) {
+        pendingSpecialCallback?.invoke(granted)
+        pendingSpecialCallback = null
+    }
+
+    fun settingsIntent(context: Context, permission: String): Intent {
+        val uri = "package:${context.packageName}".toUri()
+        return when (permission) {
+            MANAGE_EXTERNAL_STORAGE -> Intent(
+                Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri
+            )
+
+            else -> appSettingsIntent(context)
+        }
+    }
+
+    fun appSettingsIntent(context: Context): Intent {
+        return when {
+            isXiaomi -> xiaoMiIntent(context)
+            else -> appDetailsIntent(context)
+        }
+    }
+
+    fun xiaoMiIntent(context: Context): Intent {
+        Timber.d("xiaoMiIntent")
+        return Intent().apply {
+            action = "miui.intent.action.APP_PERM_EDITOR"
+            setClassName(
+                "com.miui.securitycenter",
+                "com.miui.permcenter.permissions.PermissionsEditorActivity"
+            )
+            putExtra("extra_pkgname", context.packageName)
+        }
+    }
+
+    fun appDetailsIntent(context: Context): Intent {
+        return Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS, "package:${context.packageName}".toUri()
+        )
+    }
+
+    val isXiaomi: Boolean
+        get() = "xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)
+
     fun revoke(context: Context, permission: String) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
         context.revokeSelfPermissionOnKill(permission)
     }
 
-    private fun hasStorage(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false
-        return Environment.isExternalStorageManager()
-    }
+    private fun hasStorage(context: Context): Boolean {
+        return when {
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> checkCompat(
+                context, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
 
-    private val isXiaomi: Boolean
-        get() = "xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)
+            else -> Environment.isExternalStorageManager()
+        }
+    }
 }
