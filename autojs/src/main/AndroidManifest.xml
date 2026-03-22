@@ -22,6 +22,11 @@
             android:theme="@style/ScriptTheme.Transparent" />
 
         <activity
+            android:name=".permission.PermissionActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/ScriptTheme.Transparent" />
+
+        <activity
             android:name="com.stardust.autojs.core.image.capture.ScreenCaptureRequestActivity"
             android:excludeFromRecents="true"
             android:taskAffinity="com.stardust.autojs.runtime.api.image.ScreenCaptureRequestActivity"
