@@ -1,24 +1,19 @@
 package com.stardust.auojs.inrt
 
 import android.Manifest
+import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import androidx.annotation.NonNull
-import androidx.annotation.Nullable
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import android.widget.Toast
-
+import androidx.appcompat.app.AppCompatActivity
 import com.stardust.auojs.inrt.autojs.AutoJs
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher
-
-import java.util.ArrayList
-
-import android.content.pm.PackageManager.PERMISSION_DENIED
+import com.stardust.autojs.permission.PermissionManager
 
 /**
  * Created by Stardust on 2018/2/2.
@@ -26,7 +21,7 @@ import android.content.pm.PackageManager.PERMISSION_DENIED
 
 class SplashActivity : AppCompatActivity() {
 
-    override fun onCreate(@Nullable savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         val slug = findViewById<TextView>(R.id.slug)
@@ -39,8 +34,8 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun main() {
-        checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_PHONE_STATE)
+        requestPhonePermission()
+        requestStoragePermission()
     }
 
 
@@ -53,44 +48,35 @@ class SplashActivity : AppCompatActivity() {
                 runOnUiThread {
                     Toast.makeText(this@SplashActivity, e.message, Toast.LENGTH_LONG).show()
                     startActivity(Intent(this@SplashActivity, LogActivity::class.java))
-                    AutoJs.instance!!.globalConsole.printAllStackTrace(e)
+                    AutoJs.instance.globalConsole.printAllStackTrace(e)
                 }
             }
         }.start()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
-        runScript()
+    private fun requestPhonePermission() {
+        PermissionManager.requestRuntime(
+            this, Manifest.permission.READ_PHONE_STATE
+        ) {}
     }
 
-    private fun checkPermission(vararg permissions: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val requestPermissions = getRequestPermissions(permissions)
-            if (requestPermissions.isNotEmpty()) {
-                requestPermissions(requestPermissions, PERMISSION_REQUEST_CODE)
-            } else {
-                runScript()
+    private fun requestStoragePermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            PermissionManager.requestRuntime(
+                this, WRITE_EXTERNAL_STORAGE
+            ) { isGranted ->
+                if (isGranted) runScript()
             }
         } else {
-            runScript()
-        }
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private fun getRequestPermissions(permissions: Array<out String>): Array<String> {
-        val list = ArrayList<String>()
-        for (permission in permissions) {
-            if (checkSelfPermission(permission) == PERMISSION_DENIED) {
-                list.add(permission)
+            PermissionManager.requestSpecial(
+                this, MANAGE_EXTERNAL_STORAGE
+            ) { isGranted ->
+                if (isGranted) runScript()
             }
         }
-        return list.toTypedArray()
     }
 
     companion object {
-
-        private const val PERMISSION_REQUEST_CODE = 11186
         private const val INIT_TIMEOUT: Long = 2500
     }
 
