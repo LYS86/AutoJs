@@ -45,6 +45,7 @@
 
         <activity
             android:name=".ui.main.MainActivity"
+            android:exported="true"
             android:hardwareAccelerated="true"
             android:label="@string/app_name"
             android:launchMode="singleTask"
@@ -57,6 +58,7 @@
         </activity>
         <activity
             android:name=".external.shortcut.ShortcutActivity"
+            android:exported="true"
             android:taskAffinity="org.autojs.autojs.external.shortcut.ShortcutActivity"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
@@ -103,7 +105,9 @@
         <activity
             android:name=".ui.shortcut.ShortcutCreateActivity"
             android:theme="@style/AppTheme.Transparent"/>
-        <activity android:name=".external.widget.ScriptWidgetSettingsActivity">
+        <activity
+            android:name=".external.widget.ScriptWidgetSettingsActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
@@ -125,6 +129,7 @@
 
         <service
             android:name=".external.tile.LayoutBoundsTile"
+            android:exported="true"
             android:icon="@drawable/ic_circular_menu_bounds"
             android:label="@string/text_inspect_layout_bounds"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
@@ -138,6 +143,7 @@
 
         <service
             android:name=".external.tile.LayoutHierarchyTile"
+            android:exported="true"
             android:icon="@drawable/ic_circular_menu_hierarchy"
             android:label="@string/text_inspect_layout_hierarchy"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
@@ -162,7 +168,9 @@
             </intent-filter>
         </activity-alias>
 
-        <receiver android:name="org.autojs.autojs.external.receiver.StaticBroadcastReceiver">
+        <receiver
+            android:name="org.autojs.autojs.external.receiver.StaticBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
@@ -213,6 +221,7 @@
 
         <activity
             android:name=".external.open.EditIntentActivity"
+            android:exported="true"
             android:icon="@drawable/autojs_material"
             android:label="@string/text_edit_script">
             <intent-filter>
@@ -230,6 +239,7 @@
         </activity>
         <activity
             android:name=".external.open.RunIntentActivity"
+            android:exported="true"
             android:icon="@drawable/autojs_material"
             android:label="@string/text_run_script"
             android:taskAffinity="org.autojs.autojs.external.open.RunIntentActivity"
@@ -249,6 +259,7 @@
         </activity>
         <activity
             android:name=".external.open.ImportIntentActivity"
+            android:exported="true"
             android:icon="@drawable/autojs_material"
             android:label="@string/text_import_script"
             android:theme="@style/AppTheme.Transparent">
@@ -268,6 +279,7 @@
 
         <service
             android:name="com.stardust.notification.NotificationListenerService"
+            android:exported="true"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
@@ -275,7 +287,9 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".external.widget.ScriptWidget">
+        <receiver
+            android:name=".external.widget.ScriptWidget"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -285,7 +299,9 @@
                 android:resource="@xml/script_widget_config"/>
         </receiver>
 
-        <receiver android:name=".timing.TaskReceiver">
+        <receiver
+            android:name=".timing.TaskReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.stardust.autojs.action.task"/>
             </intent-filter>
