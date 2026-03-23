@@ -96,11 +96,17 @@ public class Device {
     }
 
     @SuppressLint("HardwareIds")
+    @SuppressWarnings("deprecation")
     @Nullable
     public String getIMEI() {
         checkReadPhoneStatePermission();
         try {
-            return ((TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                return tm.getImei();
+            } else {
+                return tm.getDeviceId();
+            }
         } catch (SecurityException e) {
             return null;
         }
