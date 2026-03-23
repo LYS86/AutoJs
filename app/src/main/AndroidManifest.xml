@@ -114,8 +114,12 @@
         </activity>
 
 
-        <service android:name=".external.foreground.ForegroundService"/>
-        <service android:name=".external.ScriptExecutionIntentService"/>
+        <service
+            android:name=".external.foreground.ForegroundService"
+            android:foregroundServiceType="dataSync"/>
+        <service
+            android:name=".external.ScriptExecutionIntentService"
+            android:foregroundServiceType="dataSync"/>
 
         <activity android:name=".external.tasker.TaskPrefEditActivity"/>
 
