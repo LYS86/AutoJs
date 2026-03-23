@@ -1,10 +1,13 @@
 package org.autojs.autojs.model.script;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 import android.widget.Toast;
+
+import com.stardust.autojs.permission.PermissionManager;
 
 import java.io.File;
 
@@ -50,11 +53,7 @@ public class PathChecker {
     }
 
     private static boolean hasStorageReadPermission(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-                    activity.checkSelfPermission(READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED;
-        }
-        return true;
+        return PermissionManager.checkCompat(activity, Manifest.permission.MANAGE_EXTERNAL_STORAGE);
     }
 
 
