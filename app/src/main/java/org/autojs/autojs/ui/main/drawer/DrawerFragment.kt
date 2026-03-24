@@ -259,7 +259,7 @@ class DrawerFragment : Fragment() {
     }
 
     private fun startForegroundService() {
-        PermissionManager.requestNotification(requireContext()) { granted ->
+        PermissionManager.requestNotification(requireContext(), ForegroundService.CHANNEL_ID) { granted ->
             if (granted) {
                 ForegroundService.start(requireContext())
                 setChecked(foregroundServiceItem, true)

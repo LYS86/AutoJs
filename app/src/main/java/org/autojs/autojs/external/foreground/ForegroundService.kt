@@ -49,7 +49,7 @@ class ForegroundService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 1
-        private val CHANNEL_ID = "${ForegroundService::class.simpleName}.channel"
+        val CHANNEL_ID = "${ForegroundService::class.simpleName}.channel"
 
         fun start(context: Context) {
             ContextCompat.startForegroundService(context, Intent(context, ForegroundService::class.java))

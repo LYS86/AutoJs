@@ -3,12 +3,14 @@ package com.stardust.autojs.permission
 import android.Manifest
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -30,6 +32,18 @@ object PermissionManager {
             ) == PackageManager.PERMISSION_GRANTED
         }
     }
+
+    /**
+     * 检查通知权限（包含渠道检查）
+     * @param channelId 通知渠道ID，为空时只检查总开关
+     */
+    fun checkNotificationCompat(context: Context, channelId: String = ""): Boolean {
+        val isEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+        if (!isEnabled) return false
+        if (channelId.isNotBlank()) return checkNotificationChannel(context, channelId)
+        return true
+    }
+
 
     @JvmStatic
     fun getPermissionsNeedToRequest(context: Context, permissions: Array<String>): Array<String> {
@@ -70,33 +84,44 @@ object PermissionManager {
         context.startActivity(runtimeMultipleIntent(context, needRequest))
     }
 
+
+    /**
+     * 申请特殊权限（跳转到系统设置页面）
+     * @param permission 权限名称
+     * @param channelId 通知渠道ID（仅通知权限有效）
+     */
     fun requestSpecial(
-        context: Context, permission: String, callback: (Boolean) -> Unit = {}
+        context: Context, permission: String, channelId: String = "", callback: (Boolean) -> Unit = {}
     ) {
-        if (checkCompat(context, permission)) {
+        val hasPermission = when (permission) {
+            POST_NOTIFICATIONS -> checkNotificationCompat(context, channelId)
+            else -> checkCompat(context, permission)
+        }
+        if (hasPermission) {
             callback(true)
             return
         }
         pendingSpecialCallback = callback
-        context.startActivity(specialIntent(context, permission))
+        context.startActivity(specialIntent(context, permission, channelId))
     }
 
     private fun runtimeIntent(context: Context, permission: String): Intent {
         return Intent(
             context, PermissionActivity::class.java
-        ).putExtra(PermissionActivity.EXTRA_PERMISSION, permission).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        ).putExtra(PermissionActivity.EXTRA_PERMISSION, permission)
     }
 
     private fun runtimeMultipleIntent(context: Context, permissions: Array<String>): Intent {
         return Intent(
             context, PermissionActivity::class.java
-        ).putExtra(PermissionActivity.EXTRA_PERMISSIONS, permissions).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        ).putExtra(PermissionActivity.EXTRA_PERMISSIONS, permissions)
     }
 
-    private fun specialIntent(context: Context, permission: String): Intent {
+    private fun specialIntent(context: Context, permission: String, channelId: String): Intent {
         return Intent(
             context, PermissionActivity::class.java
-        ).putExtra(PermissionActivity.EXTRA_SPECIAL_PERMISSION, permission).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        ).putExtra(PermissionActivity.EXTRA_SPECIAL_PERMISSION, permission)
+            .putExtra(PermissionActivity.EXTRA_CHANNEL_ID, channelId)
     }
 
     internal fun onResult(granted: Boolean) {
@@ -115,13 +140,14 @@ object PermissionManager {
     }
 
 
-    fun settingsIntent(context: Context, permission: String): Intent {
+    fun settingsIntent(context: Context, permission: String, channelId: String = ""): Intent {
         val uri = "package:${context.packageName}".toUri()
         return when (permission) {
             MANAGE_EXTERNAL_STORAGE -> Intent(
                 Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri
             )
-            POST_NOTIFICATIONS -> notificationIntent(context)
+
+            POST_NOTIFICATIONS -> notificationIntent(context, channelId)
             else -> appSettingsIntent(context)
         }
     }
@@ -134,7 +160,6 @@ object PermissionManager {
     }
 
     fun xiaoMiIntent(context: Context): Intent {
-        Timber.d("xiaoMiIntent")
         return Intent().apply {
             action = "miui.intent.action.APP_PERM_EDITOR"
             setClassName(
@@ -158,22 +183,73 @@ object PermissionManager {
         context.revokeSelfPermissionOnKill(permission)
     }
 
-    @JvmOverloads
-    fun requestNotification(context: Context, callback: (Boolean) -> Unit = {}) {
+    private fun requestNotificationLegacy(
+        context: Context, permission: String, channelId: String, callback: (Boolean) -> Unit
+    ) {
         when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                requestRuntime(context, POST_NOTIFICATIONS, callback)
+            !checkCompat(context, permission) -> {
+                requestSpecial(context, permission, "") {
+                    requestNotificationLegacy(context, permission, channelId, callback)
+                }
+            }
+
+            channelId.isNotBlank() && !checkNotificationChannel(context, channelId) -> {
+                requestSpecial(context, permission, channelId, callback)
             }
 
             else -> {
-                requestSpecial(context, POST_NOTIFICATIONS, callback)
+                callback(true)
             }
         }
     }
 
-    private fun notificationIntent(context: Context): Intent {
+    @SuppressLint("InlinedApi")
+    @JvmOverloads
+    fun requestNotification(context: Context, channelId: String, callback: (Boolean) -> Unit = {}) {
+        val permission = POST_NOTIFICATIONS
+        if (checkNotificationCompat(context, channelId)) {
+            callback(true)
+            return
+        }
+
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                requestRuntime(context, permission) { isGranted ->
+                    if (!isGranted) return@requestRuntime callback(false)
+                    requestSpecial(context, permission, channelId, callback)
+                }
+            }
+
+            else -> {
+                requestNotificationLegacy(context, permission, channelId, callback)
+            }
+        }
+    }
+
+    fun checkNotificationChannel(
+        context: Context,
+        channelId: String,
+    ): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true
+        val manager = NotificationManagerCompat.from(context)
+        val channel = manager.getNotificationChannel(channelId) ?: return true
+        return channel.importance != NotificationManagerCompat.IMPORTANCE_NONE
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun notificationChannelIntent(context: Context, channelId: String): Intent {
+        return Intent().apply {
+            action = Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
+            putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
+            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        }
+    }
+
+    private fun notificationIntent(context: Context, channelId: String): Intent {
+        val checkVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
         return when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> Intent().apply {
+            checkVersion && channelId.isNotBlank() -> notificationChannelIntent(context, channelId)
+            checkVersion -> Intent().apply {
                 action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
                 putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
             }
