@@ -58,4 +58,6 @@ dependencies {
     implementation(project(":automator"))
     implementation(project(":common"))
     implementation(project(":autojs"))
+    implementation(libs.splashscreen)
+    implementation(libs.timber)
 }

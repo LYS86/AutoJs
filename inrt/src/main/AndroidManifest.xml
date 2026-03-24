@@ -39,17 +39,12 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label, android:allowBackup"
         tools:targetApi="m">
-        <activity android:name=".LogActivity">
-
-        </activity>
-
         <activity
-            android:name=".SplashActivity"
+            android:name=".LogActivity"
             android:exported="true"
             android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
