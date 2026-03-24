@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
-import com.stardust.app.GlobalAppContext
 import com.stardust.app.isOpPermissionGranted
 import com.stardust.notification.NotificationListenerService
 import com.stardust.util.IntentUtil
@@ -22,6 +21,7 @@ import com.stardust.view.accessibility.AccessibilityService
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import com.stardust.autojs.permission.PermissionManager
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.autojs.AutoJs
@@ -39,7 +39,6 @@ import org.autojs.autojs.theme.ThemeUtils
 import com.stardust.autojs.util.Browser
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import java.util.Arrays
 
 class DrawerFragment : Fragment() {
 
@@ -105,8 +104,7 @@ class DrawerFragment : Fragment() {
         }
         setChecked(connectionItem, DevPluginService.getInstance().isConnected())
         if (Pref.isForegroundServiceEnabled()) {
-            ForegroundService.start(GlobalAppContext.get())
-            setChecked(foregroundServiceItem, true)
+            startForegroundService()
         }
     }
 
@@ -253,9 +251,21 @@ class DrawerFragment : Fragment() {
     private fun toggleForegroundService(holder: DrawerMenuItemViewHolder) {
         val checked = holder.getSwitchCompat().isChecked
         if (checked) {
-            ForegroundService.start(GlobalAppContext.get())
+            startForegroundService()
         } else {
-            ForegroundService.stop(GlobalAppContext.get())
+            ForegroundService.stop(requireContext())
+            setChecked(foregroundServiceItem, false)
+        }
+    }
+
+    private fun startForegroundService() {
+        PermissionManager.requestNotification(requireContext()) { granted ->
+            if (granted) {
+                ForegroundService.start(requireContext())
+                setChecked(foregroundServiceItem, true)
+            } else {
+                setChecked(foregroundServiceItem, false)
+            }
         }
     }
 
@@ -279,7 +289,7 @@ class DrawerFragment : Fragment() {
 
     private fun onConnectException(e: Throwable) {
         setChecked(connectionItem, false)
-        Toast.makeText(GlobalAppContext.get(), getString(R.string.error_connect_to_remote, e.message), Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), getString(R.string.error_connect_to_remote, e.message), Toast.LENGTH_LONG).show()
     }
 
     @Suppress("UNUSED_PARAMETER")

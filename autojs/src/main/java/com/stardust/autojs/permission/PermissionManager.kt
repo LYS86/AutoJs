@@ -2,26 +2,29 @@ package com.stardust.autojs.permission
 
 import android.Manifest
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import timber.log.Timber
 
 object PermissionManager {
 
-    internal var pendingCallback: ((Boolean) -> Unit)? = null
-    internal var pendingMultipleCallback: ((Map<String, Boolean>) -> Unit)? = null
-    internal var pendingSpecialCallback: ((Boolean) -> Unit)? = null
+    internal var pendingCallback: ((Boolean) -> Unit) = {}
+    internal var pendingMultipleCallback: ((Map<String, Boolean>) -> Unit) = {}
+    internal var pendingSpecialCallback: ((Boolean) -> Unit) = {}
 
     @JvmStatic
     fun checkCompat(context: Context, permission: String): Boolean {
         return when (permission) {
             MANAGE_EXTERNAL_STORAGE -> hasStorage(context)
+            POST_NOTIFICATIONS -> NotificationManagerCompat.from(context).areNotificationsEnabled()
             else -> ContextCompat.checkSelfPermission(
                 context, permission
             ) == PackageManager.PERMISSION_GRANTED
@@ -30,8 +33,7 @@ object PermissionManager {
 
     @JvmStatic
     fun getPermissionsNeedToRequest(context: Context, permissions: Array<String>): Array<String> {
-        return permissions.map { normalizePermission(it) }.filter { !checkCompat(context, it) }
-            .toTypedArray()
+        return permissions.map { normalizePermission(it) }.filter { !checkCompat(context, it) }.toTypedArray()
     }
 
     private fun normalizePermission(permission: String): String {
@@ -42,8 +44,7 @@ object PermissionManager {
         }
     }
 
-    @JvmStatic
-    fun requestRuntime(context: Context, permission: String, callback: (Boolean) -> Unit) {
+    fun requestRuntime(context: Context, permission: String, callback: (Boolean) -> Unit = {}) {
         if (checkCompat(context, permission)) {
             callback(true)
             return
@@ -56,14 +57,12 @@ object PermissionManager {
     @JvmStatic
     @JvmOverloads
     fun requestRuntimeMultiple(
-        context: Context,
-        permissions: Array<String>,
-        callback: ((Map<String, Boolean>) -> Unit)? = null
+        context: Context, permissions: Array<String>, callback: ((Map<String, Boolean>) -> Unit) = {}
     ) {
         val needRequest = permissions.filter { !checkCompat(context, it) }.toTypedArray()
 
         if (needRequest.isEmpty()) {
-            callback?.invoke(permissions.associateWith { true })
+            callback.invoke(permissions.associateWith { true })
             return
         }
 
@@ -71,12 +70,13 @@ object PermissionManager {
         context.startActivity(runtimeMultipleIntent(context, needRequest))
     }
 
-    @JvmStatic
     fun requestSpecial(
-        context: Context,
-        permission: String,
-        callback: ((Boolean) -> Unit)? = null
+        context: Context, permission: String, callback: (Boolean) -> Unit = {}
     ) {
+        if (checkCompat(context, permission)) {
+            callback(true)
+            return
+        }
         pendingSpecialCallback = callback
         context.startActivity(specialIntent(context, permission))
     }
@@ -84,38 +84,36 @@ object PermissionManager {
     private fun runtimeIntent(context: Context, permission: String): Intent {
         return Intent(
             context, PermissionActivity::class.java
-        ).putExtra(PermissionActivity.EXTRA_PERMISSION, permission)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        ).putExtra(PermissionActivity.EXTRA_PERMISSION, permission).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
     private fun runtimeMultipleIntent(context: Context, permissions: Array<String>): Intent {
         return Intent(
             context, PermissionActivity::class.java
-        ).putExtra(PermissionActivity.EXTRA_PERMISSIONS, permissions)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        ).putExtra(PermissionActivity.EXTRA_PERMISSIONS, permissions).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
     private fun specialIntent(context: Context, permission: String): Intent {
         return Intent(
             context, PermissionActivity::class.java
-        ).putExtra(PermissionActivity.EXTRA_SPECIAL_PERMISSION, permission)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        ).putExtra(PermissionActivity.EXTRA_SPECIAL_PERMISSION, permission).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
     internal fun onResult(granted: Boolean) {
-        pendingCallback?.invoke(granted)
-        pendingCallback = null
+        pendingCallback.invoke(granted)
+        pendingCallback = {}
     }
 
     internal fun onMultipleResult(result: Map<String, Boolean>) {
-        pendingMultipleCallback?.invoke(result)
-        pendingMultipleCallback = null
+        pendingMultipleCallback.invoke(result)
+        pendingMultipleCallback = {}
     }
 
     internal fun onSpecialResult(granted: Boolean) {
-        pendingSpecialCallback?.invoke(granted)
-        pendingSpecialCallback = null
+        pendingSpecialCallback.invoke(granted)
+        pendingSpecialCallback = {}
     }
+
 
     fun settingsIntent(context: Context, permission: String): Intent {
         val uri = "package:${context.packageName}".toUri()
@@ -123,7 +121,7 @@ object PermissionManager {
             MANAGE_EXTERNAL_STORAGE -> Intent(
                 Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri
             )
-
+            POST_NOTIFICATIONS -> notificationIntent(context)
             else -> appSettingsIntent(context)
         }
     }
@@ -140,8 +138,7 @@ object PermissionManager {
         return Intent().apply {
             action = "miui.intent.action.APP_PERM_EDITOR"
             setClassName(
-                "com.miui.securitycenter",
-                "com.miui.permcenter.permissions.PermissionsEditorActivity"
+                "com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity"
             )
             putExtra("extra_pkgname", context.packageName)
         }
@@ -159,6 +156,30 @@ object PermissionManager {
     fun revoke(context: Context, permission: String) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
         context.revokeSelfPermissionOnKill(permission)
+    }
+
+    @JvmOverloads
+    fun requestNotification(context: Context, callback: (Boolean) -> Unit = {}) {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                requestRuntime(context, POST_NOTIFICATIONS, callback)
+            }
+
+            else -> {
+                requestSpecial(context, POST_NOTIFICATIONS, callback)
+            }
+        }
+    }
+
+    private fun notificationIntent(context: Context): Intent {
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> Intent().apply {
+                action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+            }
+
+            else -> appDetailsIntent(context)
+        }
     }
 
     private fun hasStorage(context: Context): Boolean {
