@@ -21,8 +21,7 @@ import org.autojs.autojs.theme.ThemeUtils
 import java.util.concurrent.TimeUnit
 
 class EWebViewCompat(
-    context: Context,
-    attrs: AttributeSet? = null
+    context: Context, attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs), SwipeRefreshLayout.OnRefreshListener {
 
     val webView: WebView
@@ -69,39 +68,35 @@ class EWebViewCompat(
     }
 
 
-    @Suppress("DEPRECATION")
     private fun applyDarkMode() {
-        if (!WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) return
-
-        val isDark = ThemeUtils.isDarkMode(context)
         val settings = webView.settings
-        val mode = if (isDark) WebSettingsCompat.FORCE_DARK_ON else WebSettingsCompat.FORCE_DARK_OFF
+        val isDark = ThemeUtils.isDarkMode(context)
 
-        WebSettingsCompat.setForceDark(
-            settings,
-            mode
-        )
+        when {
+            WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING) -> {
+                WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, isDark)
+            }
 
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK_STRATEGY)) {
-            WebSettingsCompat.setForceDarkStrategy(
-                settings,
-                WebSettingsCompat.DARK_STRATEGY_USER_AGENT_DARKENING_ONLY
-            )
+            WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) -> {
+                @Suppress("DEPRECATION") WebSettingsCompat.setForceDark(
+                    settings, if (isDark) WebSettingsCompat.FORCE_DARK_ON else WebSettingsCompat.FORCE_DARK_OFF
+                )
+
+                if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK_STRATEGY)) {
+                    @Suppress("DEPRECATION") WebSettingsCompat.setForceDarkStrategy(
+                        settings, WebSettingsCompat.DARK_STRATEGY_USER_AGENT_DARKENING_ONLY
+                    )
+                }
+
+            }
         }
-
-        // TODO: When targetSdk >= 33, replace with:
-        // if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
-        //     WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, true)
-        // }
     }
 
     override fun onRefresh() {
         webView.reload()
         disposables.add(
-            Observable.timer(2, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { swipeRefreshLayout.isRefreshing = false }
-        )
+            Observable.timer(2, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
+                .subscribe { swipeRefreshLayout.isRefreshing = false })
     }
 
     override fun onDetachedFromWindow() {
