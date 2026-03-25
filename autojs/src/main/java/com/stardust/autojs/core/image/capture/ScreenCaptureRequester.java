@@ -68,6 +68,7 @@ public interface ScreenCaptureRequester {
 
         @Override
         public void request() {
+            MediaProjectionService.start(mActivity);
             mActivity.startActivityForResult(((MediaProjectionManager) mActivity.getSystemService(Context.MEDIA_PROJECTION_SERVICE)).createScreenCaptureIntent(), REQUEST_CODE_MEDIA_PROJECTION);
         }
 

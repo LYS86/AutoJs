@@ -44,6 +44,7 @@ public class ScreenCaptureRequestActivity extends Activity {
             finish();
             return;
         }
+        MediaProjectionService.start(this);
         mScreenCaptureRequester = new ScreenCaptureRequester.ActivityScreenCaptureRequester(mOnActivityResultDelegateMediator, this);
         mScreenCaptureRequester.setOnActivityResultCallback(mCallback);
         mScreenCaptureRequester.request();

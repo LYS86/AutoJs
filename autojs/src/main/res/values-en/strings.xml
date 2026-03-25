@@ -16,6 +16,8 @@
     <string name="text_should_enable_key_observing">Key observing is disabled, please enable in settings</string>
     <string name="no_write_settings_permissin">No writing settings permission</string>
     <string name="exception_notification_service_disabled">通知服务未运行，请重新启用通知权限</string>
-
+    <string name="media_projection_notification_channel_name">Screen Capture Service</string>
+    <string name="media_projection_notification_title">Screen Sharing</string>
+    <string name="media_projection_notification_text">Using screen capture feature</string>
 
 </resources>

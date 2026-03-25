@@ -181,6 +181,7 @@ public class ScreenCapturer {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void release() {
+        MediaProjectionService.stop(mContext);
         if (mImageAcquireLooper != null) {
             mImageAcquireLooper.quit();
         }
