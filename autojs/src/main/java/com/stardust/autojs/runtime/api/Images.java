@@ -11,11 +11,10 @@ import android.media.Image;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-
-import androidx.annotation.RequiresApi;
-
 import android.util.Base64;
 import android.view.Gravity;
+
+import androidx.annotation.RequiresApi;
 
 import com.stardust.autojs.annotation.ScriptVariable;
 import com.stardust.autojs.core.image.ColorFinder;
@@ -28,7 +27,6 @@ import com.stardust.autojs.core.opencv.OpenCVHelper;
 import com.stardust.autojs.core.ui.inflater.util.Drawables;
 import com.stardust.autojs.core.util.ScriptPromiseAdapter;
 import com.stardust.autojs.runtime.ScriptRuntime;
-import com.stardust.concurrent.VolatileDispose;
 import com.stardust.pio.UncheckedIOException;
 import com.stardust.util.ScreenMetrics;
 
@@ -44,8 +42,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -61,8 +57,6 @@ public class Images {
     private Image mPreCapture;
     private ImageWrapper mPreCaptureImage;
     private ScreenMetrics mScreenMetrics;
-    private volatile boolean mOpenCvInitialized = false;
-
     @ScriptVariable
     public final ColorFinder colorFinder;
 
@@ -343,26 +337,6 @@ public class Images {
     }
 
     public void initOpenCvIfNeeded() {
-        if (mOpenCvInitialized || OpenCVHelper.isInitialized()) {
-            return;
-        }
-        Activity currentActivity = mScriptRuntime.app.getCurrentActivity();
-        Context context = currentActivity == null ? mContext : currentActivity;
-        mScriptRuntime.console.info("opencv initializing");
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            OpenCVHelper.initIfNeeded(context, () -> {
-                mOpenCvInitialized = true;
-                mScriptRuntime.console.info("opencv initialized");
-            });
-        } else {
-            VolatileDispose<Boolean> result = new VolatileDispose<>();
-            OpenCVHelper.initIfNeeded(context, () -> {
-                mOpenCvInitialized = true;
-                result.setAndNotify(true);
-                mScriptRuntime.console.info("opencv initialized");
-            });
-            result.blockedGet();
-        }
-
+        OpenCVHelper.ensureLoaded();
     }
 }

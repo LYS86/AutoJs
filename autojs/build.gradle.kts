@@ -50,7 +50,7 @@ dependencies {
     api(libs.enhancedfloaty)
     api(libs.roundedimageview)
 
-    implementation("local:opencv:3.4.3")
+    implementation(libs.opencv)
 
     api(libs.okhttp)
     api(libs.jdeferred)
