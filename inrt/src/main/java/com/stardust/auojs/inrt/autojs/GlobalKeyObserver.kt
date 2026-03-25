@@ -43,7 +43,7 @@ class GlobalKeyObserver internal constructor() : OnKeyListener, ShellKeyObserver
                 mVolumeDownFromShell = false
                 return
             }
-            mVolumeUpFromAccessibility = true
+            mVolumeDownFromAccessibility = true
             onVolumeDown()
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             if (mVolumeUpFromShell) {

@@ -81,7 +81,7 @@ public class GlobalKeyObserver implements OnKeyListener, ShellKeyObserver.KeyLis
                 mVolumeDownFromShell = false;
                 return;
             }
-            mVolumeUpFromAccessibility = true;
+            mVolumeDownFromAccessibility = true;
             onVolumeDown();
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             if (mVolumeUpFromShell) {
