@@ -62,7 +62,13 @@ public class ScreenCapturer {
         mProjectionManager = (MediaProjectionManager) context.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         mMediaProjection = mProjectionManager.getMediaProjection(Activity.RESULT_OK, (Intent) mData.clone());
         mHandler = handler;
-        setOrientation(orientation);
+        mOrientation = orientation;
+        mDetectedOrientation = mContext.getResources().getConfiguration().orientation;
+        int initOrientation = mOrientation == ORIENTATION_AUTO ? mDetectedOrientation : mOrientation;
+        int screenHeight = ScreenMetrics.getOrientationAwareScreenHeight(initOrientation);
+        int screenWidth = ScreenMetrics.getOrientationAwareScreenWidth(initOrientation);
+        initVirtualDisplay(screenWidth, screenHeight, mScreenDensity);
+        startAcquireImageLoop();
         observeOrientation();
     }
 
