@@ -1,9 +1,11 @@
 package com.stardust.autojs.permission
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.stardust.autojs.core.image.capture.MediaProjectionService
 
 class PermissionActivity : AppCompatActivity() {
 
@@ -13,6 +15,10 @@ class PermissionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         when {
+            intent.hasExtra(EXTRA_MEDIA_PROJECTION) -> {
+                setupMediaProjectionLauncher()
+            }
+
             intent.hasExtra(EXTRA_SPECIAL_PERMISSION) -> {
                 val permission = intent.getStringExtra(EXTRA_SPECIAL_PERMISSION)!!
                 val channelId = intent.getStringExtra(EXTRA_CHANNEL_ID)!!
@@ -65,10 +71,25 @@ class PermissionActivity : AppCompatActivity() {
         launcher.launch(settingsIntent)
     }
 
+    private fun setupMediaProjectionLauncher() {
+        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val data = if (result.resultCode == RESULT_OK) result.data else null
+            if (data == null) {
+                MediaProjectionService.stop(this)
+            }
+            manager.onMediaProjectionResult(data)
+            finish()
+        }
+        MediaProjectionService.start(this)
+        val projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        launcher.launch(projectionManager.createScreenCaptureIntent())
+    }
+
     companion object {
         const val EXTRA_CHANNEL_ID = "channelId"
         const val EXTRA_PERMISSION = "permission"
         const val EXTRA_PERMISSIONS = "permissions"
         const val EXTRA_SPECIAL_PERMISSION = "special_permission"
+        const val EXTRA_MEDIA_PROJECTION = "media_projection"
     }
 }

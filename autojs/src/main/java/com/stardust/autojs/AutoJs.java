@@ -16,6 +16,7 @@ import com.stardust.autojs.core.console.GlobalConsole;
 import com.stardust.autojs.core.console.ConsoleImpl;
 import com.stardust.autojs.core.image.capture.ScreenCaptureRequestActivity;
 import com.stardust.autojs.core.image.capture.ScreenCaptureRequester;
+import com.stardust.autojs.permission.PermissionManager;
 import com.stardust.autojs.core.record.accessibility.AccessibilityActionRecorder;
 import com.stardust.autojs.core.util.Shell;
 import com.stardust.autojs.engine.LoopBasedJavaScriptEngine;
@@ -39,6 +40,8 @@ import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.WrappedException;
 
 import java.io.File;
+
+import timber.log.Timber;
 
 /**
  * Created by Stardust on 2017/11/29.
@@ -254,14 +257,20 @@ public abstract class AutoJs {
         @Override
         public void request() {
             Activity activity = mAppUtils.getCurrentActivity();
-            if (activity instanceof OnActivityResultDelegate.DelegateHost) {
-                ScreenCaptureRequester requester = new ActivityScreenCaptureRequester(
-                        ((OnActivityResultDelegate.DelegateHost) activity).getOnActivityResultDelegateMediator(), activity);
-                requester.setOnActivityResultCallback(mCallback);
-                requester.request();
-            } else {
-                ScreenCaptureRequestActivity.request(mContext, mCallback);
-            }
+            Context context = activity != null ? activity : mContext;
+            PermissionManager.INSTANCE.requestMediaProjection(context, data -> {
+                if (data != null) {
+                    mResult = data;
+                    if (mCallback != null) {
+                        mCallback.onRequestResult(Activity.RESULT_OK, data);
+                    }
+                } else {
+                    if (mCallback != null) {
+                        mCallback.onRequestResult(Activity.RESULT_CANCELED, null);
+                    }
+                }
+                return kotlin.Unit.INSTANCE;
+            });
         }
     }
 }

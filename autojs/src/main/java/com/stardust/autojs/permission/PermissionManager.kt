@@ -7,6 +7,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.app.Activity
+import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
@@ -14,6 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import com.stardust.autojs.core.image.capture.MediaProjectionService
 import timber.log.Timber
 
 object PermissionManager {
@@ -21,6 +24,7 @@ object PermissionManager {
     internal var pendingCallback: ((Boolean) -> Unit) = {}
     internal var pendingMultipleCallback: ((Map<String, Boolean>) -> Unit) = {}
     internal var pendingSpecialCallback: ((Boolean) -> Unit) = {}
+    internal var pendingMediaProjectionCallback: ((Intent?) -> Unit) = {}
 
     @JvmStatic
     fun checkCompat(context: Context, permission: String): Boolean {
@@ -137,6 +141,25 @@ object PermissionManager {
     internal fun onSpecialResult(granted: Boolean) {
         pendingSpecialCallback.invoke(granted)
         pendingSpecialCallback = {}
+    }
+
+    internal fun onMediaProjectionResult(data: Intent?) {
+        pendingMediaProjectionCallback.invoke(data)
+        pendingMediaProjectionCallback = {}
+    }
+
+    fun requestMediaProjection(context: Context, callback: (Intent?) -> Unit) {
+        pendingMediaProjectionCallback = callback
+        context.startActivity(mediaProjectionIntent(context))
+    }
+
+    private fun mediaProjectionIntent(context: Context): Intent {
+        val intent = Intent(context, PermissionActivity::class.java)
+            .putExtra(PermissionActivity.EXTRA_MEDIA_PROJECTION, true)
+        if (context !is Activity) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        return intent
     }
 
 
