@@ -9,12 +9,10 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.stardust.app.OnActivityResultDelegate;
 import com.stardust.app.SimpleActivityLifecycleCallbacks;
 import com.stardust.autojs.core.accessibility.AccessibilityBridge;
 import com.stardust.autojs.core.console.GlobalConsole;
 import com.stardust.autojs.core.console.ConsoleImpl;
-import com.stardust.autojs.core.image.capture.ScreenCaptureRequestActivity;
 import com.stardust.autojs.core.image.capture.ScreenCaptureRequester;
 import com.stardust.autojs.permission.PermissionManager;
 import com.stardust.autojs.core.record.accessibility.AccessibilityActionRecorder;
