@@ -13,7 +13,6 @@ import androidx.core.view.WindowCompat
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.stardust.app.FragmentPagerAdapterBuilder
-import com.stardust.app.OnActivityResultDelegate
 import com.stardust.theme.ThemeColorManager
 import com.stardust.util.DeveloperUtils
 import org.autojs.autojs.BuildConfig
@@ -27,13 +26,11 @@ import org.autojs.autojs.ui.main.task.TaskManagerFragment
 import org.autojs.autojs.ui.widget.SearchViewItem
 import org.greenrobot.eventbus.EventBus
 
-class MainActivity : BaseActivity(),
-    OnActivityResultDelegate.DelegateHost {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
     private var pagerAdapter: FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter? = null
-    private val activityResultMediator = OnActivityResultDelegate.Mediator()
     private var searchViewItem: SearchViewItem? = null
     private var logMenuItem: MenuItem? = null
     private var docsSearchItemExpanded = false
@@ -141,19 +138,11 @@ class MainActivity : BaseActivity(),
         })
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        activityResultMediator.onActivityResult(requestCode, resultCode, data)
-    }
-
     override fun onStart() {
         super.onStart()
         if (!BuildConfig.DEBUG) {
             DeveloperUtils.verifyApk(this, R.string.dex_crcs)
         }
-    }
-
-    override fun getOnActivityResultDelegateMediator(): OnActivityResultDelegate.Mediator {
-        return activityResultMediator
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

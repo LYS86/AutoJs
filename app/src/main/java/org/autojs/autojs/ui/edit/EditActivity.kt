@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
-import com.stardust.app.OnActivityResultDelegate
 import com.stardust.autojs.execution.ScriptExecution
 import com.stardust.pio.PFiles
 import io.reactivex.Observable
@@ -29,11 +28,9 @@ import java.io.IOException
 import androidx.core.view.get
 import androidx.core.view.size
 
-class EditActivity : BaseActivity(),
-    OnActivityResultDelegate.DelegateHost {
+class EditActivity : BaseActivity() {
 
     private lateinit var binding: ActivityEditBinding
-    private val mediator = OnActivityResultDelegate.Mediator()
     private var editorMenu: EditorMenu? = null
     private var newTask = false
 
@@ -201,14 +198,6 @@ class EditActivity : BaseActivity(),
     override fun onDestroy() {
         binding.editorView.destroy()
         super.onDestroy()
-    }
-
-    override fun getOnActivityResultDelegateMediator(): OnActivityResultDelegate.Mediator {
-        return mediator
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        mediator.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
