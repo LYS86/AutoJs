@@ -16,7 +16,6 @@ import org.mozilla.javascript.ContinuationPending;
 
 public class RunnableScriptExecution extends ScriptExecution.AbstractScriptExecution implements Runnable {
 
-    private static final String TAG = "RunnableJSExecution";
     private ScriptEngine mScriptEngine;
     private ScriptEngineManager mScriptEngineManager;
 
@@ -52,13 +51,11 @@ public class RunnableScriptExecution extends ScriptExecution.AbstractScriptExecu
             onException(engine, e);
             return null;
         } finally {
-            Log.d(TAG, "Engine destroy");
             engine.destroy();
         }
     }
 
     protected void onException(ScriptEngine engine, Throwable e) {
-        Log.w(TAG, "onException: engine = " + engine, e);
         getListener().onException(this, e);
     }
 

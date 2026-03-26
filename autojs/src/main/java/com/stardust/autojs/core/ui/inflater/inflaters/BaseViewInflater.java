@@ -33,6 +33,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/11/3.
  */
@@ -611,7 +613,7 @@ public class BaseViewInflater<V extends View> implements ViewInflater<V> {
             field.set(layoutParams, gravity);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -630,7 +632,7 @@ public class BaseViewInflater<V extends View> implements ViewInflater<V> {
             setGravity.invoke(view, Gravities.parse(g));
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }

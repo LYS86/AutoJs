@@ -27,6 +27,7 @@ import com.stardust.util.MapBuilder
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ActivityTimedTaskSettingBinding
 import org.autojs.autojs.external.ScriptIntents
+import timber.log.Timber
 import org.autojs.autojs.external.receiver.DynamicBroadcastReceivers
 import org.autojs.autojs.model.script.ScriptFile
 import org.autojs.autojs.timing.IntentTask
@@ -255,7 +256,7 @@ class TimedTaskSettingActivity : BaseActivity() {
                         REQUEST_CODE_IGNORE_BATTERY
                     )
                 } catch (e: ActivityNotFoundException) {
-                    e.printStackTrace()
+                    Timber.e(e)
                     createOrUpdateTask()
                 }
             } else {

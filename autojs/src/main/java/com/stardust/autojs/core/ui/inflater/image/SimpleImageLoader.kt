@@ -32,7 +32,7 @@ class SimpleImageLoader : ImageLoader {
                 val drawable = load(view, uri)
                 view.post { callback(drawable) }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e(e)
             }
         }.start()
     }

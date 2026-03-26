@@ -30,6 +30,8 @@ import io.reactivex.subjects.PublishSubject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/5/11.
  */
@@ -162,7 +164,7 @@ public class DevPluginService {
 
     @MainThread
     private void onSocketError(Throwable e) {
-        e.printStackTrace();
+        Timber.e(e);
         if (mSocket != null) {
             mConnectionState.onNext(new State(State.DISCONNECTED, e));
             mSocket.close();
@@ -199,7 +201,7 @@ public class DevPluginService {
             }
             mResponseHandler.handle(obj);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
 
     }

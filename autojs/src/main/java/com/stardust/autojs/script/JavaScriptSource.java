@@ -14,6 +14,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Map;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/8/2.
  */
@@ -91,7 +93,7 @@ public abstract class JavaScriptSource extends ScriptSource {
                 break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return EXECUTION_MODE_NORMAL;
         }
         return EXECUTION_MODE_NORMAL;

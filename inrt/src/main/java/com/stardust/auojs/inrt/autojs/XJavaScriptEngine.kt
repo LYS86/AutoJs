@@ -8,6 +8,7 @@ import com.stardust.autojs.script.JavaScriptFileSource
 import com.stardust.autojs.script.ScriptSource
 import com.stardust.autojs.script.StringScriptSource
 import com.stardust.pio.PFiles
+import timber.log.Timber
 import java.io.File
 import java.security.GeneralSecurityException
 
@@ -21,7 +22,7 @@ class XJavaScriptEngine(context: Context) : LoopBasedJavaScriptEngine(context) {
                     return
                 }
             } catch (e: Throwable) {
-                e.printStackTrace()
+                Timber.e(e)
                 return
             }
         }
@@ -36,7 +37,7 @@ class XJavaScriptEngine(context: Context) : LoopBasedJavaScriptEngine(context) {
         try {
             super.execute(StringScriptSource(file.name, String(ScriptEncryption.decrypt(bytes, EncryptedScriptFileHeader.BLOCK_SIZE))))
         } catch (e: GeneralSecurityException) {
-            e.printStackTrace()
+            Timber.e(e)
         }
         return true
     }

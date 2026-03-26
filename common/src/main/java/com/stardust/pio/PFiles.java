@@ -10,6 +10,8 @@ import android.util.Log;
 import com.stardust.util.Func1;
 
 import java.io.Closeable;
+
+import timber.log.Timber;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -79,7 +81,7 @@ public class PFiles {
             try {
                 return file.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         }
         return false;
@@ -172,7 +174,7 @@ public class PFiles {
             write(is, fos);
             return true;
         } catch (IOException | UncheckedIOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -284,7 +286,7 @@ public class PFiles {
         try {
             return copyStream(new FileInputStream(pathFrom), pathTo);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -293,7 +295,7 @@ public class PFiles {
         try {
             return copyStream(context.getAssets().open(assetFile), path);
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }

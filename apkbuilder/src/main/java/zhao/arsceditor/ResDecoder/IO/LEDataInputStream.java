@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 
+import timber.log.Timber;
+
 public class LEDataInputStream {
     private DataInputStream dis;
     private InputStream is;
@@ -118,7 +120,7 @@ public class LEDataInputStream {
                 field.setInt(this.is, (int)position);
             }
             catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
-                e.printStackTrace();
+                Timber.e(e);
                 throw new IOException("Unsupported");
             }
         } else {

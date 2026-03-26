@@ -22,6 +22,8 @@ import org.autojs.autojs.tool.SimpleObserver;
 
 import java.io.File;
 
+import timber.log.Timber;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -98,7 +100,7 @@ public class ScriptDirPathPreference extends MaterialEditTextPreference {
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
+                        Timber.e(e);
                         dialog.dismiss();
                         Explorers.workspace().refreshAll();
                         Toast.makeText(getContext(), getContext().getString(R.string.text_error_copy_file,

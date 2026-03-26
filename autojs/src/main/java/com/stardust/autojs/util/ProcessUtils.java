@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.stardust.autojs.core.util.ProcessShell;
 
+import timber.log.Timber;
+
 import java.lang.reflect.Field;
 
 /**
@@ -21,7 +23,7 @@ public class ProcessUtils {
             pid.setAccessible(true);
             return (int) pid.get(process);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return -1;
         }
     }

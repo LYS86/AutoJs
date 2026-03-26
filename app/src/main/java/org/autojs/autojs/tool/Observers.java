@@ -2,6 +2,8 @@ package org.autojs.autojs.tool;
 
 import com.stardust.app.GlobalAppContext;
 
+import timber.log.Timber;
+
 import org.autojs.autojs.model.explorer.ExplorerFileItem;
 
 import io.reactivex.Observer;
@@ -15,7 +17,7 @@ public class Observers {
     };
 
     private static final Consumer<Throwable> TOAST_MESSAGE = e -> {
-        e.printStackTrace();
+        Timber.e(e);
         GlobalAppContext.toast(e.getMessage());
     };
 

@@ -21,6 +21,7 @@ import com.stardust.autojs.script.ScriptSource
 import com.stardust.pio.PFiles
 import com.stardust.pio.UncheckedIOException
 import com.stardust.util.MD5
+import timber.log.Timber
 
 import java.io.File
 import java.io.IOException
@@ -109,7 +110,7 @@ open class AssetsProjectLauncher(private val mAssetsProjectDir: String, private 
             fieldVector.isAccessible = true
             fieldVector.set(null, vec)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
         }
 
     }

@@ -26,6 +26,8 @@ import org.autojs.autojs.ui.edit.EditActivity
 
 import org.mozilla.javascript.RhinoException
 
+import timber.log.Timber
+
 import java.io.File
 import java.io.FileFilter
 
@@ -104,7 +106,7 @@ object Scripts {
             AutoJs.getInstance().scriptEngineService.execute(file.toSource(),
                     ExecutionConfig(workingDirectory = file.parent))
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
             Toast.makeText(GlobalAppContext.get(), e.message, Toast.LENGTH_LONG).show()
             null
         }
@@ -116,7 +118,7 @@ object Scripts {
         return try {
             AutoJs.getInstance().scriptEngineService.execute(source, ExecutionConfig(workingDirectory = Pref.getScriptDirPath()))
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
             Toast.makeText(GlobalAppContext.get(), e.message, Toast.LENGTH_LONG).show()
             null
         }

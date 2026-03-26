@@ -9,6 +9,8 @@ import android.view.accessibility.AccessibilityNodeInfo
 
 import com.stardust.automator.UiObject
 
+import timber.log.Timber
+
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -160,7 +162,7 @@ class NodeInfo(resources: Resources?, node: UiObject, var parent: NodeInfo?) {
                         resources = context.packageManager.getResourcesForApplication(pkg)
                         resourcesCache[pkg] = resources
                     } catch (e: PackageManager.NameNotFoundException) {
-                        e.printStackTrace()
+                        Timber.e(e)
                     }
 
                 }

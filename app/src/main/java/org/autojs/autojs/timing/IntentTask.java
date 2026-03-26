@@ -4,6 +4,8 @@ import android.content.IntentFilter;
 
 import org.autojs.autojs.storage.database.BaseModel;
 
+import timber.log.Timber;
+
 public class IntentTask extends BaseModel {
 
     public static final String TABLE = "IntentTask";
@@ -30,7 +32,7 @@ public class IntentTask extends BaseModel {
             try {
                 filter.addDataType(mDataType);
             } catch (IntentFilter.MalformedMimeTypeException e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         }
         return filter;

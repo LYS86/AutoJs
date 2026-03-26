@@ -26,6 +26,8 @@ import com.stardust.util.ScreenMetrics;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/5/17.
  */
@@ -82,7 +84,7 @@ public class ScreenCapturer {
                     try {
                         refreshVirtualDisplay(orientation);
                     }catch (Exception e){
-                        e.printStackTrace();
+                        Timber.e(e);
                         mException = e;
                     }
                 }

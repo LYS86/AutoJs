@@ -23,6 +23,7 @@ import org.autojs.autojs.external.shortcut.ShortcutManager
 import org.autojs.autojs.model.script.ScriptFile
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
 import org.autojs.autojs.tool.BitmapTool
+import timber.log.Timber
 
 class ShortcutCreateActivity : AppCompatActivity() {
 
@@ -101,7 +102,7 @@ class ShortcutCreateActivity : AppCompatActivity() {
                 binding.icon.setImageDrawable(packageManager.getApplicationIcon(packageName))
                 isDefaultIcon = false
             } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
+                Timber.e(e)
             }
             return
         }

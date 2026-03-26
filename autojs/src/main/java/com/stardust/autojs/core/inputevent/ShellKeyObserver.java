@@ -7,6 +7,8 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/5/4.
  */
@@ -81,7 +83,7 @@ public class ShellKeyObserver implements InputEventObserver.InputEventListener {
                 }
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 

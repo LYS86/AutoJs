@@ -37,4 +37,5 @@ dependencies {
 
     api(libs.androidx.appcompat)
     api(project(":common"))
+    implementation(libs.timber)
 }

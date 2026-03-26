@@ -28,6 +28,7 @@ import com.stardust.autojs.execution.ScriptExecution
 import com.stardust.pio.PFiles
 import com.stardust.util.BackPressedHandler
 import com.stardust.util.Callback
+import timber.log.Timber
 import com.stardust.util.ViewUtils
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -363,7 +364,7 @@ class EditorView : FrameLayout, CodeCompletionBar.OnHintClickListener, Functions
         save()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(Observers.emptyConsumer()) { e ->
-                e.printStackTrace()
+                Timber.e(e)
                 Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
             }
     }

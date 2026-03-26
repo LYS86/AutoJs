@@ -9,6 +9,8 @@ import com.stardust.autojs.runtime.ScriptRuntime;
 
 import java.lang.reflect.Method;
 
+import timber.log.Timber;
+
 public class Plugin {
 
     public static class PluginLoadException extends RuntimeException {
@@ -36,7 +38,7 @@ public class Plugin {
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         } catch (Throwable e) {
-            e.printStackTrace();
+            Timber.e(e);
             throw new PluginLoadException(e);
         }
     }
@@ -62,12 +64,12 @@ public class Plugin {
         try {
             mGetVersion = pluginClass.getMethod("getVersion");
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         try {
             mGetScriptDir = pluginClass.getMethod("getAssetsScriptDir");
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 

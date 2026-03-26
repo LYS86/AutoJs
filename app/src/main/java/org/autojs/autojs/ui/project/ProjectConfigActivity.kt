@@ -23,6 +23,7 @@ import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity
 import org.autojs.autojs.ui.widget.SimpleTextWatcher
+import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
@@ -119,7 +120,7 @@ class ProjectConfigActivity : BaseActivity() {
         if (bitmap != null) {
             saveIcon(bitmap)
                 .subscribe({ saveProjectConfig() }) { e ->
-                    e.printStackTrace()
+                    Timber.e(e)
                     Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
                 }
         } else {
@@ -140,7 +141,7 @@ class ProjectConfigActivity : BaseActivity() {
                     Explorers.workspace().notifyChildrenChanged(ExplorerDirPage(parent, null))
                     finish()
                 }) { e ->
-                    e.printStackTrace()
+                    Timber.e(e)
                     Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
                 }
         } else {
@@ -155,7 +156,7 @@ class ProjectConfigActivity : BaseActivity() {
                     Explorers.workspace().notifyItemChanged(item, item)
                     finish()
                 }) { e ->
-                    e.printStackTrace()
+                    Timber.e(e)
                     Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
                 }
         }
@@ -223,7 +224,7 @@ class ProjectConfigActivity : BaseActivity() {
                 binding.icon.setImageBitmap(bitmap)
                 iconBitmap = bitmap
             }) { obj ->
-                obj.printStackTrace()
+                Timber.e(obj)
             }
     }
 

@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/8/2.
  */
@@ -58,7 +60,7 @@ public class InputEventToAutoFileRecorder extends InputEventRecorder {
             convertEventOrThrow(event);
             Log.d(LOG_TAG, "recordInputEvent: " + event);
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
 
     }
@@ -133,7 +135,7 @@ public class InputEventToAutoFileRecorder extends InputEventRecorder {
         try {
             mDataOutputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 }

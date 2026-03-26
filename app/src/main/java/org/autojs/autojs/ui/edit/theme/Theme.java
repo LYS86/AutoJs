@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2018/2/16.
  */
@@ -101,7 +103,7 @@ public class Theme {
         try {
             return fromJson(new InputStreamReader(context.getAssets().open(assetsPath)));
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return null;
         }
     }

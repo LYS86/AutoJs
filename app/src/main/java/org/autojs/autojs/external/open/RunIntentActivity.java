@@ -13,6 +13,8 @@ import org.autojs.autojs.external.ScriptIntents;
 import org.autojs.autojs.R;
 import org.autojs.autojs.model.script.Scripts;
 
+import timber.log.Timber;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -28,7 +30,7 @@ public class RunIntentActivity extends Activity {
         try {
             handleIntent(getIntent());
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             Toast.makeText(this, R.string.edit_and_run_handle_intent_error, Toast.LENGTH_LONG).show();
         }
         finish();

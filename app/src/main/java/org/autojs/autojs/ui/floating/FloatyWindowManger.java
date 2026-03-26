@@ -18,6 +18,8 @@ import org.autojs.autojs.ui.floating.CircularMenu;
 
 import com.stardust.util.IntentUtil;
 
+import timber.log.Timber;
+
 import java.lang.ref.WeakReference;
 
 import ezy.assist.compat.SettingsCompat;
@@ -40,7 +42,7 @@ public class FloatyWindowManger {
             return true;
             // SecurityException: https://github.com/hyb1996-guest/AutoJsIssueReport/issues/4781
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             if(hasPermission){
                 manageDrawOverlays(context);
                 GlobalAppContext.toast(R.string.text_no_floating_window_permission);

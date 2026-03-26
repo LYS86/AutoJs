@@ -28,6 +28,8 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 
 import io.reactivex.Observable;
+
+import timber.log.Timber;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -127,7 +129,7 @@ public class DevPluginResponseHandler implements Handler {
             new ProjectLauncher(dir)
                     .launch(AutoJs.getInstance().getScriptEngineService());
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             GlobalAppContext.toast(R.string.text_invalid_project);
         }
     }

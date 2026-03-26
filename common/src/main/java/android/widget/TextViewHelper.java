@@ -2,6 +2,8 @@ package android.widget;
 
 import java.lang.reflect.Field;
 
+import timber.log.Timber;
+
 public class TextViewHelper {
 
     private static final Field sSavedStateText;
@@ -12,7 +14,7 @@ public class TextViewHelper {
             text = TextView.SavedState.class.getDeclaredField("text");
             text.setAccessible(true);
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         sSavedStateText = text;
     }
@@ -24,7 +26,7 @@ public class TextViewHelper {
         try {
             sSavedStateText.set(state, text);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 }

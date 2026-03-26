@@ -28,6 +28,7 @@ import org.autojs.autojs.tool.RootTool
 import org.autojs.autojs.ui.common.NotAskAgainDialog
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutHierarchyFloatyWindow
+import timber.log.Timber
 import org.autojs.autojs.ui.main.MainActivity
 import org.autojs.autojs.ui.explorer.ExplorerView
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
@@ -307,7 +308,7 @@ class CircularMenu(context: Context) : Recorder.OnStateChangedListener, LayoutIn
         try {
             mWindow.close()
         } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
+            Timber.e(e)
         } finally {
             EventBus.getDefault().post(StateChangeEvent(STATE_CLOSED, mState))
             mState = STATE_CLOSED

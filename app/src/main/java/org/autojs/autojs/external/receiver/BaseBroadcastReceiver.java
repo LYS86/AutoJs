@@ -15,6 +15,8 @@ import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.timing.IntentTask;
 import org.autojs.autojs.timing.TimedTaskManager;
 
+import timber.log.Timber;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -44,7 +46,7 @@ public class BaseBroadcastReceiver extends BroadcastReceiver {
         try {
             AutoJs.getInstance().getScriptEngineService().execute(file.toSource(), config);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }

@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/4/12.
  */
@@ -98,7 +100,7 @@ public class JsBeautifier {
             try {
                 prepareIfNeeded();
             } catch (Exception e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         });
     }

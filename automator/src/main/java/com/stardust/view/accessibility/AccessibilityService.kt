@@ -7,6 +7,8 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.stardust.event.EventDispatcher
 
+import timber.log.Timber
+
 import java.util.HashSet
 import java.util.TreeMap
 import java.util.concurrent.ExecutorService
@@ -160,7 +162,7 @@ open class AccessibilityService : android.accessibilityservice.AccessibilityServ
                 }
                 return ENABLED.await(timeOut, TimeUnit.MILLISECONDS)
             } catch (e: InterruptedException) {
-                e.printStackTrace()
+                Timber.e(e)
                 return false
             } finally {
                 LOCK.unlock()

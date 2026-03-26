@@ -17,6 +17,8 @@ import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.edit.EditActivity;
 import org.autojs.autojs.R;
 
+import timber.log.Timber;
+
 import java.io.File;
 
 /**
@@ -33,7 +35,7 @@ public class EditIntentActivity extends BaseActivity {
         try {
             handleIntent();
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             Toast.makeText(this, R.string.edit_and_run_handle_intent_error, Toast.LENGTH_LONG).show();
         }
         finish();

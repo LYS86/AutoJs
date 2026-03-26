@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import ezy.assist.compat.RomUtil;
 import ezy.assist.compat.SettingsCompat;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2018/1/30.
  */
@@ -34,7 +36,7 @@ public class FloatingPermission {
             sCheckOp = SettingsCompat.class.getDeclaredMethod("checkOp", Context.class, int.class);
             sCheckOp.setAccessible(true);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 
@@ -100,7 +102,7 @@ public class FloatingPermission {
         try {
             return (boolean) sCheckOp.invoke(null, context, op);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }

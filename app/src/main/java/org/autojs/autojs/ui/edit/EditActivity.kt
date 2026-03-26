@@ -23,6 +23,7 @@ import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
 import org.autojs.autojs.tool.Observers
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.main.MainActivity
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import androidx.core.view.get
@@ -225,7 +226,7 @@ class EditActivity : BaseActivity() {
                 .subscribe { t -> PFiles.write(tmp, t) }
             tmp
         } catch (e: IOException) {
-            e.printStackTrace()
+            Timber.e(e)
             null
         }
     }
@@ -246,7 +247,7 @@ class EditActivity : BaseActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { t -> binding.editorView.editor.text = t },
-                    { it.printStackTrace() }
+                    { Timber.e(it) }
                 )
         }
     }

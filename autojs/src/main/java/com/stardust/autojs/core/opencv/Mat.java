@@ -11,6 +11,8 @@ import org.opencv.core.Size;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import timber.log.Timber;
+
 public class Mat extends org.opencv.core.Mat implements ResourceMonitor.Resource {
 
     private static Method nClone;
@@ -20,7 +22,7 @@ public class Mat extends org.opencv.core.Mat implements ResourceMonitor.Resource
             nClone = org.opencv.core.Mat.class.getDeclaredMethod("n_clone", long.class);
             nClone.setAccessible(true);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 

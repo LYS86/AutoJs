@@ -24,6 +24,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/5/2.
  */
@@ -170,7 +172,7 @@ public class ConsoleImpl extends AbstractConsole {
                 FloatyService.addWindow(mFloatyWindow);
                 // SecurityException: https://github.com/hyb1996-guest/AutoJsIssueReport/issues/4781
             } catch (WindowManager.BadTokenException | SecurityException e) {
-                e.printStackTrace();
+                Timber.e(e);
                 mUiHandler.toast(R.string.text_no_floating_window_permission);
             }
         });

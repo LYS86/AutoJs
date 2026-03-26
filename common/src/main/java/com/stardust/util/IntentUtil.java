@@ -16,6 +16,8 @@ import com.stardust.R;
 
 import java.io.File;
 
+import timber.log.Timber;
+
 
 public class IntentUtil {
 
@@ -25,7 +27,7 @@ public class IntentUtil {
             context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             return true;
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Timber.e(exception);
             return false;
         }
     }
@@ -55,7 +57,7 @@ public class IntentUtil {
             context.startActivity(Intent.createChooser(intent, ""));
             return true;
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -82,7 +84,7 @@ public class IntentUtil {
                     .setType("text/plain"));
             return true;
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -118,7 +120,7 @@ public class IntentUtil {
         try {
             installApk(context, path, fileProviderAuthority);
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            Timber.e(e);
             Toast.makeText(context, R.string.error_activity_not_found_for_apk_installing, Toast.LENGTH_SHORT).show();
         }
     }
@@ -150,7 +152,7 @@ public class IntentUtil {
                         .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
                 return true;
             } catch (Exception e) {
-                e.printStackTrace();
+                Timber.e(e);
                 return false;
             }
         }
@@ -166,7 +168,7 @@ public class IntentUtil {
                     .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
             return true;
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -182,7 +184,7 @@ public class IntentUtil {
                     .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
             return true;
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -194,7 +196,7 @@ public class IntentUtil {
         try {
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 }

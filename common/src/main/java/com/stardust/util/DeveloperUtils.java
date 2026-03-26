@@ -14,6 +14,8 @@ import android.util.Base64;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+
+import timber.log.Timber;
 import java.security.MessageDigest;
 import java.util.concurrent.ExecutorService;
 import java.util.zip.ZipEntry;
@@ -52,7 +54,7 @@ public class DeveloperUtils {
             }
             return builder.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         return null;
     }
@@ -145,7 +147,7 @@ public class DeveloperUtils {
             }
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }

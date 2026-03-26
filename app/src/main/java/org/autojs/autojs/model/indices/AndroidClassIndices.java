@@ -29,6 +29,8 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+import timber.log.Timber;
+
 public class AndroidClassIndices {
 
     static class LoadException extends RuntimeException {
@@ -103,7 +105,7 @@ public class AndroidClassIndices {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(Observers.emptyConsumer(), t -> {
                     mLoadThrowable = t;
-                    t.printStackTrace();
+                    Timber.e(t);
                 });
     }
 

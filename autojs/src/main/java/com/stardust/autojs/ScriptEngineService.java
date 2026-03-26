@@ -30,6 +30,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import timber.log.Timber;
+
 import static com.stardust.autojs.runtime.exception.ScriptInterruptedException.causedByInterrupted;
 
 /**
@@ -61,7 +63,7 @@ public class ScriptEngineService {
 
         @Override
         public void onException(ScriptExecution execution, Throwable e) {
-            e.printStackTrace();
+            Timber.e(e);
             onFinish(execution);
             String message = null;
             if (!causedByInterrupted(e)) {

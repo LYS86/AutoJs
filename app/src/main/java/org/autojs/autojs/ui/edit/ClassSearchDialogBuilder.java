@@ -25,6 +25,8 @@ import org.autojs.autojs.ui.widget.SimpleTextWatcher;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
+import timber.log.Timber;
+
 public class ClassSearchDialogBuilder extends ThemeColorMaterialDialogBuilder {
 
     public interface OnItemClickListener {
@@ -102,7 +104,7 @@ public class ClassSearchDialogBuilder extends ThemeColorMaterialDialogBuilder {
                     mResultListAdapter.notifyDataSetChanged(result);
                     mProgressBar.setVisibility(View.GONE);
                 }, t -> {
-                    t.printStackTrace();
+                    Timber.e(t);
                     mProgressBar.setVisibility(View.GONE);
                     Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
                 });

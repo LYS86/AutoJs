@@ -26,3 +26,7 @@ android {
         abortOnError = false
     }
 }
+
+dependencies {
+    implementation(libs.timber)
+}

@@ -15,6 +15,8 @@ import com.stardust.util.ScreenMetrics;
 
 import org.autojs.autojs.ui.floating.gesture.BounceDragGesture;
 
+import timber.log.Timber;
+
 public class CircularMenuWindow extends FloatyWindow {
 
     private static final String KEY_POSITION_X = CircularMenuWindow.class.getName() + ".position.x";
@@ -216,7 +218,7 @@ public class CircularMenuWindow extends FloatyWindow {
             getWindowManager().removeView(mCircularActionView);
             FloatyService.removeWindow(this);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 

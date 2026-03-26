@@ -17,6 +17,8 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
+import timber.log.Timber;
+
 public class JsonWebSocket extends WebSocketListener {
 
     public static class Bytes {
@@ -109,7 +111,7 @@ public class JsonWebSocket extends WebSocketListener {
             JsonElement element = mJsonParser.parse(reader);
             mJsonElementPublishSubject.onNext(element);
         } catch (JsonParseException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
 
     }

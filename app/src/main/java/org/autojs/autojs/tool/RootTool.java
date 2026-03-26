@@ -3,6 +3,8 @@ package org.autojs.autojs.tool;
 import com.stardust.autojs.core.util.ProcessShell;
 import com.stericson.RootShell.RootShell;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2018/1/26.
  */
@@ -13,7 +15,7 @@ public class RootTool {
         try {
             return RootShell.isRootAvailable();
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }

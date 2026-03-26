@@ -25,6 +25,8 @@ import com.stardust.autojs.script.ScriptSource;
 
 import org.mozilla.javascript.ContinuationPending;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/2/5.
  */
@@ -87,7 +89,7 @@ public class ScriptExecuteActivity extends AppCompatActivity {
             prepare();
             doExecution();
         } catch (ContinuationPending pending) {
-            pending.printStackTrace();
+            Timber.e(pending);
         } catch (Exception e) {
             onException(e);
         }

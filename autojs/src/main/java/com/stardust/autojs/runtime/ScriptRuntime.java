@@ -64,6 +64,8 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import timber.log.Timber;
+
 
 /**
  * Created by Stardust on 2017/1/27.
@@ -426,7 +428,7 @@ public class ScriptRuntime {
         try {
             r.run();
         } catch (Throwable e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 
@@ -483,7 +485,7 @@ public class ScriptRuntime {
             }
             return scriptTrace.toString();
         } catch (IOException e1) {
-            e1.printStackTrace();
+            Timber.e(e1);
             return message;
         }
     }

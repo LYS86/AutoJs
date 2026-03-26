@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.stardust.autojs.engine.RhinoJavaScriptEngine;
 
+import timber.log.Timber;
+
 import org.mozilla.javascript.jdk18.VMBridge_jdk18;
 
 import java.lang.reflect.Constructor;
@@ -53,7 +55,7 @@ public class VMBridge_custom extends VMBridge_jdk18 {
                 } catch (ContinuationPending pending) {
                     return defaultValue(method.getReturnType());
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    Timber.e(e);
                     // notify the script thread to exit
                     com.stardust.autojs.runtime.ScriptRuntime runtime = engine.getRuntime();
                     Log.d(LOG_TAG, "runtime = " + runtime);

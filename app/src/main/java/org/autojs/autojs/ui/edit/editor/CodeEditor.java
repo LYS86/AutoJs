@@ -23,6 +23,8 @@ import java.util.regex.PatternSyntaxException;
 
 import io.reactivex.Observable;
 
+import timber.log.Timber;
+
 /**
  * Copyright 2018 WHO<980008027@qq.com>
  * <p>
@@ -319,7 +321,7 @@ public class CodeEditor extends HVScrollView {
             @Override
             public void onException(Exception e) {
                 setProgress(false);
-                e.printStackTrace();
+                Timber.e(e);
             }
         });
     }

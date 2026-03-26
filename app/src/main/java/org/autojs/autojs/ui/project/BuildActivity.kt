@@ -28,6 +28,7 @@ import org.autojs.autojs.model.script.ScriptFile
 import org.autojs.autojs.tool.BitmapTool
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder
+import timber.log.Timber
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity
 import java.io.File
 
@@ -406,7 +407,7 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
                     binding.icon.setImageBitmap(bitmap)
                     isDefaultIcon = false
                 },
-                { it.printStackTrace() }
+                { Timber.e(it) }
             )
     }
 

@@ -11,16 +11,17 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.stardust.app.GlobalAppContext;
-
-import org.autojs.autojs.BuildConfig;
-import org.mozilla.javascript.RhinoException;
-
 import com.stardust.view.accessibility.AccessibilityService;
 import com.tencent.bugly.crashreport.BuglyLog;
 import com.tencent.bugly.crashreport.CrashReport;
 
+import org.autojs.autojs.BuildConfig;
+import org.mozilla.javascript.RhinoException;
+
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Map;
+
+import timber.log.Timber;
 
 public class CrashHandler extends CrashReport.CrashHandleCallback implements UncaughtExceptionHandler {
     private static final String TAG = "CrashHandler";
@@ -42,7 +43,7 @@ public class CrashHandler extends CrashReport.CrashHandleCallback implements Unc
     public void uncaughtException(Thread thread, Throwable ex) {
         Log.e(TAG, "Uncaught Exception", ex);
         if (thread != Looper.getMainLooper().getThread()) {
-            if(!(ex instanceof RhinoException)){
+            if (!(ex instanceof RhinoException)) {
                 CrashReport.postCatchedException(ex, thread);
             }
             return;
@@ -72,7 +73,7 @@ public class CrashHandler extends CrashReport.CrashHandleCallback implements Unc
             String msg = errorType + ": " + errorMessage;
             startErrorReportActivity(msg, errorStack);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            Timber.e(throwable);
         }
         return super.onCrashHandleStart(crashType, errorType, errorMessage, errorStack);
     }

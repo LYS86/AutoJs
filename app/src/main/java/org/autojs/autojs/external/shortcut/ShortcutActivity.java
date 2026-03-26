@@ -9,6 +9,8 @@ import org.autojs.autojs.external.ScriptIntents;
 import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.model.script.Scripts;
 
+import timber.log.Timber;
+
 /**
  * Created by Stardust on 2017/1/23.
  */
@@ -28,7 +30,7 @@ public class ShortcutActivity extends Activity {
         try {
             Scripts.INSTANCE.run(new ScriptFile(path));
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }

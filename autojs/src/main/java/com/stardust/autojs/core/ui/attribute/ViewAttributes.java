@@ -29,6 +29,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import timber.log.Timber;
+
 import static com.stardust.autojs.core.ui.inflater.inflaters.BaseViewInflater.DRAWABLE_CACHE_QUALITIES;
 import static com.stardust.autojs.core.ui.inflater.inflaters.BaseViewInflater.IMPORTANT_FOR_ACCESSIBILITY;
 import static com.stardust.autojs.core.ui.inflater.inflaters.BaseViewInflater.LAYOUT_DIRECTIONS;
@@ -403,7 +405,7 @@ public class ViewAttributes {
             setGravity.invoke(mView, g);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             return false;
         }
     }
@@ -531,7 +533,7 @@ public class ViewAttributes {
                 field.set(layoutParams, gravity);
                 mView.setLayoutParams(layoutParams);
             } catch (Exception e) {
-                e.printStackTrace();
+                Timber.e(e);
                 //TODO throw or ?
             }
         }
