@@ -3,15 +3,13 @@ package com.stardust.auojs.inrt
 import android.os.Bundle
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.core.view.WindowCompat
+import com.stardust.auojs.inrt.databinding.ActivitySettingsBinding
 
-
-/**
- * Created by Stardust on 2017/12/8.
- */
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,13 +17,16 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setupViews() {
-        setContentView(R.layout.activity_settings)
-        fragmentManager.beginTransaction().replace(R.id.fragment_setting, PreferenceFragment()).commit()
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        toolbar.setTitle(R.string.text_settings)
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        
+        fragmentManager.beginTransaction()
+            .replace(R.id.fragment_setting, PreferenceFragment())
+            .commit()
+        
+        binding.toolbar.setNavigationOnClickListener { finish() }
     }
 
     class PreferenceFragment : android.preference.PreferenceFragment() {

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">inrt</string>
     <string name="text_no_accessibility_permission">无障碍服务未启动</string>
@@ -21,5 +22,11 @@
     <string name="text_others">其他</string>
     <string name="powered_by_autojs">Powered by Auto.js</string>
     <string name="text_execution_finished" formatted="false">\n------------\n[%s]运行结束，用时%f秒</string>
+
+    <string name="text_run">运行</string>
+    <string name="text_stop">停止</string>
+    <string name="text_clear_log">清空日志</string>
+    <string name="text_script_stopped">脚本已停止</string>
+    <string name="text_log_cleared">日志已清空</string>
 
 </resources>

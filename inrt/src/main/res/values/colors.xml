@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="console_color_debug">#FF000000</color>
+    <color name="console_color_verbose">#DF757575</color>
+</resources>

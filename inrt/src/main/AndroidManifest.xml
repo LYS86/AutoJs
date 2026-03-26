@@ -34,7 +34,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="inrt"
         android:supportsRtl="true"
-        android:theme="@style/ScriptTheme"
+        android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label, android:allowBackup"
@@ -49,7 +49,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SettingsActivity"/>
+        <activity
+            android:name=".SettingsActivity" />
 
         <service
             android:name="com.stardust.notification.NotificationListenerService"

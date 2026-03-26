@@ -17,6 +17,10 @@ android {
         multiDexEnabled = true
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -60,4 +64,5 @@ dependencies {
     implementation(project(":autojs"))
     implementation(libs.splashscreen)
     implementation(libs.timber)
+    implementation(libs.material)
 }
