@@ -228,7 +228,9 @@ public class Events extends EventEmitter implements OnKeyListener, TouchObserver
         mLoopers.waitWhenIdle(true);
         if (NotificationListenerService.Companion.getInstance() == null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                mContext.startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS));
+                Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
             }
             throw new ScriptException(mContext.getString(R.string.exception_notification_service_disabled));
         }
