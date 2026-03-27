@@ -185,7 +185,7 @@ public class Loopers implements MessageQueue.IdleHandler {
         if (l == null)
             return true;
         if (l == mMainLooper) {
-            Log.d(LOG_TAG, "main looper queueIdle");
+//            Log.d(LOG_TAG, "main looper queueIdle");
             if (shouldQuitLooper() && !mThreads.hasRunningThreads() &&
                     mMainLooperQuitHandler != null && mMainLooperQuitHandler.shouldQuit()) {
                 Log.d(LOG_TAG, "main looper quit");
