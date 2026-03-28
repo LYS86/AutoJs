@@ -58,7 +58,7 @@ module.exports = function (runtime, scope) {
     };
 
     console.setGlobalLogConfig = function (config) {
-        console.warn("console.setGlobalLogConfig() is deprecated");
+        rtConsole.save(JSON.stringify(config));
     }
 
     function option(value, def) {

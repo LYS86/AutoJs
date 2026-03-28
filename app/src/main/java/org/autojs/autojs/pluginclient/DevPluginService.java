@@ -4,16 +4,19 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.AnyThread;
-import androidx.annotation.MainThread;
-import androidx.annotation.WorkerThread;
 import android.util.Log;
 import android.util.Pair;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.stardust.app.GlobalAppContext;
+import com.stardust.autojs.core.log.LogSink;
 import com.stardust.util.MapBuilder;
 
 import org.autojs.autojs.BuildConfig;
@@ -29,14 +32,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.subjects.PublishSubject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-
 import timber.log.Timber;
 
 /**
  * Created by Stardust on 2017/5/11.
  */
 
-public class DevPluginService {
+public class DevPluginService extends LogSink {
 
     private static final int CLIENT_VERSION = 2;
     private static final String LOG_TAG = "DevPluginService";
@@ -294,11 +296,14 @@ public class DevPluginService {
     }
 
 
-    @SuppressLint("CheckResult")
-    @AnyThread
-    public void log(String log) {
-        if (!isConnected())
-            return;
-        writePair(mSocket, "log", new Pair<>("log", log));
+    @Override
+    public void send(@NonNull String message) {
+        if (!isConnected()) return;
+        writePair(mSocket, "log", new Pair<>("log", message));
+    }
+
+    @Override
+    public boolean isLoggable(String tag, int priority) {
+        return super.isLoggable(tag, priority);
     }
 }

@@ -9,9 +9,11 @@ import com.stardust.app.GlobalAppContext
 import com.stardust.theme.ThemeColor
 import com.tencent.bugly.Bugly
 import com.tencent.bugly.crashreport.CrashReport
+import com.stardust.autojs.core.log.JsLogTree
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.autojs.key.GlobalKeyObserver
 import org.autojs.autojs.external.receiver.DynamicBroadcastReceivers
+import org.autojs.autojs.pluginclient.DevPluginService
 import org.autojs.autojs.theme.ThemeColorManagerCompat
 import org.autojs.autojs.timing.TimedTaskManager
 import org.autojs.autojs.timing.TimedTaskScheduler
@@ -30,8 +32,9 @@ class App : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        Timber.plant(Timber.DebugTree())
         GlobalAppContext.set(this)
+        Timber.plant(Timber.DebugTree())
+        Timber.plant(JsLogTree(DevPluginService.getInstance()))
         instance = WeakReference(this)
         setUpDebugEnvironment()
         init()

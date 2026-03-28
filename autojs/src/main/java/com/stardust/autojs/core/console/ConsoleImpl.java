@@ -2,12 +2,15 @@ package com.stardust.autojs.core.console;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
+import android.view.WindowManager;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.view.WindowManager;
 
 import com.stardust.autojs.R;
 import com.stardust.autojs.annotation.ScriptInterface;
+import com.stardust.autojs.core.log.FileSender;
 import com.stardust.autojs.runtime.ScriptRuntime;
 import com.stardust.autojs.runtime.api.AbstractConsole;
 import com.stardust.autojs.runtime.api.Console;
@@ -197,8 +200,7 @@ public class ConsoleImpl extends AbstractConsole {
     public void hide() {
         mUiHandler.post(() -> {
             synchronized (WINDOW_SHOW_LOCK) {
-                if (!mShown)
-                    return;
+                if (!mShown) return;
                 try {
                     mFloatyWindow.close();
                 } catch (IllegalArgumentException ignored) {
@@ -225,8 +227,7 @@ public class ConsoleImpl extends AbstractConsole {
         mY = y;
         if (mShown) {
             mUiHandler.post(() -> {
-                if (mShown)
-                    mFloatyWindow.getWindowBridge().updatePosition(x, y);
+                if (mShown) mFloatyWindow.getWindowBridge().updatePosition(x, y);
             });
         }
     }
@@ -297,4 +298,15 @@ public class ConsoleImpl extends AbstractConsole {
             super.error(data, options);
         }
     }
+
+    public void save(String Json) {
+        try {
+            FileSender.getInstance().setConfig(Json);
+        } catch (Exception e) {
+            error(e);
+//            Log.e(TAG, "Failed to parse log config", e);
+        }
+    }
+
+    private static final String TAG = "ConsoleImpl";
 }

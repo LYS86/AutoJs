@@ -9,7 +9,6 @@ import android.os.Looper;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.stardust.app.GlobalAppContext;
-import com.stardust.autojs.core.console.GlobalConsole;
 import com.stardust.autojs.runtime.ScriptRuntime;
 import com.stardust.autojs.runtime.accessibility.AccessibilityConfig;
 import com.stardust.autojs.runtime.api.AppUtils;
@@ -19,7 +18,6 @@ import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
-import org.autojs.autojs.pluginclient.DevPluginService;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow;
@@ -106,18 +104,6 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
     @Override
     protected AppUtils createAppUtils(Context context) {
         return new AppUtils(context, AppFileProvider.AUTHORITY);
-    }
-
-    @Override
-    protected GlobalConsole createGlobalConsole() {
-        return new GlobalConsole(getUiHandler()) {
-            @Override
-            public String println(int level, CharSequence charSequence) {
-                String log = super.println(level, charSequence);
-                DevPluginService.getInstance().log(log);
-                return log;
-            }
-        };
     }
 
     public void ensureAccessibilityServiceEnabled() {

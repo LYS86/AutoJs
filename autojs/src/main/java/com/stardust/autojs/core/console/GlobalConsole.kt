@@ -10,8 +10,8 @@ import java.util.Locale
 open class GlobalConsole(uiHandler: UiHandler) : ConsoleImpl(uiHandler) {
 
     override fun println(level: Int, charSequence: CharSequence): String {
-        logWithTimber(level, charSequence.toString())
         val formattedLog = formatLog(level, charSequence)
+        logWithTimber(level, formattedLog)
         super.println(level, formattedLog)
         return formattedLog
     }

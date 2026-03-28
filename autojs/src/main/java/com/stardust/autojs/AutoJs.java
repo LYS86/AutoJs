@@ -13,6 +13,8 @@ import com.stardust.app.SimpleActivityLifecycleCallbacks;
 import com.stardust.autojs.core.accessibility.AccessibilityBridge;
 import com.stardust.autojs.core.console.GlobalConsole;
 import com.stardust.autojs.core.console.ConsoleImpl;
+import com.stardust.autojs.core.log.FileSender;
+import com.stardust.autojs.core.log.JsLogTree;
 import com.stardust.autojs.core.image.capture.ScreenCaptureRequester;
 import com.stardust.autojs.permission.PermissionManager;
 import com.stardust.autojs.core.record.accessibility.AccessibilityActionRecorder;
@@ -86,6 +88,7 @@ public abstract class AutoJs {
     protected void init() {
         addAccessibilityServiceDelegates();
         registerActivityLifecycleCallbacks();
+        initLogTree();
         ResourceMonitor.setExceptionCreator(resource -> {
             Exception exception;
             if (org.mozilla.javascript.Context.getCurrentContext() != null) {
@@ -97,6 +100,10 @@ public abstract class AutoJs {
             return exception;
         });
         ResourceMonitor.setUnclosedResourceDetectedHandler(detectedException -> mGlobalConsole.error(detectedException));
+    }
+
+    protected void initLogTree() {
+        Timber.plant(new JsLogTree(FileSender.getInstance()));
     }
 
     public abstract void ensureAccessibilityServiceEnabled();
