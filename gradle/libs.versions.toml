@@ -38,8 +38,6 @@ tasker-plugin = "4.0.3"
 apksig = "8.7.3"
 spongycastle = "1.58.0.0"
 jdeferred = "1.2.6"
-android-logging-log4j = "1.0.3"
-log4j = "1.2.17"
 licensesdialog = "2.2.0"
 expandablerecyclerview = "3.0.0-RC1"
 expandable-layout = "1.6.0"
@@ -90,8 +88,6 @@ tasker-plugin = { group = "com.twofortyfouram", name = "android-plugin-client-sd
 apksig = { group = "com.android.tools.build", name = "apksig", version.ref = "apksig" }
 spongycastle = { group = "com.madgag.spongycastle", name = "prov", version.ref = "spongycastle" }
 jdeferred = { group = "org.jdeferred", name = "jdeferred-android-aar", version.ref = "jdeferred" }
-android-logging-log4j = { group = "de.mindpipe.android", name = "android-logging-log4j", version.ref = "android-logging-log4j" }
-log4j = { group = "log4j", name = "log4j", version.ref = "log4j" }
 licensesdialog = { group = "de.psdev.licensesdialog", name = "licensesdialog", version.ref = "licensesdialog" }
 expandablerecyclerview = { group = "com.bignerdranch.android", name = "expandablerecyclerview", version.ref = "expandablerecyclerview" }
 expandable-layout = { group = "com.github.aakira", name = "expandable-layout", version.ref = "expandable-layout" }
@@ -108,7 +104,6 @@ opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
 retrofit = ["retrofit", "retrofit-converter-gson", "retrofit-rxjava2-adapter"]
 rxjava = ["rxjava", "rxandroid"]
 material-dialogs = ["material-dialogs-core", "material-dialogs-commons"]
-log4j = ["android-logging-log4j", "log4j"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

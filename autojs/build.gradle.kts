@@ -63,8 +63,6 @@ dependencies {
         exclude(group = "com.android.support")
     }
 
-    api(libs.bundles.log4j)
-
     implementation("local:libtermexec:1.0")
     implementation("local:emulatorview:1.0")
     implementation("local:term-debug:1.0")
