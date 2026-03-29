@@ -152,14 +152,6 @@ module.exports = function (runtime, global) {
 
     app.launch = app.launchPackage;
 
-    app.versionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-    app.versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-
-    app.autojs = {
-        versionCode: org.autojs.autojs.BuildConfig.VERSION_CODE,
-        versionName: org.autojs.autojs.BuildConfig.VERSION_NAME
-    };
-
     app.intentToShell = function(i) {
         var cmd = "";
         function quoteStr(str) {

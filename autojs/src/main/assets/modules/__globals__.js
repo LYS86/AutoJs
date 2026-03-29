@@ -84,11 +84,11 @@ module.exports = function(runtime, global){
     global.requiresApi = runtime.requiresApi.bind(runtime);
     global.requiresAutojsVersion = function(version){
         if(typeof(version) == 'number'){
-            if(compare(version, app.autojs.versionCode) > 0){
+            if(compare(version, app.versionCode) > 0){
                 throw new Error("需要Auto.js版本号" + version + "以上才能运行");
             }
         }else{
-            if(compareVersion(version, app.autojs.versionName) > 0){
+            if(compareVersion(version, app.versionName) > 0){
                 throw new Error("需要Auto.js版本" + version + "以上才能运行");
             }
         }
