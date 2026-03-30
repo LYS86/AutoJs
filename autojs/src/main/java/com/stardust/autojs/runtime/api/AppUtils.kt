@@ -3,6 +3,7 @@ package com.stardust.autojs.runtime.api
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -31,7 +32,7 @@ class AppUtils @JvmOverloads constructor(
                     ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -63,16 +64,21 @@ class AppUtils @JvmOverloads constructor(
     fun getAppName(packageName: String): String? {
         val packageManager = mContext.packageManager
         return try {
-            val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
+            val applicationInfo = getApplicationInfo(packageName)
             packageManager.getApplicationLabel(applicationInfo).toString()
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
             null
         }
     }
 
     @ScriptInterface
     fun openAppSetting(packageName: String): Boolean {
-        return IntentUtil.goToAppDetailSettings(mContext, packageName)
+        return try {
+            getApplicationInfo(packageName)
+            IntentUtil.goToAppDetailSettings(mContext, packageName)
+        } catch (_: PackageManager.NameNotFoundException) {
+            false
+        }
     }
 
     @ScriptInterface
@@ -144,6 +150,20 @@ class AppUtils @JvmOverloads constructor(
             else -> {
                 @Suppress("DEPRECATION")
                 packageManager.getPackageInfo(packageName, 0)
+            }
+        }
+    }
+
+    private fun getApplicationInfo(packageName: String): ApplicationInfo {
+        val packageManager = mContext.packageManager
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                packageManager.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0))
+            }
+
+            else -> {
+                @Suppress("DEPRECATION")
+                packageManager.getApplicationInfo(packageName, 0)
             }
         }
     }
