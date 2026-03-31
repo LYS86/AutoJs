@@ -16,7 +16,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.FragmentMyScriptListBinding
-import org.autojs.autojs.external.fileprovider.AppFileProvider
+import com.stardust.autojs.util.FileProviderUtils
 import org.autojs.autojs.model.explorer.ExplorerDirPage
 import org.autojs.autojs.model.explorer.ExplorerItem
 import org.autojs.autojs.model.explorer.Explorers
@@ -67,7 +67,7 @@ class MyScriptListFragment : ViewPagerFragment, FloatingActionMenu.OnFloatingAct
                 if (item.isEditable) {
                     Scripts.edit(requireContext(), item.toScriptFile())
                 } else {
-                    IntentUtil.viewFile(GlobalAppContext.get(), item.path, AppFileProvider.AUTHORITY)
+                    IntentUtil.viewFile(GlobalAppContext.get(), item.path, FileProviderUtils.getAuthority(requireContext()))
                 }
             }
         })

@@ -19,7 +19,7 @@ import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.external.ScriptIntents
-import org.autojs.autojs.external.fileprovider.AppFileProvider
+import com.stardust.autojs.util.FileProviderUtils
 import org.autojs.autojs.external.shortcut.Shortcut
 import org.autojs.autojs.external.shortcut.ShortcutActivity
 import org.autojs.autojs.ui.edit.EditActivity
@@ -77,7 +77,7 @@ object Scripts {
 
 
     fun openByOtherApps(uri: Uri) {
-        IntentUtil.viewFile(GlobalAppContext.get(), uri, "text/plain", AppFileProvider.AUTHORITY)
+        IntentUtil.viewFile(GlobalAppContext.get(), uri, "text/plain", FileProviderUtils.getAuthority(GlobalAppContext.get()))
     }
 
     fun openByOtherApps(file: File) {
@@ -154,7 +154,7 @@ object Scripts {
         val context = GlobalAppContext.get()
         context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND)
                 .setType("text/plain")
-                .putExtra(Intent.EXTRA_STREAM, IntentUtil.getUriOfFile(context, file.path, AppFileProvider.AUTHORITY)),
+                .putExtra(Intent.EXTRA_STREAM, IntentUtil.getUriOfFile(context, file.path, FileProviderUtils.getAuthority(context))),
                 GlobalAppContext.getString(R.string.text_send)
         ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 

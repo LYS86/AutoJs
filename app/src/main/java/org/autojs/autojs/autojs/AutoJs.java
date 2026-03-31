@@ -17,7 +17,7 @@ import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
 
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
-import org.autojs.autojs.external.fileprovider.AppFileProvider;
+import com.stardust.autojs.util.FileProviderUtils;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow;
@@ -103,7 +103,7 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
 
     @Override
     protected AppUtils createAppUtils(Context context) {
-        return new AppUtils(context, AppFileProvider.AUTHORITY);
+        return new AppUtils(context, FileProviderUtils.getAuthority(context));
     }
 
     public void ensureAccessibilityServiceEnabled() {

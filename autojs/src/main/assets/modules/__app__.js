@@ -131,25 +131,6 @@ module.exports = function (runtime, global) {
         return arr;
     }
 
-    app.parseUri = function (uri) {
-        if (uri.startsWith("file://")) {
-            return app.getUriForFile(uri);
-        }
-        return android.net.Uri.parse(uri);
-    }
-
-    app.getUriForFile = function (path) {
-        if (path.startsWith("file://")) {
-            path = path.substring(7);
-        }
-        let file = new java.io.File(files.path(path));
-        if (app.fileProviderAuthority == null) {
-            return android.net.Uri.fromFile(file);
-        }
-        return Packages["androidx"].core.content.FileProvider.getUriForFile(context,
-            app.fileProviderAuthority, file);
-    };
-
     app.launch = app.launchPackage;
 
     app.intentToShell = function(i) {

@@ -23,7 +23,7 @@ import org.autojs.autojs.R
 import org.autojs.autojs.build.ApkBuilder
 import org.autojs.autojs.build.ApkBuilderPluginHelper
 import org.autojs.autojs.databinding.ActivityBuildBinding
-import org.autojs.autojs.external.fileprovider.AppFileProvider
+import com.stardust.autojs.util.FileProviderUtils
 import org.autojs.autojs.model.script.ScriptFile
 import org.autojs.autojs.tool.BitmapTool
 import org.autojs.autojs.ui.BaseActivity
@@ -63,7 +63,7 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
         binding.fab.setOnClickListener { buildApk() }
         binding.btnInstall.setOnClickListener {
             val outApk = it.tag as? File ?: return@setOnClickListener
-            IntentUtil.installApkOrToast(this, outApk.path, AppFileProvider.AUTHORITY)
+            IntentUtil.installApkOrToast(this, outApk.path, FileProviderUtils.getAuthority(this))
         }
     }
 

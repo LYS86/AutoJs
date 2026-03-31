@@ -15,7 +15,7 @@ import com.stardust.autojs.runtime.exception.ScriptInterruptedException
 import com.stardust.autojs.script.JavaScriptSource
 import com.stardust.view.accessibility.AccessibilityService
 import com.stardust.view.accessibility.AccessibilityServiceUtils
-import java.lang.IllegalStateException
+import com.stardust.autojs.util.FileProviderUtils
 
 
 /**
@@ -29,7 +29,7 @@ class AutoJs private constructor(application: Application) : com.stardust.autojs
     }
 
     override fun createAppUtils(context: Context): AppUtils {
-        return AppUtils(context, context.packageName + ".fileprovider")
+        return AppUtils(context, FileProviderUtils.getAuthority(context))
     }
 
 

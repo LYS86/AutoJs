@@ -8,11 +8,13 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.util.Log
-import androidx.annotation.Nullable
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.stardust.autojs.annotation.ScriptInterface
 import com.stardust.util.IntentUtil
+import timber.log.Timber
+import java.io.File
 import java.lang.ref.WeakReference
 
 class AppUtils @JvmOverloads constructor(
@@ -84,16 +86,15 @@ class AppUtils @JvmOverloads constructor(
     @ScriptInterface
     fun getFileProviderAuthority(): String? = mFileProviderAuthority
 
-    @Nullable
     fun getCurrentActivity(): Activity? {
-        Log.d("App", "getCurrentActivity: ${mCurrentActivity.get()}")
+        Timber.d("getCurrentActivity: ${mCurrentActivity.get()}")
         return mCurrentActivity.get()
     }
 
     @ScriptInterface
     fun uninstall(packageName: String) {
         mContext.startActivity(
-            Intent(Intent.ACTION_DELETE, Uri.parse("package:$packageName"))
+            Intent(Intent.ACTION_DELETE, "package:$packageName".toUri())
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }
@@ -118,15 +119,36 @@ class AppUtils @JvmOverloads constructor(
         }
         mContext.startActivity(
             Intent(Intent.ACTION_VIEW)
-                .setData(Uri.parse(finalUrl))
+                .setData(finalUrl.toUri())
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
+    }
+
+    @ScriptInterface
+    fun parseUri(uri: String): Uri {
+        if (uri.startsWith("file://")) {
+            return getUriForFile(uri.substring(7))
+        }
+        return uri.toUri()
+    }
+
+    @ScriptInterface
+    fun getUriForFile(path: String): Uri {
+        var filePath = path
+        if (filePath.startsWith("file://")) {
+            filePath = filePath.substring(7)
+        }
+        val file = File(filePath)
+        if (mFileProviderAuthority == null) {
+            return Uri.fromFile(file)
+        }
+        return FileProvider.getUriForFile(mContext, mFileProviderAuthority, file)
     }
 
     val versionCode: Long
         get() = try {
             val packageInfo = getPackageInfo()
-            packageInfo.longVersionCode
+            packageInfo.versionCodeCompat
         } catch (_: PackageManager.NameNotFoundException) {
             -1L
         }
@@ -140,36 +162,49 @@ class AppUtils @JvmOverloads constructor(
         }
 
     private fun getPackageInfo(): PackageInfo {
-        val packageManager = mContext.packageManager
-        val packageName = mContext.packageName
-        return when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
-            }
-
-            else -> {
-                @Suppress("DEPRECATION")
-                packageManager.getPackageInfo(packageName, 0)
-            }
-        }
+        return mContext.packageManager.getPackageInfoCompat(mContext.packageName)
     }
 
     private fun getApplicationInfo(packageName: String): ApplicationInfo {
-        val packageManager = mContext.packageManager
+        return mContext.packageManager.getApplicationInfoCompat(packageName)
+    }
+
+    fun PackageManager.getPackageInfoCompat(packageName: String): PackageInfo {
         return when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                packageManager.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0))
+                getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
             }
 
             else -> {
                 @Suppress("DEPRECATION")
-                packageManager.getApplicationInfo(packageName, 0)
+                getPackageInfo(packageName, 0)
             }
         }
     }
 
+    fun PackageManager.getApplicationInfoCompat(packageName: String): ApplicationInfo {
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0))
+            }
+
+            else -> {
+                @Suppress("DEPRECATION")
+                getApplicationInfo(packageName, 0)
+            }
+        }
+    }
+
+    val PackageInfo.versionCodeCompat: Long
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            longVersionCode
+        } else {
+            @Suppress("DEPRECATION")
+            versionCode.toLong()
+        }
+
     fun setCurrentActivity(currentActivity: Activity?) {
         mCurrentActivity = WeakReference(currentActivity)
-        Log.d("App", "setCurrentActivity: $currentActivity")
+        Timber.d("setCurrentActivity: $currentActivity")
     }
 }
