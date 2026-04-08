@@ -7,11 +7,14 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.stardust.autojs.annotation.ScriptInterface
+import com.stardust.autojs.core.compat.getApplicationInfoCompat
+import com.stardust.autojs.core.compat.getInstalledApplicationsCompat
+import com.stardust.autojs.core.compat.getPackageInfoCompat
+import com.stardust.autojs.core.compat.versionCodeCompat
 import com.stardust.util.IntentUtil
 import timber.log.Timber
 import java.io.File
@@ -53,7 +56,7 @@ class AppUtils @JvmOverloads constructor(
     @ScriptInterface
     fun getPackageName(appName: String): String? {
         val packageManager = mContext.packageManager
-        val installedApplications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+        val installedApplications = packageManager.getInstalledApplicationsCompat(PackageManager.GET_META_DATA)
         for (applicationInfo in installedApplications) {
             if (packageManager.getApplicationLabel(applicationInfo).toString() == appName) {
                 return applicationInfo.packageName
@@ -168,40 +171,6 @@ class AppUtils @JvmOverloads constructor(
     private fun getApplicationInfo(packageName: String): ApplicationInfo {
         return mContext.packageManager.getApplicationInfoCompat(packageName)
     }
-
-    fun PackageManager.getPackageInfoCompat(packageName: String): PackageInfo {
-        return when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
-            }
-
-            else -> {
-                @Suppress("DEPRECATION")
-                getPackageInfo(packageName, 0)
-            }
-        }
-    }
-
-    fun PackageManager.getApplicationInfoCompat(packageName: String): ApplicationInfo {
-        return when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0))
-            }
-
-            else -> {
-                @Suppress("DEPRECATION")
-                getApplicationInfo(packageName, 0)
-            }
-        }
-    }
-
-    val PackageInfo.versionCodeCompat: Long
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            longVersionCode
-        } else {
-            @Suppress("DEPRECATION")
-            versionCode.toLong()
-        }
 
     fun setCurrentActivity(currentActivity: Activity?) {
         mCurrentActivity = WeakReference(currentActivity)

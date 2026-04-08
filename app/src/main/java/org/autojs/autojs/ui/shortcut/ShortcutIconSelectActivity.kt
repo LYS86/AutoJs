@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.stardust.autojs.core.compat.getInstalledApplicationsCompat
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -50,7 +51,7 @@ class ShortcutIconSelectActivity : BaseActivity() {
 
     @SuppressLint("CheckResult")
     private fun loadApps() {
-        val packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+        val packages = packageManager.getInstalledApplicationsCompat(PackageManager.GET_META_DATA)
         Observable.fromIterable(packages)
             .observeOn(Schedulers.computation())
             .filter { appInfo -> appInfo.icon != 0 }
