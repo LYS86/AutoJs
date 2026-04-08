@@ -10,6 +10,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
 
+    <!-- MIUI 权限，用于获取应用列表 -->
+    <uses-permission android:name="com.android.permission.GET_INSTALLED_APPS" />
+
     <application>
         <activity
             android:name=".execution.ScriptExecuteActivity"

@@ -4,11 +4,10 @@ import android.Manifest
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.app.Activity
-import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
@@ -16,10 +15,14 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import com.stardust.autojs.core.image.capture.MediaProjectionService
-import timber.log.Timber
+import com.stardust.autojs.permission.PermissionManager.GET_INSTALLED_APPS
 
 object PermissionManager {
+
+    /**
+     * 获取应用列表权限,MIUI 专属
+     */
+    const val GET_INSTALLED_APPS = "com.android.permission.GET_INSTALLED_APPS"
 
     internal var pendingCallback: ((Boolean) -> Unit) = {}
     internal var pendingMultipleCallback: ((Map<String, Boolean>) -> Unit) = {}
@@ -288,6 +291,24 @@ object PermissionManager {
             )
 
             else -> Environment.isExternalStorageManager()
+        }
+    }
+
+    /**
+     * 检查当前系统是否支持 [GET_INSTALLED_APPS] 权限。
+     *
+     * 影响版本：MIUI 13 及以上系统版本
+     *
+     * @see <a href="https://dev.mi.com/xiaomihyperos/documentation/detail?pId=1619">应用列表权限的适配说明</a>
+     */
+    private fun isSupportGetInstalledAppsPermission(context: Context): Boolean {
+        return try {
+            val permissionInfo = context.packageManager.getPermissionInfo(
+                GET_INSTALLED_APPS, 0
+            )
+            permissionInfo.packageName.equals("com.lbe.security.miui", ignoreCase = true)
+        } catch (_: PackageManager.NameNotFoundException) {
+            false
         }
     }
 }
