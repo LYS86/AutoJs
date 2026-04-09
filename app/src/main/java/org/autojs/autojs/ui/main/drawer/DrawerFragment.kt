@@ -19,6 +19,9 @@ import com.stardust.enhancedfloaty.FloatyService
 import com.stardust.notification.NotificationListenerService
 import com.stardust.util.IntentUtil
 import com.stardust.view.accessibility.AccessibilityService
+import com.stardust.app.GlobalAppContext
+import com.stardust.autojs.shizuku.Shell
+import rikka.shizuku.Shizuku
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -45,6 +48,7 @@ class DrawerFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val urlDevPlugin = "https://www.autojs.org/topic/968/"
+    private val REQUEST_CODE_SHIZUKU = 1001
 
     private val connectionItem =
         DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote)
@@ -83,6 +87,13 @@ class DrawerFragment : Fragment() {
         this::toggleForegroundService
     )
 
+    private val shizukuItem = DrawerMenuItem(
+        R.drawable.ic_service_green,
+        R.string.text_shizuku,
+        0,
+        this::onShizukuToggle
+    )
+
     private val floatingWindowItem =
         DrawerMenuItem(R.drawable.ic_robot_64, R.string.text_floating_window, 0, this::showOrDismissFloatingWindow)
     private val checkForUpdatesItem =
@@ -113,6 +124,9 @@ class DrawerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpViews()
+        Shizuku.addBinderReceivedListenerSticky(binderReceivedListener)
+        Shizuku.addBinderDeadListener(binderDeadListener)
+        Shizuku.addRequestPermissionResultListener(permissionResultListener)
     }
 
     private fun setUpViews() {
@@ -156,6 +170,7 @@ class DrawerFragment : Fragment() {
                 stableModeItem,
                 notificationPermissionItem,
                 foregroundServiceItem,
+                shizukuItem,
                 usageStatsPermissionItem,
 
                 DrawerMenuGroup(R.string.text_script_record),
@@ -285,6 +300,21 @@ class DrawerFragment : Fragment() {
         }
     }
 
+    fun onShizukuToggle(holder: DrawerMenuItemViewHolder) {
+        val checked = holder.getSwitchCompat().isChecked
+        if (checked) {
+            try {
+                Shell.requestPermission(REQUEST_CODE_SHIZUKU)
+            } catch (e: IllegalStateException) {
+                setChecked(shizukuItem, false)
+                GlobalAppContext.toast(e.message ?: "Unknown error")
+            }
+        } else {
+            Shell.unbindService()
+            setChecked(shizukuItem, false)
+        }
+    }
+
     private fun startForegroundService() {
         PermissionManager.requestNotification(requireContext(), ForegroundService.CHANNEL_ID) { granted ->
             if (granted) {
@@ -334,6 +364,7 @@ class DrawerFragment : Fragment() {
         setChecked(accessibilityServiceItem, AccessibilityServiceTool.isAccessibilityServiceEnabled(activity))
         setChecked(notificationPermissionItem, NotificationListenerService.instance != null)
         setChecked(usageStatsPermissionItem, PermissionManager.checkCompat(requireContext(), PACKAGE_USAGE_STATS))
+        setChecked(shizukuItem, Shizuku.pingBinder() && Shizuku.checkSelfPermission() == PERMISSION_GRANTED)
     }
 
     private fun enableAccessibilityService() {
@@ -380,6 +411,9 @@ class DrawerFragment : Fragment() {
         super.onDestroy()
         connectionStateDisposable?.dispose()
         EventBus.getDefault().unregister(this)
+        Shizuku.removeBinderReceivedListener(binderReceivedListener)
+        Shizuku.removeBinderDeadListener(binderDeadListener)
+        Shizuku.removeRequestPermissionResultListener(permissionResultListener)
     }
 
     override fun onDestroyView() {
@@ -403,5 +437,26 @@ class DrawerFragment : Fragment() {
 
     private fun isAccessibilityServiceEnabled(): Boolean {
         return AccessibilityServiceTool.isAccessibilityServiceEnabled(activity)
+    }
+
+    private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
+        setChecked(shizukuItem, Shizuku.checkSelfPermission() == PERMISSION_GRANTED)
+    }
+
+    private val binderDeadListener = Shizuku.OnBinderDeadListener {
+        setChecked(shizukuItem, false)
+    }
+
+    private val permissionResultListener = Shizuku.OnRequestPermissionResultListener { _, grantResult ->
+        if (grantResult == PERMISSION_GRANTED) {
+            Shell.bindUserService()
+            setChecked(shizukuItem, true)
+        } else {
+            setChecked(shizukuItem, false)
+        }
+    }
+
+    companion object {
+        private const val PERMISSION_GRANTED = 0
     }
 }

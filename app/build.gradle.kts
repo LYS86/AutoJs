@@ -119,4 +119,5 @@ dependencies {
     implementation(project(":automator"))
     implementation(project(":common"))
     implementation(project(":autojs"))
+    implementation(libs.bundles.shizuku)
 }

@@ -1,7 +1,7 @@
 [versions]
 compileSdk = "33"
 targetSdk = "33"
-minSdk = "21"
+minSdk = "24"
 appVersionCode = "461"
 appVersionName = "4.1.1 Alpha2"
 agp = "7.4.2"
@@ -50,6 +50,7 @@ roundedimageview = "2.3.0"
 
 splashscreen = "1.0.1"
 opencv = "4.13.0"
+shizuku = "13.1.5"
 
 [libraries]
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
@@ -101,11 +102,14 @@ roundedimageview = { group = "com.makeramen", name = "roundedimageview", version
 
 splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
+shizuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shizuku" }
+shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shizuku" }
 
 [bundles]
 retrofit = ["retrofit", "retrofit-converter-gson", "retrofit-rxjava2-adapter"]
 rxjava = ["rxjava", "rxandroid"]
 material-dialogs = ["material-dialogs-core", "material-dialogs-commons"]
+shizuku = ["shizuku-api", "shizuku-provider"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
