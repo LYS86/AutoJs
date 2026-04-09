@@ -32,6 +32,6 @@ dependencies {
 
     api(libs.kotlin.stdlib)
     api(libs.androidx.annotation)
-    api(libs.settingscompat)
+    implementation(libs.androidx.fragment)
     implementation(libs.timber)
 }

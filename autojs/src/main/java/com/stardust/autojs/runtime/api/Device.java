@@ -15,11 +15,13 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.telephony.TelephonyManager;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.stardust.autojs.R;
+import com.stardust.autojs.permission.PermissionManager;
 import com.stardust.autojs.runtime.exception.ScriptException;
 import com.stardust.pio.PFiles;
 import com.stardust.pio.UncheckedIOException;
@@ -29,8 +31,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
 import java.util.List;
-
-import ezy.assist.compat.SettingsCompat;
 
 /**
  * Created by Stardust on 2017/12/2.
@@ -287,10 +287,9 @@ public class Device {
 
 
     private void checkWriteSettingsPermission() {
-        if (SettingsCompat.canWriteSettings(mContext)) {
+        if (PermissionManager.canWriteSettings(mContext)) {
             return;
         }
-        SettingsCompat.manageWriteSettings(mContext);
         throw new SecurityException(mContext.getString(R.string.no_write_settings_permissin));
     }
 

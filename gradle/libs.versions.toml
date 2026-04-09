@@ -13,6 +13,7 @@ androidx-browser = "1.3.0"
 androidx-cardview = "1.0.0"
 androidx-annotation = "1.0.0"
 androidx-multidex = "2.0.0"
+androidx-fragment = "1.0.0"
 androidx-swiperefreshlayout = "1.1.0"
 androidx-webkit = "1.7.0"
 androidx-espresso = "3.1.1-alpha01"
@@ -46,7 +47,7 @@ multi-level-listview = "1.1"
 mutabletheme = "1.0.0"
 enhancedfloaty = "0.31"
 roundedimageview = "2.3.0"
-settingscompat = "1.1.5"
+
 splashscreen = "1.0.1"
 opencv = "4.13.0"
 
@@ -57,6 +58,7 @@ androidx-browser = { group = "androidx.browser", name = "browser", version.ref =
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "androidx-cardview" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "androidx-multidex" }
+androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "androidx-fragment" }
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "androidx-swiperefreshlayout" }
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "androidx-webkit" }
 androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso" }
@@ -96,7 +98,7 @@ multi-level-listview = { group = "com.github.hyb1996", name = "android-multi-lev
 mutabletheme = { group = "com.github.hyb1996", name = "MutableTheme", version.ref = "mutabletheme" }
 enhancedfloaty = { group = "com.github.hyb1996", name = "EnhancedFloaty", version.ref = "enhancedfloaty" }
 roundedimageview = { group = "com.makeramen", name = "roundedimageview", version.ref = "roundedimageview" }
-settingscompat = { group = "com.github.hyb1996", name = "settingscompat", version.ref = "settingscompat" }
+
 splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
 

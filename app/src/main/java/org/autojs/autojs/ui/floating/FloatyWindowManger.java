@@ -1,30 +1,22 @@
 package org.autojs.autojs.ui.floating;
 
+import static com.stardust.autojs.util.FloatingPermission.manageDrawOverlays;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.stardust.app.GlobalAppContext;
 import com.stardust.autojs.util.FloatingPermission;
 import com.stardust.enhancedfloaty.FloatyService;
 import com.stardust.enhancedfloaty.FloatyWindow;
-import com.stardust.enhancedfloaty.util.FloatingWindowPermissionUtil;
 
-import org.autojs.autojs.App;
 import org.autojs.autojs.R;
-import org.autojs.autojs.ui.floating.CircularMenu;
-
-import com.stardust.util.IntentUtil;
-
-import timber.log.Timber;
 
 import java.lang.ref.WeakReference;
 
-import ezy.assist.compat.SettingsCompat;
-
-import static com.stardust.autojs.util.FloatingPermission.manageDrawOverlays;
+import timber.log.Timber;
 
 /**
  * Created by Stardust on 2017/9/30.
@@ -36,13 +28,13 @@ public class FloatyWindowManger {
 
     public static boolean addWindow(Context context, FloatyWindow window) {
         context.startService(new Intent(context, FloatyService.class));
-        boolean hasPermission = FloatingPermission.ensurePermissionGranted(context);
         try {
             FloatyService.addWindow(window);
             return true;
             // SecurityException: https://github.com/hyb1996-guest/AutoJsIssueReport/issues/4781
         } catch (Exception e) {
             Timber.e(e);
+            boolean hasPermission = FloatingPermission.canDrawOverlays(context);
             if(hasPermission){
                 manageDrawOverlays(context);
                 GlobalAppContext.toast(R.string.text_no_floating_window_permission);
@@ -64,7 +56,7 @@ public class FloatyWindowManger {
 
     public static boolean showCircularMenu() {
         if (!FloatingPermission.canDrawOverlays(GlobalAppContext.get())) {
-            Toast.makeText(GlobalAppContext.get(), R.string.text_no_floating_window_permission, Toast.LENGTH_SHORT).show();
+            GlobalAppContext.toast(R.string.text_no_floating_window_permission);
             manageDrawOverlays(GlobalAppContext.get());
             return false;
         } else {

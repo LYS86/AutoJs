@@ -195,6 +195,7 @@ object PermissionManager {
         }
     }
 
+    @JvmStatic
     fun appDetailsIntent(context: Context): Intent {
         return Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS, "package:${context.packageName}".toUri()
@@ -311,4 +312,23 @@ object PermissionManager {
             false
         }
     }
+
+    @JvmStatic
+    fun canDrawOverlays(context: Context): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(context)
+    }
+
+    @JvmStatic
+    fun canWriteSettings(context: Context): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.System.canWrite(context)
+    }
+
+    @JvmStatic
+    fun overlaySettingsIntent(context: Context): Intent {
+        return Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
+            data = "package:${context.packageName}".toUri()
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    }
+
 }

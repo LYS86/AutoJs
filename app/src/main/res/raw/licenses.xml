@@ -90,12 +90,6 @@
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
-        <name>Settings Compat</name>
-        <copyright>Copyright 2016 czy1121</copyright>
-        <url>https://github.com/czy1121/settingscompat</url>
-        <license>Apache Software License 2.0</license>
-    </notice>
-    <notice>
         <name>Zip4j</name>
         <copyright/>
         <url>http://www.lingala.net/zip4j/</url>
