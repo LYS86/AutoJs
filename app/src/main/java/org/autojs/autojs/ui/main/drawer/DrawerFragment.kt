@@ -1,7 +1,7 @@
 package org.autojs.autojs.ui.main.drawer
 
+import android.Manifest.permission.PACKAGE_USAGE_STATS
 import android.annotation.SuppressLint
-import android.app.AppOpsManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -13,21 +13,22 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
-import com.stardust.app.isOpPermissionGranted
+import com.stardust.autojs.permission.PermissionManager
+import com.stardust.autojs.util.Browser
+import com.stardust.enhancedfloaty.FloatyService
 import com.stardust.notification.NotificationListenerService
 import com.stardust.util.IntentUtil
-import com.stardust.enhancedfloaty.FloatyService
 import com.stardust.view.accessibility.AccessibilityService
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import com.stardust.autojs.permission.PermissionManager
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.databinding.FragmentDrawerBinding
 import org.autojs.autojs.external.foreground.ForegroundService
 import org.autojs.autojs.pluginclient.DevPluginService
+import org.autojs.autojs.theme.ThemeUtils
 import org.autojs.autojs.tool.AccessibilityServiceTool
 import org.autojs.autojs.tool.Observers
 import org.autojs.autojs.tool.WifiTool
@@ -35,8 +36,6 @@ import org.autojs.autojs.ui.common.NotAskAgainDialog
 import org.autojs.autojs.ui.floating.CircularMenu
 import org.autojs.autojs.ui.floating.FloatyWindowManger
 import org.autojs.autojs.ui.settings.SettingsActivity
-import org.autojs.autojs.theme.ThemeUtils
-import com.stardust.autojs.util.Browser
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -47,23 +46,47 @@ class DrawerFragment : Fragment() {
 
     private val urlDevPlugin = "https://www.autojs.org/topic/968/"
 
-    private val connectionItem = DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote)
-    private val accessibilityServiceItem = DrawerMenuItem(R.drawable.ic_service_green, R.string.text_accessibility_service, 0, this::enableOrDisableAccessibilityService)
-    private val stableModeItem = object : DrawerMenuItem(R.drawable.ic_stable, R.string.text_stable_mode, R.string.key_stable_mode, null) {
-        override fun setChecked(checked: Boolean) {
-            super.setChecked(checked)
-            if (checked) {
-                showStableModePromptIfNeeded()
+    private val connectionItem =
+        DrawerMenuItem(R.drawable.ic_connect_to_pc, R.string.debug, 0, this::connectOrDisconnectToRemote)
+    private val accessibilityServiceItem = DrawerMenuItem(
+        R.drawable.ic_service_green,
+        R.string.text_accessibility_service,
+        0,
+        this::enableOrDisableAccessibilityService
+    )
+    private val stableModeItem =
+        object : DrawerMenuItem(R.drawable.ic_stable, R.string.text_stable_mode, R.string.key_stable_mode, null) {
+            override fun setChecked(checked: Boolean) {
+                super.setChecked(checked)
+                if (checked) {
+                    showStableModePromptIfNeeded()
+                }
             }
         }
-    }
 
-    private val notificationPermissionItem = DrawerMenuItem(R.drawable.ic_ali_notification, R.string.text_notification_permission, 0, this::goToNotificationServiceSettings)
-    private val usageStatsPermissionItem = DrawerMenuItem(R.drawable.ic_ali_notification, R.string.text_usage_stats_permission, 0, this::goToUsageStatsSettings)
-    private val foregroundServiceItem = DrawerMenuItem(R.drawable.ic_service_green, R.string.text_foreground_service, R.string.key_foreground_servie, this::toggleForegroundService)
+    private val notificationPermissionItem = DrawerMenuItem(
+        R.drawable.ic_ali_notification,
+        R.string.text_notification_permission,
+        0,
+        this::goToNotificationServiceSettings
+    )
+    private val usageStatsPermissionItem = DrawerMenuItem(
+        R.drawable.ic_ali_notification,
+        R.string.text_usage_stats_permission,
+        0,
+        this::goToUsageStatsSettings
+    )
+    private val foregroundServiceItem = DrawerMenuItem(
+        R.drawable.ic_service_green,
+        R.string.text_foreground_service,
+        R.string.key_foreground_servie,
+        this::toggleForegroundService
+    )
 
-    private val floatingWindowItem = DrawerMenuItem(R.drawable.ic_robot_64, R.string.text_floating_window, 0, this::showOrDismissFloatingWindow)
-    private val checkForUpdatesItem = DrawerMenuItem(R.drawable.ic_check_for_updates, R.string.text_check_for_updates, this::checkForUpdates)
+    private val floatingWindowItem =
+        DrawerMenuItem(R.drawable.ic_robot_64, R.string.text_floating_window, 0, this::showOrDismissFloatingWindow)
+    private val checkForUpdatesItem =
+        DrawerMenuItem(R.drawable.ic_check_for_updates, R.string.text_check_for_updates, this::checkForUpdates)
 
     private lateinit var drawerMenuAdapter: DrawerMenuAdapter
     private var connectionStateDisposable: io.reactivex.disposables.Disposable? = null
@@ -186,23 +209,27 @@ class DrawerFragment : Fragment() {
     }
 
     fun goToUsageStatsSettings(holder: DrawerMenuItemViewHolder) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            return
-        }
-        val enabled = requireContext().isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS)
         val checked = holder.getSwitchCompat().isChecked
-        if (checked && enabled.not()) {
-            if (NotAskAgainDialog.Builder(requireContext(), "DrawerFragment.usage_stats")
-                .title(R.string.text_usage_stats_permission)
-                .content(R.string.description_usage_stats_permission)
-                .positiveText(R.string.ok)
-                .dismissListener { IntentUtil.requestAppUsagePermission(requireContext()) }
-                .show() == null) {
-                IntentUtil.requestAppUsagePermission(requireContext())
+        val enabled = PermissionManager.checkCompat(requireContext(), PACKAGE_USAGE_STATS)
+        when {
+            checked && enabled.not() -> {
+                NotAskAgainDialog.Builder(requireContext(), "DrawerFragment.usage_stats")
+                    .title(R.string.text_usage_stats_permission)
+                    .content(R.string.description_usage_stats_permission)
+                    .positiveText(R.string.ok)
+                    .dismissListener { requestUsageStatsPermission() }
+                    .show() ?: run { requestUsageStatsPermission() }
+            }
+
+            else -> {
+                requestUsageStatsPermission()
             }
         }
-        if (checked.not() && enabled) {
-            IntentUtil.requestAppUsagePermission(requireContext())
+    }
+
+    private fun requestUsageStatsPermission() {
+        PermissionManager.openSettings(requireContext(), PACKAGE_USAGE_STATS) { isGranted ->
+            setChecked(usageStatsPermissionItem, isGranted)
         }
     }
 
@@ -289,7 +316,8 @@ class DrawerFragment : Fragment() {
 
     private fun onConnectException(e: Throwable) {
         setChecked(connectionItem, false)
-        Toast.makeText(requireContext(), getString(R.string.error_connect_to_remote, e.message), Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), getString(R.string.error_connect_to_remote, e.message), Toast.LENGTH_LONG)
+            .show()
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -304,12 +332,8 @@ class DrawerFragment : Fragment() {
 
     private fun syncSwitchState() {
         setChecked(accessibilityServiceItem, AccessibilityServiceTool.isAccessibilityServiceEnabled(activity))
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            setChecked(notificationPermissionItem, NotificationListenerService.instance != null)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setChecked(usageStatsPermissionItem, requireContext().isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS))
-        }
+        setChecked(notificationPermissionItem, NotificationListenerService.instance != null)
+        setChecked(usageStatsPermissionItem, PermissionManager.checkCompat(requireContext(), PACKAGE_USAGE_STATS))
     }
 
     private fun enableAccessibilityService() {
@@ -328,7 +352,11 @@ class DrawerFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { succeed ->
                 if (succeed.not()) {
-                    Toast.makeText(context, R.string.text_enable_accessibitliy_service_by_root_failed, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        R.string.text_enable_accessibitliy_service_by_root_failed,
+                        Toast.LENGTH_SHORT
+                    ).show()
                     AccessibilityServiceTool.goToAccessibilitySetting()
                 }
                 setProgress(accessibilityServiceItem, false)

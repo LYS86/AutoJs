@@ -19,8 +19,8 @@ class PermissionActivity : AppCompatActivity() {
                 setupMediaProjectionLauncher()
             }
 
-            intent.hasExtra(EXTRA_SPECIAL_PERMISSION) -> {
-                val permission = intent.getStringExtra(EXTRA_SPECIAL_PERMISSION)!!
+            intent.hasExtra(EXTRA_SETTINGS_PERMISSION) -> {
+                val permission = intent.getStringExtra(EXTRA_SETTINGS_PERMISSION)!!
                 val channelId = intent.getStringExtra(EXTRA_CHANNEL_ID)!!
                 setupSpecialLauncher(permission, channelId)
             }
@@ -64,7 +64,7 @@ class PermissionActivity : AppCompatActivity() {
 
                 else -> manager.checkCompat(this, permission)
             }
-            manager.onSpecialResult(granted)
+            manager.onSettingsResult(granted)
             finish()
         }
         val settingsIntent = manager.settingsIntent(this, permission, channelId)
@@ -89,7 +89,7 @@ class PermissionActivity : AppCompatActivity() {
         const val EXTRA_CHANNEL_ID = "channelId"
         const val EXTRA_PERMISSION = "permission"
         const val EXTRA_PERMISSIONS = "permissions"
-        const val EXTRA_SPECIAL_PERMISSION = "special_permission"
+        const val EXTRA_SETTINGS_PERMISSION = "settings_permission"
         const val EXTRA_MEDIA_PROJECTION = "media_projection"
     }
 }

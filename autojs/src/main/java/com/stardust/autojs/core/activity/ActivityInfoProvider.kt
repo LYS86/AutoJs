@@ -1,19 +1,18 @@
 package com.stardust.autojs.core.activity
 
+import android.Manifest.permission.PACKAGE_USAGE_STATS
 import android.accessibilityservice.AccessibilityService
-import android.app.AppOpsManager
 import android.app.usage.UsageStatsManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.SystemClock
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityWindowInfo
 import androidx.annotation.RequiresApi
-import com.stardust.app.isOpPermissionGranted
 import com.stardust.autojs.core.util.Shell
+import com.stardust.autojs.permission.PermissionManager
 import com.stardust.view.accessibility.AccessibilityDelegate
 import java.util.regex.Pattern
 
@@ -27,6 +26,7 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
 
     @Volatile
     private var mLatestPackage: String = ""
+
     @Volatile
     private var mLatestActivity: String = ""
     private var mLatestComponentFromShell: ComponentName? = null
@@ -90,7 +90,11 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
     }
 
     fun getLatestPackageByUsageStatsIfGranted(): String {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 && context.isOpPermissionGranted(AppOpsManager.OPSTR_GET_USAGE_STATS)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 && PermissionManager.checkCompat(
+                context,
+                PACKAGE_USAGE_STATS
+            )
+        ) {
             return getLatestPackageByUsageStats()
         }
         return mLatestPackage
@@ -119,7 +123,6 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
         val shell = Shell(true)
         shell.setCallback(object : Shell.Callback {
             override fun onOutput(str: String) {
-
             }
 
             override fun onNewLine(line: String) {
@@ -130,7 +133,6 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
             }
 
             override fun onInterrupted(e: InterruptedException) {
-
             }
         })
         shell.exec(DUMP_WINDOW_COMMAND.format(dumpInterval))
@@ -141,7 +143,8 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
     fun getLatestPackageByUsageStats(): String {
         val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val current = System.currentTimeMillis()
-        val usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, current - 60 * 60 * 1000, current)
+        val usageStats =
+            usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, current - 60 * 60 * 1000, current)
         return if (usageStats.isEmpty()) {
             mLatestPackage
         } else {
@@ -150,7 +153,6 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
             }
             usageStats.last().packageName
         }
-
     }
 
     private fun setLatestComponent(latestPackage: CharSequence?, latestClass: CharSequence?) {

@@ -1,21 +1,25 @@
 package com.stardust.autojs.permission
 
-import android.Manifest
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
+import android.Manifest.permission.PACKAGE_USAGE_STATS
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
+import android.os.Process
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.stardust.autojs.permission.PermissionManager.GET_INSTALLED_APPS
+import timber.log.Timber
 
 object PermissionManager {
 
@@ -26,7 +30,7 @@ object PermissionManager {
 
     internal var pendingCallback: ((Boolean) -> Unit) = {}
     internal var pendingMultipleCallback: ((Map<String, Boolean>) -> Unit) = {}
-    internal var pendingSpecialCallback: ((Boolean) -> Unit) = {}
+    internal var pendingSettingsCallback: ((Boolean) -> Unit) = {}
     internal var pendingMediaProjectionCallback: ((Intent?) -> Unit) = {}
 
     @JvmStatic
@@ -34,6 +38,7 @@ object PermissionManager {
         return when (permission) {
             MANAGE_EXTERNAL_STORAGE -> hasStorage(context)
             POST_NOTIFICATIONS -> NotificationManagerCompat.from(context).areNotificationsEnabled()
+            PACKAGE_USAGE_STATS -> checkUsageStatsOp(context)
             else -> ContextCompat.checkSelfPermission(
                 context, permission
             ) == PackageManager.PERMISSION_GRANTED
@@ -50,7 +55,6 @@ object PermissionManager {
         if (channelId.isNotBlank()) return checkNotificationChannel(context, channelId)
         return true
     }
-
 
     @JvmStatic
     fun getPermissionsNeedToRequest(context: Context, permissions: Array<String>): Array<String> {
@@ -91,25 +95,16 @@ object PermissionManager {
         context.startActivity(runtimeMultipleIntent(context, needRequest))
     }
 
-
     /**
-     * 申请特殊权限（跳转到系统设置页面）
+     * 打开特殊权限的设置页面
      * @param permission 权限名称
      * @param channelId 通知渠道ID（仅通知权限有效）
      */
-    fun requestSpecial(
+    fun openSettings(
         context: Context, permission: String, channelId: String = "", callback: (Boolean) -> Unit = {}
     ) {
-        val hasPermission = when (permission) {
-            POST_NOTIFICATIONS -> checkNotificationCompat(context, channelId)
-            else -> checkCompat(context, permission)
-        }
-        if (hasPermission) {
-            callback(true)
-            return
-        }
-        pendingSpecialCallback = callback
-        context.startActivity(specialIntent(context, permission, channelId))
+        pendingSettingsCallback = callback
+        context.startActivity(settingsLaunchIntent(context, permission, channelId))
     }
 
     private fun runtimeIntent(context: Context, permission: String): Intent {
@@ -124,10 +119,10 @@ object PermissionManager {
         ).putExtra(PermissionActivity.EXTRA_PERMISSIONS, permissions)
     }
 
-    private fun specialIntent(context: Context, permission: String, channelId: String): Intent {
+    private fun settingsLaunchIntent(context: Context, permission: String, channelId: String): Intent {
         return Intent(
             context, PermissionActivity::class.java
-        ).putExtra(PermissionActivity.EXTRA_SPECIAL_PERMISSION, permission)
+        ).putExtra(PermissionActivity.EXTRA_SETTINGS_PERMISSION, permission)
             .putExtra(PermissionActivity.EXTRA_CHANNEL_ID, channelId)
     }
 
@@ -141,9 +136,9 @@ object PermissionManager {
         pendingMultipleCallback = {}
     }
 
-    internal fun onSpecialResult(granted: Boolean) {
-        pendingSpecialCallback.invoke(granted)
-        pendingSpecialCallback = {}
+    internal fun onSettingsResult(granted: Boolean) {
+        pendingSettingsCallback.invoke(granted)
+        pendingSettingsCallback = {}
     }
 
     internal fun onMediaProjectionResult(data: Intent?) {
@@ -157,14 +152,13 @@ object PermissionManager {
     }
 
     private fun mediaProjectionIntent(context: Context): Intent {
-        val intent = Intent(context, PermissionActivity::class.java)
-            .putExtra(PermissionActivity.EXTRA_MEDIA_PROJECTION, true)
+        val intent =
+            Intent(context, PermissionActivity::class.java).putExtra(PermissionActivity.EXTRA_MEDIA_PROJECTION, true)
         if (context !is Activity) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         return intent
     }
-
 
     fun settingsIntent(context: Context, permission: String, channelId: String = ""): Intent {
         val uri = "package:${context.packageName}".toUri()
@@ -174,6 +168,7 @@ object PermissionManager {
             )
 
             POST_NOTIFICATIONS -> notificationIntent(context, channelId)
+            PACKAGE_USAGE_STATS -> Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
             else -> appSettingsIntent(context)
         }
     }
@@ -215,13 +210,13 @@ object PermissionManager {
     ) {
         when {
             !checkCompat(context, permission) -> {
-                requestSpecial(context, permission, "") {
+                openSettings(context, permission, "") {
                     requestNotificationLegacy(context, permission, channelId, callback)
                 }
             }
 
             channelId.isNotBlank() && !checkNotificationChannel(context, channelId) -> {
-                requestSpecial(context, permission, channelId, callback)
+                openSettings(context, permission, channelId, callback)
             }
 
             else -> {
@@ -243,7 +238,7 @@ object PermissionManager {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
                 requestRuntime(context, permission) { isGranted ->
                     if (!isGranted) return@requestRuntime callback(false)
-                    requestSpecial(context, permission, channelId, callback)
+                    openSettings(context, permission, channelId, callback)
                 }
             }
 
@@ -288,7 +283,7 @@ object PermissionManager {
     private fun hasStorage(context: Context): Boolean {
         return when {
             Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> checkCompat(
-                context, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                context, WRITE_EXTERNAL_STORAGE
             )
 
             else -> Environment.isExternalStorageManager()
@@ -323,6 +318,33 @@ object PermissionManager {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.System.canWrite(context)
     }
 
+    private fun checkUsageStatsOp(context: Context): Boolean {
+        Timber.tag("DrawerFragment").d("checkUsageStatsOp: ${context.packageName}")
+        val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val mode = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName)
+            }
+
+            else -> {
+                @Suppress("DEPRECATION")
+                appOps.checkOpNoThrow(
+                    AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName
+                )
+            }
+        }
+
+        return when {
+            mode == AppOpsManager.MODE_DEFAULT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
+                context.checkCallingOrSelfPermission(PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED
+            }
+
+            else -> {
+                mode == AppOpsManager.MODE_ALLOWED
+            }
+        }
+    }
+
     @JvmStatic
     fun overlaySettingsIntent(context: Context): Intent {
         return Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
@@ -330,5 +352,4 @@ object PermissionManager {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
     }
-
 }

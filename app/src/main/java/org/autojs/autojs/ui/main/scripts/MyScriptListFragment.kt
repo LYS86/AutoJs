@@ -96,11 +96,10 @@ class MyScriptListFragment : ViewPagerFragment, FloatingActionMenu.OnFloatingAct
                 if (granted) Explorers.workspace().refreshAll()
             }
         } else {
-            PermissionManager.requestSpecial(
+            PermissionManager.openSettings(
                 requireContext(),
                 MANAGE_EXTERNAL_STORAGE
             ) { granted ->
-                Timber.d("requestSpecial: $granted")
                 if (granted) Explorers.workspace().refreshAll()
             }
         }

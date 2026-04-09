@@ -99,7 +99,7 @@ class LogActivity : androidx.appcompat.app.AppCompatActivity() {
                 onComplete()
             }
         } else {
-            PermissionManager.requestSpecial(
+            PermissionManager.openSettings(
                 this, Manifest.permission.MANAGE_EXTERNAL_STORAGE
             ) { _ ->
                 onComplete()

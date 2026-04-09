@@ -1,21 +1,20 @@
 package com.stardust.autojs.core.accessibility;
 
-import android.app.ActivityManager;
-import android.app.AppOpsManager;
+import static android.Manifest.permission.PACKAGE_USAGE_STATS;
+
 import android.content.Context;
 import android.os.Build;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityWindowInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import android.view.accessibility.AccessibilityNodeInfo;
-import android.view.accessibility.AccessibilityWindowInfo;
-
-import com.stardust.app.AppOpsKt;
+import com.stardust.autojs.core.activity.ActivityInfoProvider;
+import com.stardust.autojs.permission.PermissionManager;
 import com.stardust.autojs.runtime.accessibility.AccessibilityConfig;
 import com.stardust.util.IntentUtil;
 import com.stardust.util.UiHandler;
-import com.stardust.autojs.core.activity.ActivityInfoProvider;
 import com.stardust.view.accessibility.AccessibilityNotificationObserver;
 import com.stardust.view.accessibility.AccessibilityService;
 
@@ -134,7 +133,7 @@ public abstract class AccessibilityBridge {
     public void setFlags(int flags) {
         mFlags = flags;
         if ((mFlags & FLAG_USE_USAGE_STATS) != 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (!AppOpsKt.isOpPermissionGranted(mContext, AppOpsManager.OPSTR_GET_USAGE_STATS)) {
+            if (!PermissionManager.checkCompat(mContext, PACKAGE_USAGE_STATS)) {
                 IntentUtil.requestAppUsagePermission(mContext);
                 throw new SecurityException("没有\"查看使用情况\"权限");
             }
