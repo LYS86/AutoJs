@@ -3,11 +3,12 @@ package org.autojs.autojs;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 
 import com.stardust.app.GlobalAppContext;
 import com.stardust.autojs.runtime.accessibility.AccessibilityConfig;
 import com.stardust.theme.ThemeColorManager;
+
+import org.autojs.autojs.PrefV2;
 
 import org.autojs.autojs.autojs.key.GlobalKeyObserver;
 
@@ -43,7 +44,7 @@ public class Pref {
     }
 
     private static SharedPreferences def() {
-        return PreferenceManager.getDefaultSharedPreferences(GlobalAppContext.get());
+        return PrefV2.prefs;
     }
 
     private static boolean getDisposableBoolean(String key, boolean defaultValue) {

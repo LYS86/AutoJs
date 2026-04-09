@@ -7,8 +7,8 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 object PrefV2 {
+    @JvmField
     var prefs: SharedPreferences = GlobalAppContext.get().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
-        private set
 
     fun string(key: String, defaultValue: String = ""): ReadWriteProperty<Any?, String> =
         PreferenceDelegate(key, defaultValue,
