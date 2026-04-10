@@ -1,11 +1,14 @@
 package com.stardust.autojs.permission
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.stardust.autojs.core.image.capture.MediaProjectionService
+import com.stardust.autojs.util.AccessibilityServiceUtils
 
 class PermissionActivity : AppCompatActivity() {
 
@@ -62,12 +65,18 @@ class PermissionActivity : AppCompatActivity() {
                     manager.checkNotificationCompat(this, channelId)
                 }
 
+                AccessibilityServiceUtils.ACCESSIBILITY -> AccessibilityServiceUtils.isEnabled()
+
                 else -> manager.checkCompat(this, permission)
             }
             manager.onSettingsResult(granted)
             finish()
         }
-        val settingsIntent = manager.settingsIntent(this, permission, channelId)
+        val settingsIntent = when (permission) {
+            AccessibilityServiceUtils.ACCESSIBILITY -> Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            else -> manager.settingsIntent(this, permission, channelId)
+        }
+
         launcher.launch(settingsIntent)
     }
 

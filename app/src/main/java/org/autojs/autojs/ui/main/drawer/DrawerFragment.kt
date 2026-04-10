@@ -1,7 +1,6 @@
 package org.autojs.autojs.ui.main.drawer
 
 import android.Manifest.permission.PACKAGE_USAGE_STATS
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -11,20 +10,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
+import com.stardust.app.GlobalAppContext
 import com.stardust.autojs.permission.PermissionManager
+import com.stardust.autojs.shizuku.Shell
+import com.stardust.autojs.util.AccessibilityServiceUtils
 import com.stardust.autojs.util.Browser
 import com.stardust.enhancedfloaty.FloatyService
 import com.stardust.notification.NotificationListenerService
 import com.stardust.util.IntentUtil
 import com.stardust.view.accessibility.AccessibilityService
-import com.stardust.app.GlobalAppContext
-import com.stardust.autojs.shizuku.Shell
-import rikka.shizuku.Shizuku
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import org.autojs.autojs.Pref
 import org.autojs.autojs.R
 import org.autojs.autojs.autojs.AutoJs
@@ -32,7 +31,6 @@ import org.autojs.autojs.databinding.FragmentDrawerBinding
 import org.autojs.autojs.external.foreground.ForegroundService
 import org.autojs.autojs.pluginclient.DevPluginService
 import org.autojs.autojs.theme.ThemeUtils
-import org.autojs.autojs.tool.AccessibilityServiceTool
 import org.autojs.autojs.tool.Observers
 import org.autojs.autojs.tool.WifiTool
 import org.autojs.autojs.ui.common.NotAskAgainDialog
@@ -41,6 +39,7 @@ import org.autojs.autojs.ui.floating.FloatyWindowManger
 import org.autojs.autojs.ui.settings.SettingsActivity
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import rikka.shizuku.Shizuku
 
 class DrawerFragment : Fragment() {
 
@@ -201,14 +200,20 @@ class DrawerFragment : Fragment() {
     }
 
     fun enableOrDisableAccessibilityService(holder: DrawerMenuItemViewHolder) {
-        val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
-        val checked = holder.getSwitchCompat().isChecked
-        if (checked && isAccessibilityServiceEnabled.not()) {
-            enableAccessibilityService()
-        } else if (checked.not() && isAccessibilityServiceEnabled) {
-            if (AccessibilityService.disable().not()) {
-                AccessibilityServiceTool.goToAccessibilitySetting()
+        lifecycleScope.launch {
+            val checked = holder.getSwitchCompat().isChecked
+            val tool = AccessibilityServiceUtils
+            when {
+                checked && tool.isEnabled().not() -> tool.enableServiceCompat()
+                checked.not() && tool.isEnabled() -> {
+                    val isSuccess = AccessibilityService.disable()
+                    if (isSuccess) return@launch
+                    tool.openSetting(requireContext()) { enabled ->
+                        setChecked(accessibilityServiceItem, enabled)
+                    }
+                }
             }
+
         }
     }
 
@@ -256,7 +261,7 @@ class DrawerFragment : Fragment() {
             setChecked(floatingWindowItem, success)
             Pref.setFloatingMenuShown(success)
             if (success) {
-                enableAccessibilityServiceByRootIfNeeded()
+                enableAccessibilityService()
             }
         } else if (checked.not() && isFloatingWindowShowing) {
             FloatyWindowManger.hideCircularMenu()
@@ -267,17 +272,6 @@ class DrawerFragment : Fragment() {
     @Suppress("UNUSED_PARAMETER")
     fun openThemeColorSettings(_holder: DrawerMenuItemViewHolder) {
         activity?.let { SettingsActivity.selectThemeColor(it) }
-    }
-
-    @SuppressLint("CheckResult")
-    private fun enableAccessibilityServiceByRootIfNeeded() {
-        Observable.fromCallable { Pref.shouldEnableAccessibilityServiceByRoot() && isAccessibilityServiceEnabled().not() }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { needed ->
-                if (needed) {
-                    enableAccessibilityServiceByRoot()
-                }
-            }
     }
 
     fun connectOrDisconnectToRemote(holder: DrawerMenuItemViewHolder) {
@@ -361,37 +355,23 @@ class DrawerFragment : Fragment() {
     }
 
     private fun syncSwitchState() {
-        setChecked(accessibilityServiceItem, AccessibilityServiceTool.isAccessibilityServiceEnabled(activity))
+        setChecked(accessibilityServiceItem, checkService())
         setChecked(notificationPermissionItem, NotificationListenerService.instance != null)
         setChecked(usageStatsPermissionItem, PermissionManager.checkCompat(requireContext(), PACKAGE_USAGE_STATS))
         setChecked(shizukuItem, Shizuku.pingBinder() && Shizuku.checkSelfPermission() == PERMISSION_GRANTED)
     }
 
     private fun enableAccessibilityService() {
-        if (Pref.shouldEnableAccessibilityServiceByRoot().not()) {
-            AccessibilityServiceTool.goToAccessibilitySetting()
+        val shouldEnable = AccessibilityServiceUtils.byRoot
+        val serviceRunning = checkService()
+        if (shouldEnable.not() || serviceRunning) {
             return
         }
-        enableAccessibilityServiceByRoot()
-    }
-
-    @SuppressLint("CheckResult")
-    private fun enableAccessibilityServiceByRoot() {
         setProgress(accessibilityServiceItem, true)
-        Observable.fromCallable { AccessibilityServiceTool.enableAccessibilityServiceByRootAndWaitFor(4000) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { succeed ->
-                if (succeed.not()) {
-                    Toast.makeText(
-                        context,
-                        R.string.text_enable_accessibitliy_service_by_root_failed,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    AccessibilityServiceTool.goToAccessibilitySetting()
-                }
-                setProgress(accessibilityServiceItem, false)
-            }
+        lifecycleScope.launch {
+            AccessibilityServiceUtils.enableServiceCompat()
+            setProgress(accessibilityServiceItem, false)
+        }
     }
 
     @Subscribe
@@ -435,8 +415,8 @@ class DrawerFragment : Fragment() {
         drawerMenuAdapter.notifyItemChanged(item)
     }
 
-    private fun isAccessibilityServiceEnabled(): Boolean {
-        return AccessibilityServiceTool.isAccessibilityServiceEnabled(activity)
+    private fun checkService(): Boolean {
+        return AccessibilityServiceUtils.isEnabled()
     }
 
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
