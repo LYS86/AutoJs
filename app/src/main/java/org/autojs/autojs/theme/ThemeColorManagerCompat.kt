@@ -3,7 +3,7 @@ package org.autojs.autojs.theme
 import com.stardust.app.GlobalAppContext
 import com.stardust.theme.ThemeColor
 import com.stardust.theme.ThemeColorManager
-import org.autojs.autojs.PrefV2
+import com.stardust.autojs.core.pref.PrefV2
 import org.autojs.autojs.R
 
 object ThemeColorManagerCompat {

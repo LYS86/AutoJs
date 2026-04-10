@@ -6,7 +6,7 @@ import com.stardust.pio.UncheckedIOException
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import org.autojs.autojs.PrefV2
+import com.stardust.autojs.core.pref.PrefV2
 import org.autojs.autojs.theme.ThemeUtils
 import timber.log.Timber
 import java.io.IOException

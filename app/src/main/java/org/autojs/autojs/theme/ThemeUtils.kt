@@ -7,7 +7,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import com.stardust.app.GlobalAppContext
-import org.autojs.autojs.PrefV2
+import com.stardust.autojs.core.pref.PrefV2
 import org.autojs.autojs.R
 import org.autojs.autojs.theme.dialog.MaterialAlertDialog
 

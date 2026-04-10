@@ -1,4 +1,4 @@
-package org.autojs.autojs
+package com.stardust.autojs.core.pref
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -11,31 +11,36 @@ object PrefV2 {
     var prefs: SharedPreferences = GlobalAppContext.get().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
 
     fun string(key: String, defaultValue: String = ""): ReadWriteProperty<Any?, String> =
-        PreferenceDelegate(key, defaultValue,
+        PreferenceDelegate(
+            key, defaultValue,
             { k, v -> prefs.getString(k, v)!! },
             { k, v -> prefs.edit().putString(k, v) }
         )
 
     fun int(key: String, defaultValue: Int = 0): ReadWriteProperty<Any?, Int> =
-        PreferenceDelegate(key, defaultValue,
+        PreferenceDelegate(
+            key, defaultValue,
             { k, v -> prefs.getInt(k, v) },
             { k, v -> prefs.edit().putInt(k, v) }
         )
 
     fun boolean(key: String, defaultValue: Boolean = false): ReadWriteProperty<Any?, Boolean> =
-        PreferenceDelegate(key, defaultValue,
+        PreferenceDelegate(
+            key, defaultValue,
             { k, v -> prefs.getBoolean(k, v) },
             { k, v -> prefs.edit().putBoolean(k, v) }
         )
 
     fun long(key: String, defaultValue: Long = 0L): ReadWriteProperty<Any?, Long> =
-        PreferenceDelegate(key, defaultValue,
+        PreferenceDelegate(
+            key, defaultValue,
             { k, v -> prefs.getLong(k, v) },
             { k, v -> prefs.edit().putLong(k, v) }
         )
 
     fun float(key: String, defaultValue: Float = 0f): ReadWriteProperty<Any?, Float> =
-        PreferenceDelegate(key, defaultValue,
+        PreferenceDelegate(
+            key, defaultValue,
             { k, v -> prefs.getFloat(k, v) },
             { k, v -> prefs.edit().putFloat(k, v) }
         )

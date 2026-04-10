@@ -5,10 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 
 import com.stardust.app.GlobalAppContext;
+import com.stardust.autojs.core.pref.PrefV2;
 import com.stardust.autojs.runtime.accessibility.AccessibilityConfig;
-import com.stardust.theme.ThemeColorManager;
-
-import org.autojs.autojs.PrefV2;
 
 import org.autojs.autojs.autojs.key.GlobalKeyObserver;
 
