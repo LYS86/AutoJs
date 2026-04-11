@@ -27,6 +27,9 @@ android {
     lint {
         abortOnError = false
     }
+    buildFeatures {
+        aidl = true
+    }
 }
 
 dependencies {
