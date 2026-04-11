@@ -11,3 +11,4 @@
 **/build/
 !**/src/**/build/
 **/.gradle/
+/.kotlin/

@@ -1,5 +1,5 @@
 [versions]
-compileSdk = "33"
+compileSdk = "36"
 targetSdk = "33"
 minSdk = "24"
 appVersionCode = "461"
@@ -51,6 +51,7 @@ roundedimageview = "2.3.0"
 splashscreen = "1.0.1"
 opencv = "4.13.0"
 shizuku = "13.1.5"
+compose-bom = "2026.03.01"
 
 [libraries]
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
@@ -105,6 +106,11 @@ opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
 shizuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shizuku" }
 shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shizuku" }
 
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+
 [bundles]
 retrofit = ["retrofit", "retrofit-converter-gson", "retrofit-rxjava2-adapter"]
 rxjava = ["rxjava", "rxandroid"]
@@ -116,3 +122,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
