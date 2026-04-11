@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 android {
     compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "com.stardust.automator"
@@ -10,11 +14,6 @@ android {
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     buildTypes {
@@ -26,6 +25,10 @@ android {
 
     lint {
         abortOnError = false
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 

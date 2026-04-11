@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 android {
     compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "com.stardust"
@@ -21,6 +25,10 @@ android {
 
     lint {
         abortOnError = false
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 

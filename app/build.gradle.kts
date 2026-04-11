@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 android {
     compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "org.autojs.autojs"
@@ -31,14 +35,9 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-        encoding = "utf-8"
-    }
-
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     configurations.all {

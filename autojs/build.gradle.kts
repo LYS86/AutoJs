@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 android {
     compileSdk = libs.versions.compileSdk.get().toInt()
     namespace = "com.stardust.autojs"
@@ -19,16 +23,12 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
     lint {
         abortOnError = false
     }
     buildFeatures {
         aidl = true
+        buildConfig = true
     }
 }
 
