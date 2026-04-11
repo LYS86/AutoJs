@@ -159,7 +159,7 @@ class AppUtils @JvmOverloads constructor(
     val versionName: String
         get() = try {
             val packageInfo = getPackageInfo()
-            packageInfo.versionName
+            packageInfo.versionName ?: "unknown"
         } catch (_: PackageManager.NameNotFoundException) {
             "unknown"
         }
