@@ -76,11 +76,6 @@ public class MainThreadProxy {
         mThread.stop();
     }
 
-    @Deprecated
-    public void stop(Throwable obj) {
-        mThread.stop(obj);
-    }
-
     public void interrupt() {
         mThread.interrupt();
     }
@@ -93,23 +88,8 @@ public class MainThreadProxy {
         return mThread.isInterrupted();
     }
 
-    @Deprecated
-    public void destroy() {
-        mThread.destroy();
-    }
-
     public boolean isAlive() {
         return mThread.isAlive();
-    }
-
-    @Deprecated
-    public void suspend() {
-        mThread.suspend();
-    }
-
-    @Deprecated
-    public void resume() {
-        mThread.resume();
     }
 
     public void setPriority(int newPriority) {
@@ -138,11 +118,6 @@ public class MainThreadProxy {
 
     public static int enumerate(Thread[] tarray) {
         return Thread.enumerate(tarray);
-    }
-
-    @Deprecated
-    public int countStackFrames() {
-        return mThread.countStackFrames();
     }
 
     public void join(long millis) throws InterruptedException {
