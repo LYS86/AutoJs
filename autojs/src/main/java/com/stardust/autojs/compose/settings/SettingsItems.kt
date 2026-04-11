@@ -38,7 +38,7 @@ fun SettingsCategory(
         color = MaterialTheme.colorScheme.primary,
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)
+            .padding(top = 16.dp, bottom = 8.dp)
     )
 }
 
@@ -67,7 +67,7 @@ fun SettingsItem(
                     onClick?.invoke()
                 }
             }
-            .padding(horizontal = 16.dp, vertical = 4.dp)) {
+            .padding(vertical = 4.dp)) {
         if (iconRes != null) {
             Icon(
                 painter = painterResource(id = iconRes),

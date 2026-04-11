@@ -4,6 +4,7 @@ targetSdk = "33"
 minSdk = "24"
 appVersionCode = "461"
 appVersionName = "4.1.1 Alpha2"
+activityCompose = "1.10.1"
 agp = "8.13.0"
 kotlin = "2.3.20"
 coroutines = "1.6.4"
@@ -54,6 +55,7 @@ shizuku = "13.1.5"
 compose-bom = "2026.03.01"
 
 [libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
@@ -110,6 +112,7 @@ compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = 
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-ui = { module = "androidx.compose.ui:ui" }
 
 [bundles]
 retrofit = ["retrofit", "retrofit-converter-gson", "retrofit-rxjava2-adapter"]

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
@@ -24,6 +25,7 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+        compose = true
     }
 
     splits {
@@ -56,6 +58,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso) {
         exclude(group = "com.android.support", module = "support-annotations")
     }
+    debugImplementation(libs.compose.ui.tooling)
 
     testImplementation(libs.junit)
 
@@ -65,4 +68,9 @@ dependencies {
     implementation(libs.splashscreen)
     implementation(libs.timber)
     implementation(libs.material)
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.material3)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.compose.ui)
 }
