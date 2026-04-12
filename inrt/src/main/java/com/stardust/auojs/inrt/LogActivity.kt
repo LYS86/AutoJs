@@ -1,116 +1,114 @@
 package com.stardust.auojs.inrt
 
-import android.Manifest
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.util.Log
+import android.util.SparseArray
 import android.view.View
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Stop
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.snackbar.Snackbar
 import com.stardust.auojs.inrt.autojs.AutoJs
-import com.stardust.auojs.inrt.databinding.ActivityMainBinding
 import com.stardust.auojs.inrt.launch.GlobalProjectLauncher
+import com.stardust.autojs.R.color
+import com.stardust.autojs.compose.theme.AppTheme
 import com.stardust.autojs.core.console.ConsoleImpl
-import com.stardust.autojs.permission.PermissionManager
+import com.stardust.autojs.core.console.ConsoleView
+import com.stardust.autojs.engine.ScriptEngine
+import com.stardust.autojs.engine.ScriptEngineManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class LogActivity : androidx.appcompat.app.AppCompatActivity() {
+class LogActivity : ComponentActivity() {
 
-    private lateinit var binding: ActivityMainBinding
-    private var isScriptRunning = false
-    private var runMenuItem: MenuItem? = null
+    private var isScriptRunning by mutableStateOf(false)
+    private var snackbarMessage by mutableStateOf<String?>(null)
 
+    private val engineLifecycleCallback = object : ScriptEngineManager.EngineLifecycleCallback {
+        override fun onEngineCreate(engine: ScriptEngine<*>) {
+            isScriptRunning = true
+        }
+
+        override fun onEngineRemove(engine: ScriptEngine<*>) {
+            isScriptRunning = AutoJs.instance.scriptEngineManager.engines.isNotEmpty()
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        setupView()
-        requestPermissionsAndLaunch()
-    }
-
-    private fun setupView() {
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        
-        binding.toolbar.inflateMenu(R.menu.menu_main)
-        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-            onMenuItemClick(menuItem)
-            true
-        }
-        runMenuItem = binding.toolbar.menu.findItem(R.id.action_run)
-        
-        binding.console.setConsole(AutoJs.instance.globalConsole)
-        binding.console.findViewById<View>(R.id.input_container).visibility = View.GONE
-    }
-
-    private fun onMenuItemClick(menuItem: MenuItem) {
-        when (menuItem.itemId) {
-            R.id.action_run -> {
-                if (isScriptRunning) {
-                    stopScript()
-                } else {
-                    launchScript()
+        setContent {
+            AppTheme {
+                val snackbarHostState = remember { SnackbarHostState() }
+                LaunchedEffect(snackbarMessage) {
+                    snackbarMessage?.let { message ->
+                        snackbarHostState.showSnackbar(message)
+                        snackbarMessage = null
+                    }
                 }
-            }
-            R.id.action_clear -> {
-                clearLog()
-            }
-            R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
+
+                LogScreen(
+                    isScriptRunning = isScriptRunning,
+                    onRunClick = ::launchScript,
+                    onStopClick = ::stopScript,
+                    onClearClick = ::clearLog,
+                    onSettingsClick = {
+                        startActivity(Intent(this@LogActivity, SettingsActivity::class.java))
+                    },
+                    console = AutoJs.instance.globalConsole,
+                    snackbarHostState = snackbarHostState
+                )
             }
         }
+        init(savedInstanceState == null)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        return false
+    override fun onDestroy() {
+        AutoJs.instance.scriptEngineService.unregisterEngineLifecycleCallback(engineLifecycleCallback)
+        super.onDestroy()
     }
 
-    private fun updateRunButton() {
-        runMenuItem?.let { item ->
-            if (isScriptRunning) {
-                item.setIcon(R.drawable.ic_stop_24dp)
-                item.setTitle(R.string.text_stop)
-            } else {
-                item.setIcon(R.drawable.ic_play_arrow_24dp)
-                item.setTitle(R.string.text_run)
-            }
-        }
-    }
-
-    private fun requestPermissionsAndLaunch() {
-        requestStoragePermission {
+    private fun init(isFirstCreate: Boolean) {
+        if (isFirstCreate.not()) return
+        AutoJs.instance.scriptEngineService.registerEngineLifecycleCallback(engineLifecycleCallback)
+        isScriptRunning = AutoJs.instance.scriptEngineManager.engines.isNotEmpty()
+        if (BuildConfig.DEBUG) {
             launchScript()
         }
     }
 
-    private fun requestStoragePermission(onComplete: () -> Unit) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            PermissionManager.requestRuntime(
-                this, Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) { _ ->
-                onComplete()
-            }
-        } else {
-            PermissionManager.openSettings(
-                this, Manifest.permission.MANAGE_EXTERNAL_STORAGE
-            ) { _ ->
-                onComplete()
-            }
-        }
-    }
-
     private fun launchScript() {
-        isScriptRunning = true
-        updateRunButton()
-        
         lifecycleScope.launch {
             try {
                 withContext(Dispatchers.IO) {
@@ -120,17 +118,12 @@ class LogActivity : androidx.appcompat.app.AppCompatActivity() {
                 Timber.e(e, "Failed to launch script")
                 showSnackbar(e.message ?: "Unknown error")
                 AutoJs.instance.globalConsole.printAllStackTrace(e)
-            } finally {
-                isScriptRunning = false
-                updateRunButton()
             }
         }
     }
 
     private fun stopScript() {
         AutoJs.instance.scriptEngineService.stopAll()
-        isScriptRunning = false
-        updateRunButton()
         showSnackbar(getString(R.string.text_script_stopped))
     }
 
@@ -140,10 +133,79 @@ class LogActivity : androidx.appcompat.app.AppCompatActivity() {
     }
 
     private fun showSnackbar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+        snackbarMessage = message
     }
 
     companion object {
         const val EXTRA_LAUNCH_SCRIPT = "launch_script"
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LogScreen(
+    isScriptRunning: Boolean,
+    onRunClick: () -> Unit,
+    onStopClick: () -> Unit,
+    onClearClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    console: ConsoleImpl,
+    snackbarHostState: SnackbarHostState
+) {
+    Scaffold(topBar = {
+        TopAppBar(
+            title = { Text(stringResource(R.string.app_name)) },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                scrolledContainerColor = MaterialTheme.colorScheme.primary
+            ),
+            actions = {
+            IconButton(onClick = {
+                if (isScriptRunning) {
+                    onStopClick()
+                } else {
+                    onRunClick()
+                }
+            }) {
+                Icon(
+                    imageVector = if (isScriptRunning) Icons.Rounded.Stop else Icons.Rounded.PlayArrow,
+                    contentDescription = stringResource(if (isScriptRunning) R.string.text_stop else R.string.text_run)
+                )
+            }
+            IconButton(onClick = onClearClick) {
+                Icon(Icons.Rounded.Delete, contentDescription = stringResource(R.string.text_clear_log))
+            }
+            IconButton(onClick = onSettingsClick) {
+                Icon(Icons.Rounded.Settings, contentDescription = stringResource(R.string.text_settings))
+            }
+        })
+    }, snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+        ConsoleViewWrapper(
+            console = console, modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(horizontal = 8.dp)
+        )
+    }
+}
+
+@Composable
+private fun ConsoleViewWrapper(console: ConsoleImpl, modifier: Modifier = Modifier) {
+    AndroidView(
+        factory = { ctx ->
+            ConsoleView(ctx).apply {
+                val colors = SparseArray<Int>().apply {
+                    put(Log.VERBOSE, ctx.getColor(color.md_theme_outlineVariant))
+                    put(Log.DEBUG, ctx.getColor(color.md_theme_onSurface_highContrast))
+                    put(Log.INFO, 0xff64dd17.toInt())
+                    put(Log.WARN, 0xff2962ff.toInt())
+                    put(Log.ERROR, 0xffd50000.toInt())
+                    put(Log.ASSERT, 0xffff534e.toInt())
+                }
+                setColors(colors)
+                setConsole(console)
+                findViewById<View>(R.id.input_container).visibility = View.GONE
+            }
+        }, modifier = modifier
+    )
 }
