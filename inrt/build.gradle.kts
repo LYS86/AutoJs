@@ -18,12 +18,10 @@ android {
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.appVersionCode.get().toInt() - 200
         versionName = libs.versions.appVersionName.get()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
 
     buildFeatures {
-        viewBinding = true
         buildConfig = true
         compose = true
     }
@@ -55,12 +53,7 @@ android {
 }
 
 dependencies {
-    androidTestImplementation(libs.androidx.espresso) {
-        exclude(group = "com.android.support", module = "support-annotations")
-    }
     debugImplementation(libs.compose.ui.tooling)
-
-    testImplementation(libs.junit)
 
     implementation(project(":automator"))
     implementation(project(":common"))
