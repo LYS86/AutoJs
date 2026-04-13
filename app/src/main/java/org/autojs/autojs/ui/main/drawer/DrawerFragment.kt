@@ -36,7 +36,7 @@ import org.autojs.autojs.tool.WifiTool
 import org.autojs.autojs.ui.common.NotAskAgainDialog
 import org.autojs.autojs.ui.floating.CircularMenu
 import org.autojs.autojs.ui.floating.FloatyWindowManger
-import org.autojs.autojs.ui.settings.SettingsActivity
+import org.autojs.autojs.ui.compose.settings.SettingsActivity
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import rikka.shizuku.Shizuku

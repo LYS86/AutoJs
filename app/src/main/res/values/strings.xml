@@ -324,6 +324,12 @@
     <string name="text_project_location">项目位置</string>
     <string name="text_new_project">新建项目</string>
     <string name="text_js_file">js文件</string>
+    <string name="text_binary_file">二进制文件</string>
+    <string name="text_local_document">本地文档</string>
+    <string name="text_online_document">在线文档</string>
+    <string name="text_no_action">不执行任何操作</string>
+    <string name="text_copy_files">复制原文件夹内容到新文件夹</string>
+    <string name="text_move_files">移动原文件夹内容到新文件夹</string>
     <string name="text_invalid_project">无效项目</string>
     <string name="text_foreground_service">前台服务</string>
     <string name="text_shizuku">Shizuku</string>

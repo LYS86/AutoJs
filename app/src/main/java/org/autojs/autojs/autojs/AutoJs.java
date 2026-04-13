@@ -23,7 +23,7 @@ import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutHierarchyFloatyWindow;
 import org.autojs.autojs.ui.log.LogActivity;
-import org.autojs.autojs.ui.settings.SettingsActivity;
+import org.autojs.autojs.ui.compose.settings.SettingsActivity;
 
 import com.stardust.view.accessibility.AccessibilityService;
 import com.stardust.view.accessibility.LayoutInspector;

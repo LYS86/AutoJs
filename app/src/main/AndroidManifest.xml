@@ -88,8 +88,9 @@
             android:theme="@style/EditorTheme">
         </activity>
         <activity
-            android:name=".ui.settings.SettingsActivity"
-            android:theme="@style/AppTheme.Settings"/>
+            android:name=".ui.compose.settings.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/AutoJsTheme"/>
         <activity android:name=".ui.error.ErrorReportActivity"/>
         <activity
             android:name=".external.tasker.TaskerScriptEditActivity"

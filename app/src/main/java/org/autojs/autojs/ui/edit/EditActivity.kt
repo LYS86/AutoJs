@@ -43,9 +43,9 @@ class EditActivity : BaseActivity() {
         setUpViews()
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent?.let {
+        intent.let {
             setIntent(it)
             if (binding.editorView.isTextChanged) {
                 showSwitchFileConfirmDialog(it)

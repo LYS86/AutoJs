@@ -140,4 +140,11 @@
     <string name="theme_dark">Dark</string>
     <string name="text_no_storage_permission">No storage permission, cannot read script files</string>
     <string name="text_request_permission">Request Permission</string>
+    <string name="text_js_file">JS file</string>
+    <string name="text_binary_file">Binary file</string>
+    <string name="text_local_document">Local</string>
+    <string name="text_online_document">Online</string>
+    <string name="text_no_action">No action</string>
+    <string name="text_copy_files">Copy files to new directory</string>
+    <string name="text_move_files">Move files to new directory</string>
 </resources>

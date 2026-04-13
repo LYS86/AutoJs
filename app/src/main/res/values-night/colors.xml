@@ -16,6 +16,5 @@
     <color name="console_verbose">#7F7F80</color>
     <color name="prefTextColorPrimary">#E0E0E0</color>
     <color name="prefTextColorSecondary">#9A9A9A</color>
-    <color name="pref_divider">#3A3A3C</color>
 
 </resources>
