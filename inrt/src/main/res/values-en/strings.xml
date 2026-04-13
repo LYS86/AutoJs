@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">inrt</string>
+    <string name="text_no_accessibility_permission">Accessibility service not enabled</string>
+    <string name="text_auto_operate_service_enabled_but_not_running">Accessibility service is enabled but not running. Try re-enabling or restarting your device</string>
+    <string name="text_enable_accessibility_service_by_root_timeout">Failed to enable accessibility service with root</string>
+    <string name="text_settings">Settings</string>
+    <string name="text_script_running">Script Running</string>
+    <string name="text_use_volume_to_stop_running">Stop all scripts with volume up</string>
+    <string name="summary_enable_accessibility_service_by_root">Automatically enable accessibility service using root when running scripts</string>
+    <string name="text_enable_accessibility_service_by_root">Auto-enable service with root</string>
+    <string name="summary_stable_mode">More stable layout analysis, but some scripts may not work. Requires restarting accessibility service</string>
+    <string name="text_stable_mode">Stable mode</string>
+    <string name="text_accessibility_service">Accessibility Service</string>
+    <string name="text_dont_show_main_activity">Hide main screen</string>
+    <string name="summary_dont_show_main_activity">Run script immediately when app opens</string>
+    <string name="text_others">Others</string>
+    <string name="text_language">App language</string>
+    <string name="text_execution_finished" formatted="false">\n------------\n[%s] finished in %f seconds</string>
+    <string name="text_run">Run</string>
+    <string name="text_stop">Stop</string>
+    <string name="text_clear_log">Clear log</string>
+    <string name="text_script_stopped">Script stopped</string>
+    <string name="text_log_cleared">Log cleared</string>
+</resources>

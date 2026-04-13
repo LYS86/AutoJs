@@ -1,6 +1,10 @@
 package com.stardust.auojs.inrt
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -10,11 +14,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.stardust.autojs.compose.layout.TopAppBarScaffold
 import com.stardust.autojs.compose.settings.PrefSwitchItem
 import com.stardust.autojs.compose.settings.SettingsCategory
+import com.stardust.autojs.compose.settings.SettingsItem
 import com.stardust.autojs.compose.theme.AppTheme
 
 class SettingsActivity : ComponentActivity() {
@@ -64,14 +69,21 @@ internal fun SettingsScreen(onBack: () -> Unit) {
                 summary = stringResource(R.string.summary_stable_mode),
                 key = stringResource(R.string.key_stable_mode)
             )
-        }
-    }
-}
 
-@Preview
-@Composable
-private fun SettingsScreenPreview() {
-    AppTheme {
-        SettingsScreen(onBack = {})
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                SettingsCategory(title = stringResource(R.string.text_others))
+                val context = LocalContext.current
+                SettingsItem(
+                    title = stringResource(R.string.text_language),
+                    onClick = {
+                        context.startActivity(
+                            Intent(Settings.ACTION_APP_LOCALE_SETTINGS).apply {
+                                data = Uri.fromParts("package", context.packageName, null)
+                            }
+                        )
+                    }
+                )
+            }
+        }
     }
 }
