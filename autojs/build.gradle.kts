@@ -80,8 +80,8 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.bundles.shizuku)
 
-    implementation(platform(libs.compose.bom))
-    implementation(libs.compose.material3)
-    implementation(libs.compose.material.icons.extended)
+    api(platform(libs.compose.bom))
+    api(libs.compose.material3)
+    api(libs.compose.material.icons.extended)
     debugImplementation(libs.compose.ui.tooling)
 }

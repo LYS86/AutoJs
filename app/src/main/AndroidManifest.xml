@@ -100,7 +100,9 @@
             android:name=".ui.project.BuildActivity"
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".ui.project.ProjectConfigActivity"/>
-        <activity android:name=".ui.log.LogActivity"/>
+        <activity
+            android:name=".ui.log.LogActivity"
+            android:theme="@style/AutoJsTheme"/>
         <activity android:name=".ui.shortcut.ShortcutIconSelectActivity"/>
         <activity android:name=".ui.timing.TimedTaskSettingActivity"/>
         <activity
