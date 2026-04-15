@@ -13,7 +13,7 @@ android {
     namespace = "com.stardust.auojs.inrt"
 
     defaultConfig {
-        applicationId = "com.stardust.auojs.inrt"
+        applicationId = "org.github.autojs.inrt"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.appVersionCode.get().toInt() - 200

@@ -14,7 +14,7 @@ android {
     namespace = "org.autojs.autojs"
 
     defaultConfig {
-        applicationId = "org.autojs.autojs"
+        applicationId = "org.github.autojs"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.appVersionCode.get().toInt()
