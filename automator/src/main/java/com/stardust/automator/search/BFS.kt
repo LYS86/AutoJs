@@ -11,8 +11,8 @@ object BFS : SearchAlgorithm {
         val result = ArrayList<UiObject>()
         val queue = ArrayDeque<UiObject>()
         queue.add(root)
-        while (!queue.isEmpty()) {
-            val top = queue.poll()
+        while (true) {
+            val top = queue.poll() ?: break
             val isTarget = filter.filter(top)
             if (isTarget) {
                 result.add(top)
