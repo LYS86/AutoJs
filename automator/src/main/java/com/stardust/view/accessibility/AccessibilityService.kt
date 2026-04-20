@@ -1,6 +1,5 @@
 package com.stardust.view.accessibility
 
-import android.os.Build
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
@@ -142,7 +141,7 @@ open class AccessibilityService : android.accessibilityservice.AccessibilityServ
         }
 
         fun disable(): Boolean {
-            if (instance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (instance != null) {
                 instance!!.disableSelf()
                 return true
             }

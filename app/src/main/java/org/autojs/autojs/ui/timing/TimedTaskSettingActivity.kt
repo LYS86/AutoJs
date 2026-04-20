@@ -247,8 +247,7 @@ class TimedTaskSettingActivity : BaseActivity() {
     @SuppressLint("BatteryLife")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_done) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                !(getSystemService(POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(packageName)) {
+            if (!(getSystemService(POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(packageName)) {
                 try {
                     startActivityForResult(
                         Intent().setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)

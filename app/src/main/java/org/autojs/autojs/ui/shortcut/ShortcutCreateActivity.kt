@@ -45,11 +45,7 @@ class ShortcutCreateActivity : AppCompatActivity() {
 
     private fun showDialog() {
         binding = ShortcutCreateDialogBinding.inflate(layoutInflater)
-        binding.useAndroidNShortcut.visibility = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
+        binding.useAndroidNShortcut.visibility = View.VISIBLE
         binding.name.setText(scriptFile.simplifiedName)
         binding.icon.setOnClickListener {
             selectIcon()

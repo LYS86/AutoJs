@@ -1,7 +1,6 @@
 package com.stardust.autojs.util
 
 import android.content.Context
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
@@ -36,10 +35,7 @@ object FloatingPermission {
 
     @JvmStatic
     fun manageDrawOverlays(context: Context) {
-        val intent = when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> PermissionManager.overlaySettingsIntent(context)
-            else -> PermissionManager.appDetailsIntent(context)
-        }
+        val intent = PermissionManager.overlaySettingsIntent(context)
 
         try {
             context.startActivity(intent)
