@@ -268,15 +268,12 @@ object PermissionManager {
     }
 
     private fun notificationIntent(context: Context, channelId: String): Intent {
-        val checkVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
         return when {
-            checkVersion && channelId.isNotBlank() -> notificationChannelIntent(context, channelId)
-            checkVersion -> Intent().apply {
+            channelId.isNotBlank() -> notificationChannelIntent(context, channelId)
+            else -> Intent().apply {
                 action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
                 putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
             }
-
-            else -> appDetailsIntent(context)
         }
     }
 
@@ -310,32 +307,23 @@ object PermissionManager {
 
     @JvmStatic
     fun canDrawOverlays(context: Context): Boolean {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(context)
+        return Settings.canDrawOverlays(context)
     }
 
     @JvmStatic
     fun canWriteSettings(context: Context): Boolean {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.System.canWrite(context)
+        return Settings.System.canWrite(context)
     }
 
     private fun checkUsageStatsOp(context: Context): Boolean {
         Timber.tag("DrawerFragment").d("checkUsageStatsOp: ${context.packageName}")
         val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode = when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
-                appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName)
-            }
-
-            else -> {
-                @Suppress("DEPRECATION")
-                appOps.checkOpNoThrow(
-                    AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName
-                )
-            }
-        }
+        val mode = appOps.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName
+        )
 
         return when {
-            mode == AppOpsManager.MODE_DEFAULT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
+            mode == AppOpsManager.MODE_DEFAULT -> {
                 context.checkCallingOrSelfPermission(PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED
             }
 
