@@ -41,11 +41,10 @@ dependencies {
     testImplementation(libs.junit)
 
     api(libs.rhino)
-    implementation(files("libs/dx.jar"))
     implementation(libs.kotlinx.coroutines)
 
     api(libs.eventbus)
-    api(libs.zip4j)
+    implementation(libs.r8)
 
     api(libs.material.dialogs.core) {
         exclude(group = "com.android.support")
