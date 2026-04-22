@@ -39,7 +39,6 @@
     <string name="text_already_copy_to_clip">已复制到剪贴板</string>
     <string name="my_github">https://github.com/LYS86/AutoJs</string>
     <string name="text_floating_window">悬浮窗</string>
-    <string name="text_error_report">错误报告</string>
     <string name="text_press_again_to_exit">再按一次退出程序</string>
     <string name="text_already_stop_n_scripts">已停止%d个正在运行的脚本</string>
     <string name="text_start_running">开始运行</string>
@@ -117,10 +116,6 @@
     <string name="text_layout_inspector_is_dumping">布局分析中</string>
     <string name="text_force_stop">强制停止</string>
     <string name="text_execution_finished" formatted="false">\n------------\n[%s]运行结束，用时%f秒</string>
-    <string name="text_again">又</string>
-    <string name="text_again_and_again">又双</string>
-    <string name="text_again_and_again_again">又双叒</string>
-    <string name="text_again_and_again_again_again">又双叒叕</string>
     <string name="debug">连接电脑</string>
     <string name="text_server_address">服务器地址</string>
     <string name="text_about_me_and_repo">关于项目与开发者</string>

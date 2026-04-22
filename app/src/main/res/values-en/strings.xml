@@ -34,7 +34,6 @@
     <string name="text_already_copy_to_clip">Copied</string>
     <string name="my_github">https://github.com/LYS86/AutoJs</string>
     <string name="text_floating_window">Floating Window</string>
-    <string name="text_error_report">Bug Report</string>
     <string name="text_press_again_to_exit">Press again to exit</string>
     <string name="text_already_stop_n_scripts">%d script(s) is(are) stopped</string>
     <string name="text_start_running">Running</string>
