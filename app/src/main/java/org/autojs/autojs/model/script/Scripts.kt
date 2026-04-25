@@ -104,7 +104,7 @@ object Scripts {
     fun run(file: ScriptFile): ScriptExecution? {
         return try {
             AutoJs.getInstance().scriptEngineService.execute(file.toSource(),
-                    ExecutionConfig(workingDirectory = file.parent))
+                    ExecutionConfig(workingDirectory = file.parent ?: ""))
         } catch (e: Exception) {
             Timber.e(e)
             Toast.makeText(GlobalAppContext.get(), e.message, Toast.LENGTH_LONG).show()
@@ -127,13 +127,13 @@ object Scripts {
 
     fun runWithBroadcastSender(file: File): ScriptExecution {
         return AutoJs.getInstance().scriptEngineService.execute(ScriptFile(file).toSource(), BROADCAST_SENDER_SCRIPT_EXECUTION_LISTENER,
-                ExecutionConfig(workingDirectory = file.parent))
+                ExecutionConfig(workingDirectory = file.parent ?: ""))
     }
 
 
     fun runRepeatedly(scriptFile: ScriptFile, loopTimes: Int, delay: Long, interval: Long): ScriptExecution {
         val source = scriptFile.toSource()
-        val directoryPath = scriptFile.parent
+        val directoryPath = scriptFile.parent ?: ""
         return AutoJs.getInstance().scriptEngineService.execute(source, ExecutionConfig(workingDirectory = directoryPath,
                 delay = delay, loopTimes = loopTimes, interval = interval))
     }
