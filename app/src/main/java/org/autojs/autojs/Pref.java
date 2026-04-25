@@ -66,10 +66,6 @@ public class Pref {
         return def().getBoolean(getString(R.string.key_use_volume_control_running), false);
     }
 
-    public static boolean shouldEnableAccessibilityServiceByRoot() {
-        return def().getBoolean(getString(R.string.key_enable_accessibility_service_by_root), false);
-    }
-
     private static String getString(int id) {
         return GlobalAppContext.getString(id);
     }

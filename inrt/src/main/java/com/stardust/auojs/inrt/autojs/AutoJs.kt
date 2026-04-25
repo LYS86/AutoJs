@@ -5,7 +5,6 @@ import android.app.Application
 import android.content.Context
 import com.stardust.app.GlobalAppContext
 import com.stardust.auojs.inrt.LogActivity
-import com.stardust.auojs.inrt.Pref
 import com.stardust.auojs.inrt.R
 import com.stardust.auojs.inrt.SettingsActivity
 import com.stardust.autojs.runtime.ScriptRuntime
@@ -13,14 +12,9 @@ import com.stardust.autojs.runtime.api.AppUtils
 import com.stardust.autojs.runtime.exception.ScriptException
 import com.stardust.autojs.runtime.exception.ScriptInterruptedException
 import com.stardust.autojs.script.JavaScriptSource
-import com.stardust.view.accessibility.AccessibilityService
-import com.stardust.view.accessibility.AccessibilityServiceUtils
+import com.stardust.autojs.util.AccessibilityServiceUtils
 import com.stardust.autojs.util.FileProviderUtils
-
-
-/**
- * Created by Stardust on 2017/4/2.
- */
+import com.stardust.view.accessibility.AccessibilityService
 
 class AutoJs private constructor(application: Application) : com.stardust.autojs.AutoJs(application) {
 
@@ -32,47 +26,40 @@ class AutoJs private constructor(application: Application) : com.stardust.autojs
         return AppUtils(context, FileProviderUtils.getAuthority(context))
     }
 
-
     override fun ensureAccessibilityServiceEnabled() {
-        if (AccessibilityService.instance != null) {
-            return
-        }
-        var errorMessage: String? = null
-        if (AccessibilityServiceUtils.isAccessibilityServiceEnabled(application, AccessibilityService::class.java)) {
-            errorMessage = GlobalAppContext.getString(R.string.text_auto_operate_service_enabled_but_not_running)
-        } else {
-            if (Pref.shouldEnableAccessibilityServiceByRoot()) {
-                if (!AccessibilityServiceTool.enableAccessibilityServiceByRootAndWaitFor(application, 2000)) {
-                    errorMessage = GlobalAppContext.getString(R.string.text_enable_accessibility_service_by_root_timeout)
+        if (AccessibilityService.instance != null) return
+        val errorMessage = when {
+            AccessibilityServiceUtils.isEnabled() ->
+                GlobalAppContext.getString(R.string.text_auto_operate_service_enabled_but_not_running)
+            AccessibilityServiceUtils.isAutoEnable ->
+                when {
+                    !AccessibilityServiceUtils.enableServiceAndWaitBlocking(2000) ->
+                        GlobalAppContext.getString(R.string.text_auto_enable_service_timeout)
+                    else -> null
                 }
-            } else {
-                errorMessage = GlobalAppContext.getString(R.string.text_no_accessibility_permission)
-            }
+            else -> GlobalAppContext.getString(R.string.text_no_accessibility_permission)
         }
         if (errorMessage != null) {
-            AccessibilityServiceTool.goToAccessibilitySetting()
+            AccessibilityServiceUtils.openSetting()
             throw ScriptException(errorMessage)
         }
     }
 
     override fun waitForAccessibilityServiceEnabled() {
-        if (AccessibilityService.instance != null) {
-            return
-        }
-        var errorMessage: String? = null
-        if (AccessibilityServiceUtils.isAccessibilityServiceEnabled(application, AccessibilityService::class.java)) {
-            errorMessage = GlobalAppContext.getString(R.string.text_auto_operate_service_enabled_but_not_running)
-        } else {
-            if (Pref.shouldEnableAccessibilityServiceByRoot()) {
-                if (!AccessibilityServiceTool.enableAccessibilityServiceByRootAndWaitFor(application, 2000)) {
-                    errorMessage = GlobalAppContext.getString(R.string.text_enable_accessibility_service_by_root_timeout)
+        if (AccessibilityService.instance != null) return
+        val errorMessage = when {
+            AccessibilityServiceUtils.isEnabled() ->
+                GlobalAppContext.getString(R.string.text_auto_operate_service_enabled_but_not_running)
+            AccessibilityServiceUtils.isAutoEnable ->
+                when {
+                    !AccessibilityServiceUtils.enableServiceAndWaitBlocking(2000) ->
+                        GlobalAppContext.getString(R.string.text_auto_enable_service_timeout)
+                    else -> null
                 }
-            } else {
-                errorMessage = GlobalAppContext.getString(R.string.text_no_accessibility_permission)
-            }
+            else -> GlobalAppContext.getString(R.string.text_no_accessibility_permission)
         }
         if (errorMessage != null) {
-            AccessibilityServiceTool.goToAccessibilitySetting()
+            AccessibilityServiceUtils.openSetting()
             if (!AccessibilityService.waitForEnabled(-1)) {
                 throw ScriptInterruptedException()
             }

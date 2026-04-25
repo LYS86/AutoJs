@@ -12,16 +12,16 @@ import com.stardust.autojs.core.util.ProcessShell
 import com.stardust.autojs.permission.PermissionManager
 import com.stardust.autojs.shizuku.Shell
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import com.stardust.view.accessibility.AccessibilityService as AccessibilityService2
 
 object AccessibilityServiceUtils {
 
     private val serviceClass = AccessibilityService::class.java
     private val serviceName = "${GlobalAppContext.get().packageName}/${serviceClass.name}"
-    const val ROOT_KEY = "key_enable_accessibility_service_by_root"
-    val byRoot: Boolean by PrefV2.boolean(ROOT_KEY, false)
+    const val KEY = "auto_enable_service"
+    val isAutoEnable: Boolean by PrefV2.boolean(KEY, false)
     const val ACCESSIBILITY = "accessibility"
     private const val PUT_SERVICES =
         "settings put secure enabled_accessibility_services %s;settings put secure accessibility_enabled 1 "
@@ -40,6 +40,7 @@ object AccessibilityServiceUtils {
      * 3. **Root shell**
      */
     suspend fun enableServiceCompat(): Boolean {
+        if (isAutoEnable.not()) return false
         val context = GlobalAppContext.get()
         val currentServices = readServices()
         val services = when {
@@ -59,6 +60,16 @@ object AccessibilityServiceUtils {
         return withContext(Dispatchers.IO) {
             AccessibilityService2.waitForEnabled(timeout)
         }
+    }
+
+    @JvmStatic
+    fun enableServiceAndWaitBlocking(timeout: Long = 2000L): Boolean {
+        return runBlocking { enableServiceAndWait(timeout) }
+    }
+
+    @JvmStatic
+    fun enableServiceBlocking() {
+        runBlocking { enableServiceCompat() }
     }
 
     fun openSetting(context: Context, callback: (Boolean) -> Unit) {
@@ -91,7 +102,6 @@ object AccessibilityServiceUtils {
     }
 
     private fun writeServicesByRoot(value: String): Boolean {
-        if (byRoot.not()) return false
         val cmd = PUT_SERVICES.format(value)
         return ProcessShell.execCommand(cmd, true).code == 0
     }

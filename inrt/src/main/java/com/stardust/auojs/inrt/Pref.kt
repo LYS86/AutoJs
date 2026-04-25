@@ -21,10 +21,6 @@ object Pref {
         return preferences.getBoolean(getString(resId), defaultValue)
     }
 
-    fun shouldEnableAccessibilityServiceByRoot(): Boolean {
-        return getBoolean(R.string.key_enable_accessibility_service_by_root, false)
-    }
-
     fun shouldHideLogs(): Boolean {
         return getBoolean(R.string.key_dont_show_main_activity, false)
     }

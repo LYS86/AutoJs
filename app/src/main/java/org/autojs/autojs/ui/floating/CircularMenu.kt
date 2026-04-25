@@ -23,7 +23,7 @@ import org.autojs.autojs.model.explorer.ExplorerDirPage
 import org.autojs.autojs.model.explorer.ExplorerItem
 import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.model.script.Scripts
-import org.autojs.autojs.tool.AccessibilityServiceTool
+import com.stardust.autojs.util.AccessibilityServiceUtils
 import org.autojs.autojs.tool.RootTool
 import org.autojs.autojs.ui.common.NotAskAgainDialog
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow
@@ -206,7 +206,7 @@ class CircularMenu(context: Context) : Recorder.OnStateChangedListener, LayoutIn
         mLayoutInspectDialog = null
         if (AccessibilityService.instance == null) {
             Toast.makeText(mContext, R.string.text_no_accessibility_permission_to_capture, Toast.LENGTH_SHORT).show()
-            AccessibilityServiceTool.goToAccessibilitySetting()
+            AccessibilityServiceUtils.openSetting()
             return
         }
         val progress = DialogUtils.showDialog(ThemeColorMaterialDialogBuilder(mContext)
@@ -270,7 +270,7 @@ class CircularMenu(context: Context) : Recorder.OnStateChangedListener, LayoutIn
 
     private fun enableAccessibilityService() {
         dismissSettingsDialog()
-        AccessibilityServiceTool.enableAccessibilityService()
+        AccessibilityServiceUtils.enableServiceBlocking()
     }
 
     private fun dismissSettingsDialog() {

@@ -351,7 +351,7 @@ class DrawerFragment : Fragment() {
     }
 
     private fun enableAccessibilityService() {
-        val shouldEnable = AccessibilityServiceUtils.byRoot
+        val shouldEnable = AccessibilityServiceUtils.isAutoEnable
         val serviceRunning = checkService()
         if (shouldEnable.not() || serviceRunning) {
             return

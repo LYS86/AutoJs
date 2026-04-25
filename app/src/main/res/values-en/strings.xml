@@ -66,11 +66,10 @@
     <string name="text_max_length_for_code_completion">Maximum file length of code complements</string>
     <string name="text_file_exists">The file exists</string>
     <string name="text_accessibility_service">Accessibility Service</string>
-    <string name="text_enable_accessibility_service_by_root">Enable service automatically with root</string>
+    <string name="text_auto_enable_service">Auto-enable accessibility service</string>
     <string name="text_auto_operate_service_enabled_but_not_running">Accessibility service is enabled but not running. This may be Android\'s BUG. You may need to restart your phone</string>
-    <string name="key_enable_accessibility_service_by_root">key_enable_accessibility_service_by_root</string>
-    <string name="text_enable_accessibility_service_by_root_timeout">Start the accessibility service timeout</string>
-    <string name="summary_enable_accessibility_service_by_root">Enable accessibility service automatically when needed</string>
+    <string name="text_auto_enable_service_timeout">Timed out enabling accessibility service automatically</string>
+    <string name="summary_auto_enable_service">Automatically enable accessibility service when running scripts (System API/Shizuku/Root)</string>
     <string name="text_appearance">Appearance</string>
     <string name="text_theme_color">Theme Color</string>
     <string name="text_select_image">Choose a picture</string>

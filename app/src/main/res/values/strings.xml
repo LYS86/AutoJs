@@ -72,11 +72,10 @@
     <string name="text_max_length_for_code_completion">代码补全最大文件长度</string>
     <string name="text_file_exists">文件已存在</string>
     <string name="text_accessibility_service">无障碍服务</string>
-    <string name="text_enable_accessibility_service_by_root">通过Root权限自动启用服务</string>
+    <string name="text_auto_enable_service">自动启用无障碍服务</string>
     <string name="text_auto_operate_service_enabled_but_not_running">无障碍服务已启用但并未运行，这可能是安卓的BUG，您可能需要重启手机或重启无障碍服务</string>
-    <string name="key_enable_accessibility_service_by_root">key_enable_accessibility_service_by_root</string>
-    <string name="text_enable_accessibility_service_by_root_timeout">使用Root权限启动无障碍服务超时</string>
-    <string name="summary_enable_accessibility_service_by_root">开启后运行脚本会使用Root权限自动开启无障碍服务</string>
+    <string name="text_auto_enable_service_timeout">自动启用无障碍服务超时</string>
+    <string name="summary_auto_enable_service">开启后运行脚本会自动启用无障碍服务（系统API/Shizuku/Root）</string>
     <string name="text_appearance">外观</string>
     <string name="text_theme_color">主题色</string>
     <string name="text_select_image">选择图片</string>
@@ -134,7 +133,6 @@
     <string name="hint_loop_delay">延迟多少秒后开始循环</string>
     <string name="text_number_format_error">格式错误</string>
     <string name="text_accessibility_settings">打开无障碍服务</string>
-    <string name="text_enable_accessibitliy_service_by_root_failed">使用root权限开启失败</string>
     <string name="text_delete_failed">删除失败</string>
     <string name="text_edit_script">编辑脚本</string>
     <string name="text_run_script">运行脚本</string>
