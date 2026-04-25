@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 
 import com.stardust.app.GlobalAppContext;
+import com.stardust.autojs.core.accessibility.AccessibilityService;
 import com.stardust.autojs.core.pref.PrefV2;
 import com.stardust.autojs.runtime.accessibility.AccessibilityConfig;
 
@@ -116,7 +117,7 @@ public class Pref {
     }
 
     public static boolean isStableModeEnabled() {
-        return def().getBoolean(getString(R.string.key_stable_mode), false);
+        return def().getBoolean(AccessibilityService.KEY_STABLE_MODE, false);
     }
 
     public static String getDocumentationUrl() {

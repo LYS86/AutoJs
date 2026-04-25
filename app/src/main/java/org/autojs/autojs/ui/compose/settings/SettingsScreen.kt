@@ -45,6 +45,7 @@ import com.stardust.autojs.compose.settings.PrefListItem
 import com.stardust.autojs.compose.settings.PrefSwitchItem
 import com.stardust.autojs.compose.settings.SettingsCategory
 import com.stardust.autojs.compose.settings.SettingsItem
+import com.stardust.autojs.core.accessibility.AccessibilityService
 import com.stardust.autojs.core.pref.PrefV2
 import com.stardust.autojs.util.Browser
 import de.psdev.licensesdialog.LicenseResolver
@@ -121,7 +122,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
             PrefSwitchItem(
                 title = stringResource(R.string.text_stable_mode),
                 summary = stringResource(R.string.summary_stable_mode),
-                key = stringResource(R.string.key_stable_mode)
+                key = AccessibilityService.KEY_STABLE_MODE
             )
 
             SettingsCategory(title = stringResource(R.string.text_appearance))

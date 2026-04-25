@@ -21,6 +21,7 @@ import com.stardust.autojs.compose.settings.PrefSwitchItem
 import com.stardust.autojs.compose.settings.SettingsCategory
 import com.stardust.autojs.compose.settings.SettingsItem
 import com.stardust.autojs.compose.theme.AppTheme
+import com.stardust.autojs.core.accessibility.AccessibilityService
 
 class SettingsActivity : ComponentActivity() {
 
@@ -67,7 +68,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
             PrefSwitchItem(
                 title = stringResource(R.string.text_stable_mode),
                 summary = stringResource(R.string.summary_stable_mode),
-                key = stringResource(R.string.key_stable_mode)
+                key = AccessibilityService.KEY_STABLE_MODE
             )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

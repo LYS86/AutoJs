@@ -57,16 +57,6 @@ class DrawerFragment : Fragment() {
         0,
         this::enableOrDisableAccessibilityService
     )
-    private val stableModeItem =
-        object : DrawerMenuItem(R.drawable.ic_stable, R.string.text_stable_mode, R.string.key_stable_mode, null) {
-            override fun setChecked(checked: Boolean) {
-                super.setChecked(checked)
-                if (checked) {
-                    showStableModePromptIfNeeded()
-                }
-            }
-        }
-
     private val notificationPermissionItem = DrawerMenuItem(
         R.drawable.ic_ali_notification,
         R.string.text_notification_permission,
@@ -166,7 +156,6 @@ class DrawerFragment : Fragment() {
             listOf(
                 DrawerMenuGroup(R.string.text_service),
                 accessibilityServiceItem,
-                stableModeItem,
                 notificationPermissionItem,
                 foregroundServiceItem,
                 shizukuItem,
@@ -377,14 +366,6 @@ class DrawerFragment : Fragment() {
     @Subscribe
     fun onCircularMenuStateChange(event: CircularMenu.StateChangeEvent) {
         setChecked(floatingWindowItem, event.currentState != CircularMenu.STATE_CLOSED)
-    }
-
-    private fun showStableModePromptIfNeeded() {
-        NotAskAgainDialog.Builder(requireContext(), "DrawerFragment.stable_mode")
-            .title(R.string.text_stable_mode)
-            .content(R.string.description_stable_mode)
-            .positiveText(R.string.ok)
-            .show()
     }
 
     override fun onDestroy() {
