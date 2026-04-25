@@ -158,12 +158,12 @@ class TimedTaskSettingActivity : BaseActivity() {
         }
         val time = LocalTime.fromMillisOfDay(timedTask!!.millis)
         binding.dailyTaskTimePicker.apply {
-            currentHour = time.hourOfDay
-            currentMinute = time.minuteOfHour
+            hour = time.hourOfDay
+            minute = time.minuteOfHour
         }
         binding.weeklyTaskTimePicker.apply {
-            currentHour = time.hourOfDay
-            currentMinute = time.minuteOfHour
+            hour = time.hourOfDay
+            minute = time.minuteOfHour
         }
         if (timedTask!!.isDaily) {
             binding.dailyTaskRadio.isChecked = true
@@ -218,12 +218,12 @@ class TimedTaskSettingActivity : BaseActivity() {
             Toast.makeText(this, R.string.text_weekly_task_should_check_day_of_week, Toast.LENGTH_SHORT).show()
             return null
         }
-        val time = LocalTime(binding.weeklyTaskTimePicker.currentHour, binding.weeklyTaskTimePicker.currentMinute)
+        val time = LocalTime(binding.weeklyTaskTimePicker.hour, binding.weeklyTaskTimePicker.minute)
         return TimedTask.weeklyTask(time, timeFlag, scriptFile!!.path, ExecutionConfig.default)
     }
 
     private fun createDailyTask(): TimedTask {
-        val time = LocalTime(binding.dailyTaskTimePicker.currentHour, binding.dailyTaskTimePicker.currentMinute)
+        val time = LocalTime(binding.dailyTaskTimePicker.hour, binding.dailyTaskTimePicker.minute)
         return TimedTask.dailyTask(time, scriptFile!!.path, ExecutionConfig())
     }
 
@@ -345,7 +345,7 @@ class TimedTaskSettingActivity : BaseActivity() {
             .put(Intent.ACTION_BATTERY_CHANGED, R.string.text_run_on_battery_change)
             .put(Intent.ACTION_POWER_CONNECTED, R.string.text_run_on_power_connect)
             .put(Intent.ACTION_POWER_DISCONNECTED, R.string.text_run_on_power_disconnect)
-            .put(ConnectivityManager.CONNECTIVITY_ACTION, R.string.text_run_on_conn_change)
+            .put("android.net.conn.CONNECTIVITY_CHANGE", R.string.text_run_on_conn_change)
             .put(Intent.ACTION_PACKAGE_ADDED, R.string.text_run_on_package_install)
             .put(Intent.ACTION_PACKAGE_REMOVED, R.string.text_run_on_package_uninstall)
             .put(Intent.ACTION_PACKAGE_REPLACED, R.string.text_run_on_package_update)
@@ -363,7 +363,7 @@ class TimedTaskSettingActivity : BaseActivity() {
             .put(R.id.run_on_battery_change, Intent.ACTION_BATTERY_CHANGED)
             .put(R.id.run_on_power_connect, Intent.ACTION_POWER_CONNECTED)
             .put(R.id.run_on_power_disconnect, Intent.ACTION_POWER_DISCONNECTED)
-            .put(R.id.run_on_conn_change, ConnectivityManager.CONNECTIVITY_ACTION)
+            .put(R.id.run_on_conn_change, "android.net.conn.CONNECTIVITY_CHANGE")
             .put(R.id.run_on_package_install, Intent.ACTION_PACKAGE_ADDED)
             .put(R.id.run_on_package_uninstall, Intent.ACTION_PACKAGE_REMOVED)
             .put(R.id.run_on_package_update, Intent.ACTION_PACKAGE_REPLACED)
