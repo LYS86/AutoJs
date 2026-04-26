@@ -10,17 +10,17 @@ import com.stardust.automator.UiObject
 class SearchUpTargetAction(action: Int, filter: FilterAction.Filter) : SearchTargetAction(action, filter) {
     private val mAble: Able = Able.ABLE_MAP.get(action)
 
-    override fun searchTarget(n: UiObject?): UiObject? {
-        var node = n
+    override fun searchTarget(node: UiObject?): UiObject? {
+        var current = node
         var i = 0
-        while (node != null && !mAble.isAble(node)) {
+        while (current != null && !mAble.isAble(current)) {
             i++
             if (i > LOOP_MAX) {
                 return null
             }
-            node = node.parent()
+            current = current.parent()
         }
-        return node
+        return current
     }
 
     override fun toString(): String {
@@ -32,7 +32,7 @@ class SearchUpTargetAction(action: Int, filter: FilterAction.Filter) : SearchTar
 
     companion object {
 
-        private val TAG = SearchUpTargetAction::class.java!!.getSimpleName()
+        private val TAG = SearchUpTargetAction::class.java.simpleName
         private val LOOP_MAX = 20
     }
 }
