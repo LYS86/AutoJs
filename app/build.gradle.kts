@@ -58,6 +58,7 @@ android {
     lint {
         abortOnError = false
         disable += listOf("MissingTranslation", "ExtraTranslation")
+        baseline = file("lint-baseline.xml")
     }
 }
 
