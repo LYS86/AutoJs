@@ -5,8 +5,6 @@
     <string name="text_create_fail">Creation failed</string>
     <string name="text_please_input_name">Input name</string>
     <string name="text_name">Name</string>
-    <string name="text_go_to_setting">Go to setting</string>
-    <string name="explain_accessibility_permission">Need to enable the Accessibility service.\nYou can also enable it later in the side menu.</string>
     <string name="text_cancel">Cancel</string>
     <string name="text_path_is_empty">Path is empty</string>
     <string name="text_file_not_exists">File dost not exist</string>
@@ -28,9 +26,6 @@
     <string name="text_about">About</string>
     <string name="text_licenses">Open Sources Licenses</string>
     <string name="text_do_not_remind_again">Don\'t show again</string>
-    <string name="copyright">Copyright©2016 All right reserves.</string>
-    <string name="developer">Stardust</string>
-    <string name="github">Source Code</string>
     <string name="text_already_copy_to_clip">Copied</string>
     <string name="my_github">https://github.com/LYS86/AutoJs</string>
     <string name="text_floating_window">Floating Window</string>
@@ -45,7 +40,6 @@
     <string name="text_already_delete">Deleted</string>
     <string name="text_error">Error</string>
     <string name="text_copy_debug_info">Copy debugging log</string>
-    <string name="text_please_choose">Please choose </string>
     <string name="text_crash">Crash~ o(≧口≦)o</string>
     <string name="crash_feedback">(ಥ _ ಥ)Exit or submit a bug report or copy debugging log to the developer(≧∇≦)ﾉ</string>
     <string name="text_clear">Clear</string>
@@ -60,7 +54,6 @@
     <string name="text_use_volume_control_record">Use the volume keys to control</string>
     <string name="summary_use_volume_control_record">Stop or start recording when volume changes</string>
     <string name="key_use_volume_control_record">key_use_volume_control_record</string>
-    <string name="text_mobile_qq_not_installed">Not installed mobile QQ</string>
     <string name="text_edit">Edit</string>
     <string name="key_max_length_for_code_completion">key_max_length_for_code_completion</string>
     <string name="text_max_length_for_code_completion">Maximum file length of code complements</string>
@@ -77,19 +70,12 @@
     <string name="text_no_floating_window_permission">No floating window permission</string>
     <string name="text_no_accessibility_permission_to_capture">Accessibility service is not activated</string>
     <string name="text_record_msg">Recording Prompt</string>
-    <string name="text_text_changed">Text Changed</string>
-    <string name="text_scrolled">Scrolled</string>
-    <string name="text_long_clicked">Long Clicked</string>
-    <string name="text_clicked">Clicked</string>
-    <string name="text_copy_to_my_scripts">Import to my scripts</string>
     <string name="text_import_succeed">Import successful</string>
     <string name="text_current_activity">Current Activity:</string>
     <string name="text_current_package">Current Package:</string>
-    <string name="go_to_accessibility_settings"><![CDATA[Settings->Accessibility Services->UiAutomator]]></string>
     <string name="text_script_running">Script</string>
     <string name="key_use_volume_control_running">key_use_volume_control_running</string>
     <string name="text_use_volume_to_stop_running">Stop all scripts when volume changes</string>
-    <string name="text_need_to_enable_accessibility_service">Need to enable Accessibility Service</string>
     <string name="text_refresh">Refresh</string>
     <string name="notice_no_running_script"><![CDATA[No running script φ(>ω<*)]]></string>
     <string name="text_check_for_updates">Check for updates</string>
@@ -112,7 +98,6 @@
     <string name="theme_color_gray">Gray</string>
     <string name="theme_color_blue_gray">Blue gray</string>
     <string name="text_import_fail">Import failed</string>
-    <string name="text_no_brower">No brower installed.</string>
     <string name="text_please_choose_a_script">Choose a script</string>
     <string name="text_edit_prepare_script">Edit pre-execute script</string>
     <string name="text_clear_pre_execute_script">Clear pre-execute script</string>

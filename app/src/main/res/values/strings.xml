@@ -4,8 +4,6 @@
     <string name="text_create_fail">创建失败</string>
     <string name="text_please_input_name">请输入名称</string>
     <string name="text_name">名称</string>
-    <string name="text_go_to_setting">去设置</string>
-    <string name="explain_accessibility_permission">软件需要打开\"无障碍服务\"才能运行，请在随后的设置中选择\"Auto.js\"并开启服务。\n您也可以稍后在侧拉菜单中设置。</string>
     <string name="text_cancel">取消</string>
     <string name="text_path_is_empty">路径为空</string>
     <string name="text_file_not_exists">文件不存在</string>
@@ -31,11 +29,6 @@
     <string name="text_about">关于</string>
     <string name="text_licenses">开放源代码许可</string>
     <string name="text_do_not_remind_again">不再提示</string>
-    <string name="copyright">Copyright©2018-2019 All right reserves.</string>
-    <string name="developer">星尘幻影</string>
-    <string name="qq" translatable="false">2732014414</string>
-    <string name="email" translatable="false">hybbbb1996@gmail.com</string>
-    <string name="github">软件源代码</string>
     <string name="text_already_copy_to_clip">已复制到剪贴板</string>
     <string name="my_github">https://github.com/LYS86/AutoJs</string>
     <string name="text_floating_window">悬浮窗</string>
@@ -50,7 +43,6 @@
     <string name="text_already_delete">已删除</string>
     <string name="text_error">错误</string>
     <string name="text_copy_debug_info">复制调试信息</string>
-    <string name="text_please_choose">请选择</string>
     <string name="text_crash">崩溃了o(≧口≦)o</string>
     <string name="crash_feedback">将会自动提交错误信息。您也可以手动复制调试信息提交给开发者(*^▽^*)或者点击\"退出\"退出程序o(╥﹏╥)o</string>
     <string name="text_clear">清空</string>
@@ -66,7 +58,6 @@
     <string name="text_use_volume_control_record">使用音量下键控制</string>
     <string name="summary_use_volume_control_record">开启悬浮窗后每次音量下键会开始或停止脚本录制</string>
     <string name="key_use_volume_control_record">key_use_volume_control_record</string>
-    <string name="text_mobile_qq_not_installed">未安装手机QQ</string>
     <string name="text_edit">编辑</string>
     <string name="key_max_length_for_code_completion">key_max_length_for_code_completion</string>
     <string name="text_max_length_for_code_completion">代码补全最大文件长度</string>
@@ -83,21 +74,13 @@
     <string name="text_no_floating_window_permission">没有悬浮窗权限</string>
     <string name="text_no_accessibility_permission_to_capture">无障碍服务未启动</string>
     <string name="text_record_msg">录制提示</string>
-    <string name="text_text_changed">文字改变</string>
-    <string name="text_scrolled">滑动</string>
-    <string name="text_long_clicked">长按</string>
-    <string name="text_clicked">点击</string>
-    <string name="text_copy_to_my_scripts">导入到我的脚本</string>
     <string name="text_import_succeed">导入成功</string>
     <string name="text_current_activity">当前活动:</string>
     <string name="text_current_package">当前应用包名:</string>
-    <string name="go_to_accessibility_settings"><![CDATA[请打开设置->无障碍服务->Auto.js并开启]]></string>
     <string name="text_script_running">脚本运行</string>
     <string name="key_use_volume_control_running">key_use_volume_control_running</string>
     <string name="text_use_volume_to_stop_running">音量上键停止所有脚本</string>
-    <string name="text_need_to_enable_accessibility_service">需要启用无障碍服务</string>
     <string name="text_import_fail">导入失败</string>
-    <string name="text_no_brower">没有浏览器耶o(╯□╰)o快去安装一个吧</string>
     <string name="text_refresh">刷新</string>
     <string name="notice_no_running_script"><![CDATA[没有正在运行的脚本 φ(>ω<*)]]></string>
     <string name="text_please_choose_a_script">请选择脚本</string>
@@ -141,7 +124,6 @@
     <string name="key_root_record_out_file_type">key_root_record_out_file_type</string>
     <string name="text_root_record_out_file_type">Root录制生成文件类型</string>
     <string name="text_binary">binary</string>
-    <string name="key_stable_mode">key_stable_mode</string>
     <string name="summary_stable_mode">开启后布局分析更稳定，但小部分脚本可能无法正常运行。重启无障碍服务生效</string>
     <string name="text_stable_mode">稳定模式</string>
     <string name="key_enable_observe_key">key_enable_observe_key</string>
@@ -149,7 +131,6 @@
     <string name="text_file">文件</string>
     <string name="text_tutorial">教程</string>
     <string name="text_manage">管理</string>
-    <string name="not_login">未登录</string>
     <string name="text_volume_down_control">音量下键控制</string>
     <string name="text_others">其他</string>
     <string name="text_import">导入</string>
@@ -180,10 +161,7 @@
     <string name="text_exit_floating_window">退出悬浮窗</string>
     <string name="text_select_save_path">保存到</string>
     <string name="text_cancel_download">取消下载</string>
-    <string name="text_download">下载</string>
-    <string name="format_file_downloaded" formatted="true">文件已保存到 %s</string>
     <string name="confirm_overwrite_file">文件已存在，要覆盖吗？</string>
-    <string name="text_select_file_to_upload">选择要上传的文件</string>
     <string name="text_select_file_to_import">选择要导入的文件</string>
     <string name="text_build_apk">打包应用</string>
     <string name="text_select">选择</string>
@@ -195,7 +173,6 @@
     <string name="text_version_code">版本号</string>
     <string name="text_build_successfully">打包成功</string>
     <string name="text_install">安装</string>
-    <string name="text_build_failed">打包失败，错误信息：</string>
     <string name="format_build_successfully" formatted="true">apk文件已保存到 %s</string>
     <string name="apk_builder_prepare">准备文件</string>
     <string name="apk_builder_build">构建中</string>
@@ -253,10 +230,7 @@
     <string name="text_day6">六</string>
     <string name="text_day7">日</string>
     <string name="text_weekly_task_should_check_day_of_week">至少选择一周中的一天</string>
-    <string name="no_apk_builder_plugin">没有安装打包插件，是否立即下载？</string>
-    <string name="text_apk_builder_plugin_unavailable">打包插件不可用</string>
     <string name="text_detail">详情</string>
-    <string name="text_open">打开</string>
     <string name="text_generated_code">生成结果</string>
     <string name="text_copy">复制</string>
     <string name="format_default_package_name" formatted="true">com.example.script%d</string>
@@ -265,7 +239,6 @@
     <string name="text_device_not_rooted">设备没有root</string>
     <string name="prompt_device_not_rooted">监测到您的设备没有root, 录制脚本需要root权限, 是否继续?</string>
     <string name="text_device_rooted">仍要录制</string>
-    <string name="description_stable_mode">稳定模式通过省略布局细节使脚本抓取布局时更稳定，但同时获取到的屏幕上的控件可能会减少。\n\n重新启动无障碍服务才能生效。</string>
     <string name="dex_crcs">2184044085\n3566596539\npJTCkHuhypD9i3UBQ55XQw==RtXsgCTVFA7VYhLeF1TSkg==</string>
     <string name="text_size_min_value">8</string>
     <string name="text_size_max_value">56</string>
@@ -273,8 +246,6 @@
     <string name="text_preview">预览</string>
     <string name="text_size_current_value" formatted="true">字体大小: %d</string>
     <string name="error_regex_find_prev">正则表达式不能向前查找</string>
-    <string name="text_notification">通知</string>
-    <string name="apk_builder_plugin_version_too_low">打包插件版本过低，打包的应用可能无法正常运行。是否立即下载对应版本的打包插件？</string>
     <string name="text_inspect_layout_bounds">布局范围分析</string>
     <string name="text_inspect_layout_hierarchy">布局层次分析</string>
     <string name="text_inspect_layout">布局分析</string>
@@ -282,7 +253,6 @@
     <string name="text_change_script_dir">更改脚本文件夹路径</string>
     <string name="key_script_dir_path">key_script_dir_path</string>
     <string name="default_value_script_dir_path">/脚本/</string>
-    <string name="text_error_copy_file" formatted="true">发生错误: %s</string>
     <string name="text_debug">调试</string>
     <string name="text_set_breakpoint">断点</string>
     <string name="text_launch_debugger">启动调试</string>
@@ -355,18 +325,11 @@
     <string name="text_run_on_startup">Auto.js启动时</string>
     <string name="text_usage_stats_permission">查看使用统计权限</string>
     <string name="description_usage_stats_permission">通过\"查看使用统计\"权限可以获取本设备过去使用应用的情况，从而使获取当前应用(currentPackage)时更准确。</string>
-    <string name="text_open_with">打开方式</string>
-    <string name="text_root">Root</string>
-    <string name="text_no_root">免Root</string>
-    <string name="text_star">收藏</string>
-    <string name="text_upvote">赞</string>
-    <string name="text_downvote">踩</string>
     <string name="text_sign_config">签名配置</string>
     <string name="text_keystore_path">签名文件路径</string>
     <string name="text_keystore_password">签名文件密码</string>
     <string name="text_key_alias">密钥别名</string>
     <string name="text_key_password">密钥密码</string>
-    <string name="text_sign_config_required">请填写签名配置</string>
     <string name="text_keystore_not_found">签名文件不存在</string>
     <string name="text_keystore_path_empty">请选择签名文件</string>
     <string name="text_keystore_password_empty">请填写签名文件密码</string>
