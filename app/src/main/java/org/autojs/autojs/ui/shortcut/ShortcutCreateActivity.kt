@@ -4,21 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Icon
-import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.IconCompat
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ShortcutCreateDialogBinding
-import org.autojs.autojs.external.ScriptIntents
-import org.autojs.autojs.external.shortcut.Shortcut
-import org.autojs.autojs.external.shortcut.ShortcutActivity
 import org.autojs.autojs.external.shortcut.ShortcutManager
 import org.autojs.autojs.model.script.ScriptFile
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
@@ -67,27 +62,25 @@ class ShortcutCreateActivity : AppCompatActivity() {
         startActivityForResult(Intent(this, ShortcutIconSelectActivity::class.java), REQUEST_CODE_SELECT_ICON)
     }
 
-    @SuppressLint("NewApi")
     private fun createShortcut() {
-        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && binding.useAndroidNShortcut.isChecked) ||
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createShortcutByShortcutManager()
-            return
-        }
-        val shortcut = Shortcut(this)
-        if (isDefaultIcon) {
-            shortcut.iconRes(R.drawable.ic_node_js_black)
+        val icon = if (isDefaultIcon) {
+            IconCompat.createWithResource(this, R.drawable.ic_node_js_black)
         } else {
             val bitmap = BitmapTool.drawableToBitmap(binding.icon.drawable)
-            shortcut.icon(bitmap)
+            IconCompat.createWithBitmap(bitmap)
         }
-        shortcut.name(binding.name.text.toString())
-            .targetClass(ShortcutActivity::class.java)
-            .extras(Intent().putExtra(ScriptIntents.EXTRA_KEY_PATH, scriptFile.path))
-            .send()
+        val name = binding.name.text.toString()
+        if (binding.useAndroidNShortcut.isChecked) {
+            ShortcutManager.createPinnedShortcut(
+                this, name, scriptFile.path, icon, scriptFile.path
+            )
+        } else {
+            ShortcutManager.createDynamicShortcut(
+                this, name, scriptFile.path, icon, scriptFile.path
+            )
+        }
     }
 
-    @SuppressLint("CheckResult")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != RESULT_OK || data == null) {
             return
@@ -114,26 +107,5 @@ class ShortcutCreateActivity : AppCompatActivity() {
             }, {
                 Log.e(LOG_TAG, "decode stream", it)
             })
-    }
-
-    @SuppressLint("NewApi")
-    private fun createShortcutByShortcutManager() {
-        val icon = if (isDefaultIcon) {
-            Icon.createWithResource(this, R.drawable.ic_file_type_js)
-        } else {
-            val bitmap = BitmapTool.drawableToBitmap(binding.icon.drawable)
-            Icon.createWithBitmap(bitmap)
-        }
-        val extras = PersistableBundle(1)
-        extras.putString(ScriptIntents.EXTRA_KEY_PATH, scriptFile.path)
-        val intent = Intent(this, ShortcutActivity::class.java)
-            .putExtra(ScriptIntents.EXTRA_KEY_PATH, scriptFile.path)
-            .setAction(Intent.ACTION_MAIN)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ShortcutManager.getInstance(this).addPinnedShortcut(binding.name.text, scriptFile.path, icon, intent)
-        } else {
-            ShortcutManager.getInstance(this).addDynamicShortcut(binding.name.text, scriptFile.path, icon, intent)
-        }
     }
 }
