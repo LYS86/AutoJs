@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
 import com.stardust.autojs.project.ProjectConfig
@@ -13,6 +14,7 @@ import com.stardust.pio.PFiles
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ActivityProjectConfigBinding
 import org.autojs.autojs.model.explorer.ExplorerDirPage
@@ -23,6 +25,7 @@ import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity
 import org.autojs.autojs.ui.widget.SimpleTextWatcher
+import org.github.autojs.shortcut.getBitmapFromIntent
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -212,20 +215,17 @@ class ProjectConfigActivity : BaseActivity() {
         return false
     }
 
-    @SuppressLint("CheckResult")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode != RESULT_OK) {
-            return
-        }
-        ShortcutIconSelectActivity.getBitmapFromIntent(applicationContext, data!!)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ bitmap ->
+        if (resultCode != RESULT_OK) return
+        lifecycleScope.launch {
+            try {
+                val bitmap = getBitmapFromIntent(applicationContext, data!!)
                 binding.icon.setImageBitmap(bitmap)
                 iconBitmap = bitmap
-            }) { obj ->
-                Timber.e(obj)
+            } catch (e: Exception) {
+                Timber.e(e)
             }
+        }
     }
 
     @SuppressLint("CheckResult")

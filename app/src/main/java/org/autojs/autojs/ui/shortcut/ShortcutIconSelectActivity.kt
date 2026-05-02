@@ -1,12 +1,9 @@
 package org.autojs.autojs.ui.shortcut
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.Menu
@@ -20,9 +17,9 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.autojs.autojs.R
-import org.autojs.autojs.tool.BitmapTool
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.workground.WrapContentGridLayoutManger
+import org.github.autojs.shortcut.EXTRA_PACKAGE_NAME
 
 class ShortcutIconSelectActivity : BaseActivity() {
 
@@ -113,22 +110,6 @@ class ShortcutIconSelectActivity : BaseActivity() {
     }
 
     companion object {
-        const val EXTRA_PACKAGE_NAME = "extra_package_name"
         private const val REQUEST_CODE_PICK_IMAGE = 11234
-
-        @JvmStatic
-        fun getBitmapFromIntent(context: Context, data: Intent): Observable<Bitmap> {
-            val packageName = data.getStringExtra(EXTRA_PACKAGE_NAME)
-            if (packageName != null) {
-                return Observable.fromCallable {
-                    val drawable = context.packageManager.getApplicationIcon(packageName)
-                    BitmapTool.drawableToBitmap(drawable)
-                }
-            }
-            val uri = data.data ?: return Observable.error(IllegalArgumentException("invalid intent"))
-            return Observable.fromCallable {
-                BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri))
-            }
-        }
     }
 }

@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.IconCompat
+import androidx.core.graphics.drawable.toBitmap
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -17,7 +18,7 @@ import org.autojs.autojs.databinding.ShortcutCreateDialogBinding
 import org.autojs.autojs.external.shortcut.ShortcutManager
 import org.autojs.autojs.model.script.ScriptFile
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
-import org.autojs.autojs.tool.BitmapTool
+import org.github.autojs.shortcut.EXTRA_PACKAGE_NAME
 import timber.log.Timber
 
 class ShortcutCreateActivity : AppCompatActivity() {
@@ -66,7 +67,7 @@ class ShortcutCreateActivity : AppCompatActivity() {
         val icon = if (isDefaultIcon) {
             IconCompat.createWithResource(this, R.drawable.ic_node_js_black)
         } else {
-            val bitmap = BitmapTool.drawableToBitmap(binding.icon.drawable)
+            val bitmap = binding.icon.drawable.toBitmap()
             IconCompat.createWithBitmap(bitmap)
         }
         val name = binding.name.text.toString()
@@ -85,7 +86,7 @@ class ShortcutCreateActivity : AppCompatActivity() {
         if (resultCode != RESULT_OK || data == null) {
             return
         }
-        val packageName = data.getStringExtra(ShortcutIconSelectActivity.EXTRA_PACKAGE_NAME)
+        val packageName = data.getStringExtra(EXTRA_PACKAGE_NAME)
         if (packageName != null) {
             try {
                 binding.icon.setImageDrawable(packageManager.getApplicationIcon(packageName))

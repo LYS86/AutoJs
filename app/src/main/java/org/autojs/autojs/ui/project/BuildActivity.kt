@@ -11,7 +11,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
 import org.autojs.autojs.build.ApkSigner
 import com.stardust.autojs.project.ProjectConfig
 import com.stardust.util.IntentUtil
@@ -25,11 +28,11 @@ import org.autojs.autojs.build.ApkBuilderPluginHelper
 import org.autojs.autojs.databinding.ActivityBuildBinding
 import com.stardust.autojs.util.FileProviderUtils
 import org.autojs.autojs.model.script.ScriptFile
-import org.autojs.autojs.tool.BitmapTool
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder
-import timber.log.Timber
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity
+import org.github.autojs.shortcut.getBitmapFromIntent
+import timber.log.Timber
 import java.io.File
 
 class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
@@ -312,7 +315,7 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
             versionCode = versionCode,
             versionName = versionName,
             icon = if (isDefaultIcon) null else {
-                { BitmapTool.drawableToBitmap(binding.icon.drawable) }
+                { binding.icon.drawable.toBitmap() }
             }
         )
     }
@@ -394,21 +397,17 @@ class BuildActivity : BaseActivity(), ApkBuilder.ProgressCallback {
         }
     }
 
-    @SuppressLint("CheckResult")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode != RESULT_OK) {
-            return
+        if (resultCode != RESULT_OK) return
+        lifecycleScope.launch {
+            try {
+                val bitmap = getBitmapFromIntent(applicationContext, data!!)
+                binding.icon.setImageBitmap(bitmap)
+                isDefaultIcon = false
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
         }
-        ShortcutIconSelectActivity.getBitmapFromIntent(applicationContext, data!!)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { bitmap ->
-                    binding.icon.setImageBitmap(bitmap)
-                    isDefaultIcon = false
-                },
-                { Timber.e(it) }
-            )
     }
 
     companion object {
