@@ -35,6 +35,8 @@
     <string name="text_open_by_other_apps">Open by other apps</string>
     <string name="text_rename">Rename</string>
     <string name="text_send_shortcut">Create shortcut</string>
+    <string name="text_dynamic_shortcut">Dynamic shortcut</string>
+    <string name="text_pinned_shortcut">Pinned shortcut</string>
     <string name="text_already_create">Created</string>
     <string name="text_delete">Delete</string>
     <string name="text_already_delete">Deleted</string>

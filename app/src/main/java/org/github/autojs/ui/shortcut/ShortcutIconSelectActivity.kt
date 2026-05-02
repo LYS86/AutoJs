@@ -17,6 +17,7 @@ import com.stardust.autojs.core.compat.getInstalledApplicationsCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.github.autojs.shortcut.EXTRA_PACKAGE_NAME
 
 class ShortcutIconSelectActivity : ComponentActivity() {
 

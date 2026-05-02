@@ -183,7 +183,8 @@
     <string name="text_template_apk_title">选择模版APK</string>
     <string name="text_search">搜索</string>
     <string name="text_select_icon">选择图标</string>
-    <string name="text_use_android_n_shortcut">添加到安卓7.0 Shortcut</string>
+    <string name="text_dynamic_shortcut">动态快捷方式</string>
+    <string name="text_pinned_shortcut">固定快捷方式</string>
     <string name="text_sample">示例代码</string>
     <string name="text_reset_to_initial_content">重置为初始内容</string>
     <string name="text_reset_succeed">重置成功</string>

@@ -108,8 +108,8 @@
             android:theme="@style/AutoJsTheme"/>
         <activity android:name=".ui.timing.TimedTaskSettingActivity"/>
         <activity
-            android:name=".ui.shortcut.ShortcutCreateActivity"
-            android:theme="@style/AppTheme.Transparent"/>
+            android:name="org.github.autojs.ui.shortcut.ShortcutCreateActivity"
+            android:theme="@style/AutoJsTheme.Transparent"/>
         <activity
             android:name=".external.widget.ScriptWidgetSettingsActivity"
             android:exported="true">

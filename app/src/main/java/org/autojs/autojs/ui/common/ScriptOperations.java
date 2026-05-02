@@ -35,7 +35,7 @@ import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.model.script.Scripts;
 import org.autojs.autojs.network.download.DownloadManager;
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder;
-import org.autojs.autojs.ui.shortcut.ShortcutCreateActivity;
+import org.github.autojs.ui.shortcut.ShortcutCreateActivity;
 import org.autojs.autojs.ui.timing.TimedTaskSettingActivity;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 
