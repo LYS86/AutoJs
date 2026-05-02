@@ -1,8 +1,10 @@
 package com.stardust.autojs.core.compat
 
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.os.Build
 
 fun PackageManager.getPackageInfoCompat(packageName: String): PackageInfo {
@@ -51,3 +53,16 @@ val PackageInfo.versionCodeCompat: Long
         @Suppress("DEPRECATION")
         versionCode.toLong()
     }
+
+fun PackageManager.queryIntentActivitiesCompat(intent: Intent, flags: Int): List<ResolveInfo> {
+    return when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+            queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(flags.toLong()))
+        }
+
+        else -> {
+            @Suppress("DEPRECATION")
+            queryIntentActivities(intent, flags)
+        }
+    }
+}

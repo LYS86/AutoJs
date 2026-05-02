@@ -1,7 +1,6 @@
 package org.github.autojs.ui.shortcut
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,7 +12,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.lifecycleScope
 import com.stardust.autojs.compose.theme.AppTheme
-import com.stardust.autojs.core.compat.getInstalledApplicationsCompat
+import com.stardust.autojs.core.compat.getApplicationInfoCompat
+import com.stardust.autojs.core.compat.queryIntentActivitiesCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,25 +41,25 @@ class ShortcutIconSelectActivity : ComponentActivity() {
 
     private fun loadApps() {
         lifecycleScope.launch(Dispatchers.Default) {
-            val packages = packageManager.getInstalledApplicationsCompat(PackageManager.GET_META_DATA)
+            val launcherIntent = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
+            val launchablePackages = packageManager
+                .queryIntentActivitiesCompat(launcherIntent, 0)
+                .map { it.activityInfo.packageName }
+                .toSet()
             appList.clear()
-            packages
-                .filter { it.icon != 0 }
-                .forEach { info ->
-                    val drawable = info.loadIcon(packageManager)
-                    val bitmap = drawable.toBitmap(
-                        width = drawable.intrinsicWidth,
-                        height = drawable.intrinsicHeight
-                    )
-                    val appItem = AppItem(
-                        packageName = info.packageName,
-                        label = info.loadLabel(packageManager).toString(),
-                        iconBitmap = bitmap
-                    )
-                    withContext(Dispatchers.Main) {
-                        appList.add(appItem)
-                    }
+            launchablePackages.forEach { pkg ->
+                val info = packageManager.getApplicationInfoCompat(pkg)
+                val drawable = info.loadIcon(packageManager)
+                val bitmap = drawable.toBitmap()
+                val appItem = AppItem(
+                    packageName = info.packageName,
+                    label = info.loadLabel(packageManager).toString(),
+                    iconBitmap = bitmap
+                )
+                withContext(Dispatchers.Main) {
+                    appList.add(appItem)
                 }
+            }
         }
     }
 }
