@@ -19,8 +19,8 @@ android {
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = libs.versions.appVersionCode.get().toInt()
         versionName = libs.versions.appVersionName.get()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -65,10 +65,6 @@ android {
 dependencies {
     implementation(libs.kotlinx.coroutines)
     implementation(libs.commons.io)
-    androidTestImplementation(libs.androidx.espresso) {
-        exclude(group = "com.android.support", module = "support-annotations")
-    }
-    testImplementation(libs.junit)
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.cardview)
@@ -129,4 +125,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.material.icons.extended)
     debugImplementation(libs.compose.ui.tooling)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.test.manifest)
 }

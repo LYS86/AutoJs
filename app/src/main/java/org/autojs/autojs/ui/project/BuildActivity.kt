@@ -30,7 +30,7 @@ import com.stardust.autojs.util.FileProviderUtils
 import org.autojs.autojs.model.script.ScriptFile
 import org.autojs.autojs.ui.BaseActivity
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder
-import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity
+import org.github.autojs.ui.shortcut.ShortcutIconSelectActivity
 import org.github.autojs.shortcut.getBitmapFromIntent
 import timber.log.Timber
 import java.io.File

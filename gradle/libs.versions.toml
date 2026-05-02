@@ -52,7 +52,7 @@ roundedimageview = "2.3.0"
 splashscreen = "1.0.1"
 opencv = "4.13.0"
 shizuku = "13.1.5"
-compose-bom = "2026.03.01"
+compose-bom = "2026.04.01"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -111,7 +111,8 @@ compose-material3 = { module = "androidx.compose.material3:material3" }
 compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui = { module = "androidx.compose.ui:ui" }
-
+compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 [bundles]
 retrofit = ["retrofit", "retrofit-converter-gson", "retrofit-rxjava2-adapter"]
 rxjava = ["rxjava", "rxandroid"]

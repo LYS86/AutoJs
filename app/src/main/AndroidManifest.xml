@@ -103,7 +103,9 @@
         <activity
             android:name=".ui.log.LogActivity"
             android:theme="@style/AutoJsTheme"/>
-        <activity android:name=".ui.shortcut.ShortcutIconSelectActivity"/>
+        <activity
+            android:name="org.github.autojs.ui.shortcut.ShortcutIconSelectActivity"
+            android:theme="@style/AutoJsTheme"/>
         <activity android:name=".ui.timing.TimedTaskSettingActivity"/>
         <activity
             android:name=".ui.shortcut.ShortcutCreateActivity"

@@ -23,7 +23,7 @@ import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.model.project.ProjectTemplate
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
 import org.autojs.autojs.ui.BaseActivity
-import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity
+import org.github.autojs.ui.shortcut.ShortcutIconSelectActivity
 import org.autojs.autojs.ui.widget.SimpleTextWatcher
 import org.github.autojs.shortcut.getBitmapFromIntent
 import timber.log.Timber

@@ -19,6 +19,7 @@ import org.autojs.autojs.external.shortcut.ShortcutManager
 import org.autojs.autojs.model.script.ScriptFile
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder
 import org.github.autojs.shortcut.EXTRA_PACKAGE_NAME
+import org.github.autojs.shortcut.ShortcutIconSelectActivity
 import timber.log.Timber
 
 class ShortcutCreateActivity : AppCompatActivity() {
