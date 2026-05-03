@@ -2,24 +2,13 @@
 <issues format="6" by="lint 8.13.0" type="baseline" client="gradle" dependencies="false" name="AGP (8.13.0)" variant="all" version="8.13.0">
 
     <issue
-        id="MissingPermission"
-        message="Missing permissions required by intent Intent.ACTION_CLOSE_SYSTEM_DIALOGS: android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS"
-        errorLine1="        sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));"
-        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/tile/LayoutInspectTileService.java"
-            line="52"
-            column="23"/>
-    </issue>
-
-    <issue
         id="MissingSuperCall"
         message="Overriding method should call `super.onActivityResult`"
         errorLine1="    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {"
         errorLine2="                 ~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/project/BuildActivity.kt"
-            line="398"
+            line="400"
             column="18"/>
     </issue>
 
@@ -52,29 +41,7 @@
         errorLine2="                 ~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/project/ProjectConfigActivity.kt"
-            line="216"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="MissingSuperCall"
-        message="Overriding method should call `super.onActivityResult`"
-        errorLine1="    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {"
-        errorLine2="                 ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/ui/shortcut/ShortcutCreateActivity.kt"
-            line="91"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="MissingSuperCall"
-        message="Overriding method should call `super.onActivityResult`"
-        errorLine1="    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {"
-        errorLine2="                 ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/ui/shortcut/ShortcutIconSelectActivity.kt"
-            line="81"
+            line="218"
             column="18"/>
     </issue>
 
@@ -338,8 +305,19 @@
         errorLine2="    ~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/model/script/Scripts.kt"
-            line="141"
+            line="128"
             column="5"/>
+    </issue>
+
+    <issue
+        id="MissingDefaultResource"
+        message="The color &quot;prefTextColorSecondary&quot; in values-night has no declaration in the base `values` folder; this can lead to crashes when the resource is queried in a configuration that does not match this qualifier"
+        errorLine1="    &lt;color name=&quot;prefTextColorSecondary&quot;>#9A9A9A&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-night/colors.xml"
+            line="16"
+            column="12"/>
     </issue>
 
     <issue
@@ -382,7 +360,7 @@
         errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="200"
+            line="202"
             column="39"/>
     </issue>
 
@@ -762,17 +740,6 @@
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.core:core-ktx than 1.3.2 is available: 1.16.0"
-        errorLine1="androidx-core = &quot;1.3.2&quot;"
-        errorLine2="                ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="12"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
         message="A newer version of androidx.browser:browser than 1.3.0 is available: 1.5.0"
         errorLine1="androidx-browser = &quot;1.3.0&quot;"
         errorLine2="                   ~~~~~~~">
@@ -824,17 +791,6 @@
             file="../gradle/libs.versions.toml"
             line="40"
             column="10"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.compose:compose-bom than 2026.03.01 is available: 2026.04.01"
-        errorLine1="compose-bom = &quot;2026.03.01&quot;"
-        errorLine2="              ~~~~~~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="55"
-            column="15"/>
     </issue>
 
     <issue
@@ -993,7 +949,7 @@
 
     <issue
         id="NewerVersionAvailable"
-        message="A newer version of joda-time:joda-time than 2.9.9 is available: 2.14.1"
+        message="A newer version of joda-time:joda-time than 2.9.9 is available: 2.14.2"
         errorLine1="joda-time = &quot;2.9.9&quot;"
         errorLine2="            ~~~~~~~">
         <location
@@ -1044,17 +1000,6 @@
             file="../gradle/libs.versions.toml"
             line="36"
             column="20"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of com.evernote:android-job than 1.2.6 is available: 1.4.3"
-        errorLine1="android-job = &quot;1.2.6&quot;"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="37"
-            column="15"/>
     </issue>
 
     <issue
@@ -1383,7 +1328,7 @@
         errorLine2="                                                                                       ~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="269"
+            line="243"
             column="88"/>
     </issue>
 
@@ -1416,7 +1361,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/project/BuildActivity.kt"
-            line="341"
+            line="344"
             column="9"/>
     </issue>
 
@@ -1808,61 +1753,6 @@
     <issue
         id="LogNotTimber"
         message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
-        errorLine1="        Log.d(getClass().getName(), &quot;onCreate&quot;);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/tile/LayoutInspectTileService.java"
-            line="30"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="LogNotTimber"
-        message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
-        errorLine1="        Log.d(getClass().getName(), &quot;onStartListening&quot;);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/tile/LayoutInspectTileService.java"
-            line="37"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="LogNotTimber"
-        message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
-        errorLine1="        Log.d(getClass().getName(), &quot;onDestroy&quot;);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/tile/LayoutInspectTileService.java"
-            line="44"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="LogNotTimber"
-        message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
-        errorLine1="        Log.d(getClass().getName(), &quot;onClick&quot;);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/tile/LayoutInspectTileService.java"
-            line="51"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="LogNotTimber"
-        message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
-        errorLine1="        Log.d(getClass().getName(), &quot;onCaptureAvailable: capturing = &quot; + mCapturing);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/tile/LayoutInspectTileService.java"
-            line="75"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="LogNotTimber"
-        message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
         errorLine1="        Log.d(LOG_TAG, &quot;handle: &quot; + data);"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1924,17 +1814,6 @@
             file="src/main/java/org/autojs/autojs/external/widget/ScriptWidgets.java"
             line="69"
             column="13"/>
-    </issue>
-
-    <issue
-        id="LogNotTimber"
-        message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
-        errorLine1="                Log.e(LOG_TAG, &quot;decode stream&quot;, it)"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/ui/shortcut/ShortcutCreateActivity.kt"
-            line="115"
-            column="17"/>
     </issue>
 
     <issue
@@ -2021,7 +1900,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="38"
+            line="33"
             column="5"/>
     </issue>
 
@@ -2032,11 +1911,11 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="128"
+            line="115"
             column="5"/>
         <location
             file="src/main/res/values/strings.xml"
-            line="117"
+            line="100"
             column="5"
             message="Conflicting number of arguments (0) here"/>
     </issue>
@@ -2340,17 +2219,6 @@
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; `SDK_INT` is always >= 24"
-        errorLine1="@RequiresApi(api = Build.VERSION_CODES.N)"
-        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/tile/LayoutBoundsTile.java"
-            line="11"
-            column="1"/>
-    </issue>
-
-    <issue
-        id="ObsoleteSdkInt"
         message="Unnecessary; `SDK_INT` is always >= 21"
         errorLine1="    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -2358,28 +2226,6 @@
             file="src/main/java/org/autojs/autojs/ui/floating/layoutinspector/LayoutBoundsView.java"
             line="57"
             column="5"/>
-    </issue>
-
-    <issue
-        id="ObsoleteSdkInt"
-        message="Unnecessary; `SDK_INT` is always >= 24"
-        errorLine1="@RequiresApi(api = Build.VERSION_CODES.N)"
-        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/tile/LayoutHierarchyTile.java"
-            line="11"
-            column="1"/>
-    </issue>
-
-    <issue
-        id="ObsoleteSdkInt"
-        message="Unnecessary; `SDK_INT` is always >= 24"
-        errorLine1="@RequiresApi(api = Build.VERSION_CODES.N)"
-        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/tile/LayoutInspectTileService.java"
-            line="22"
-            column="1"/>
     </issue>
 
     <issue
@@ -2452,17 +2298,6 @@
         <location
             file="src/main/java/org/autojs/autojs/autojs/record/GlobalActionRecorder.java"
             line="30"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="StaticFieldLeak"
-        message="Do not place Android context classes in static fields (static reference to `ShortcutManager` which has field `mContext` pointing to `Context`); this is a memory leak"
-        errorLine1="    private static ShortcutManager sInstance;"
-        errorLine2="            ~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/shortcut/ShortcutManager.java"
-            line="23"
             column="13"/>
     </issue>
 
@@ -2550,7 +2385,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="104"
+            line="100"
             column="5"/>
     </issue>
 
@@ -2622,17 +2457,6 @@
 
     <issue
         id="Overdraw"
-        message="Possible overdraw: Root element paints background `#e4e4e4` with a theme that also paints a background (inferred theme is `@style/AppTheme`)"
-        errorLine1="      android:background=&quot;#e4e4e4&quot;"
-        errorLine2="      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/divider.xml"
-            line="5"
-            column="7"/>
-    </issue>
-
-    <issue
-        id="Overdraw"
         message="Possible overdraw: Root element paints background `?android:divider` with a theme that also paints a background (inferred theme is `@style/AppTheme`)"
         errorLine1="             android:background=&quot;?android:divider&quot;"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -2688,78 +2512,13 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.android_eating_half` appears to be unused">
-        <location
-            file="src/main/res/drawable/android_eating_half.png"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.avatar_view_bg` appears to be unused"
-        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
-        errorLine2="^">
-        <location
-            file="src/main/res/drawable/avatar_view_bg.xml"
-            line="2"
-            column="1"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.bg_label_root_permission` appears to be unused"
-        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
-        errorLine2="^">
-        <location
-            file="src/main/res/drawable/bg_label_root_permission.xml"
-            line="2"
-            column="1"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
         message="The resource `R.color.prefTextColorSecondary` appears to be unused"
-        errorLine1="    &lt;color name=&quot;prefTextColorSecondary&quot;>#9DA0A2&lt;/color>"
+        errorLine1="    &lt;color name=&quot;prefTextColorSecondary&quot;>#9A9A9A&lt;/color>"
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/values/colors.xml"
-            line="10"
+            file="src/main/res/values-night/colors.xml"
+            line="16"
             column="12"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.layout.divider` appears to be unused"
-        errorLine1="&lt;View xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="^">
-        <location
-            file="src/main/res/layout/divider.xml"
-            line="2"
-            column="1"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.download` appears to be unused">
-        <location
-            file="src/main/res/drawable/download.png"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.downvote` appears to be unused">
-        <location
-            file="src/main/res/drawable/downvote.png"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.drawer_header_shadow` appears to be unused"
-        errorLine1="&lt;shape"
-        errorLine2="^">
-        <location
-            file="src/main/res/drawable/drawer_header_shadow.xml"
-            line="1"
-            column="1"/>
     </issue>
 
     <issue
@@ -2775,58 +2534,16 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.ic_close_gray600_48dp` appears to be unused">
-        <location
-            file="src/main/res/drawable/ic_close_gray600_48dp.png"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.ic_developer` appears to be unused">
-        <location
-            file="src/main/res/drawable/ic_developer.png"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
         message="The resource `R.drawable.ic_exit_to_app_black_24dp` appears to be unused">
         <location
-            file="src/main/res/drawable-hdpi/ic_exit_to_app_black_24dp.png"/>
+            file="src/main/res/drawable-mdpi/ic_exit_to_app_black_24dp.png"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.ic_github_mark` appears to be unused">
+        message="The resource `R.drawable.ic_insert_photo_white_48dp` appears to be unused">
         <location
-            file="src/main/res/drawable/ic_github_mark.png"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.ic_qq_black` appears to be unused">
-        <location
-            file="src/main/res/drawable/ic_qq_black.png"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.ic_stable` appears to be unused">
-        <location
-            file="src/main/res/drawable/ic_stable.png"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.profile_avatar_placeholder` appears to be unused">
-        <location
-            file="src/main/res/drawable/profile_avatar_placeholder.png"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.star` appears to be unused">
-        <location
-            file="src/main/res/drawable/star.png"/>
+            file="src/main/res/drawable-xhdpi/ic_insert_photo_white_48dp.png"/>
     </issue>
 
     <issue
@@ -2842,427 +2559,13 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.string.text_go_to_setting` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_go_to_setting&quot;>去设置&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="7"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.explain_accessibility_permission` appears to be unused"
-        errorLine1="    &lt;string name=&quot;explain_accessibility_permission&quot;>软件需要打开\&quot;无障碍服务\&quot;才能运行，请在随后的设置中选择\&quot;Auto.js\&quot;并开启服务。\n您也可以稍后在侧拉菜单中设置。&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="8"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.copyright` appears to be unused"
-        errorLine1="    &lt;string name=&quot;copyright&quot;>Copyright©2018-2019 All right reserves.&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="34"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.developer` appears to be unused"
-        errorLine1="    &lt;string name=&quot;developer&quot;>星尘幻影&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="35"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.qq` appears to be unused"
-        errorLine1="    &lt;string name=&quot;qq&quot; translatable=&quot;false&quot;>2732014414&lt;/string>"
-        errorLine2="            ~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="36"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.email` appears to be unused"
-        errorLine1="    &lt;string name=&quot;email&quot; translatable=&quot;false&quot;>hybbbb1996@gmail.com&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="37"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.github` appears to be unused"
-        errorLine1="    &lt;string name=&quot;github&quot;>软件源代码&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="38"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
         message="The resource `R.string.text_already_stop_n_scripts` appears to be unused"
         errorLine1="    &lt;string name=&quot;text_already_stop_n_scripts&quot;>已停止%d个正在运行的脚本&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="43"
+            line="36"
             column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_please_choose` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_please_choose&quot;>请选择&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="53"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_mobile_qq_not_installed` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_mobile_qq_not_installed&quot;>未安装手机QQ&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="69"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_text_changed` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_text_changed&quot;>文字改变&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="86"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_scrolled` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_scrolled&quot;>滑动&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="87"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_long_clicked` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_long_clicked&quot;>长按&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="88"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_clicked` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_clicked&quot;>点击&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="89"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_copy_to_my_scripts` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_copy_to_my_scripts&quot;>导入到我的脚本&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="90"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.go_to_accessibility_settings` appears to be unused"
-        errorLine1="    &lt;string name=&quot;go_to_accessibility_settings&quot;>&lt;![CDATA[请打开设置->无障碍服务->Auto.js并开启]]&gt;&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="94"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_need_to_enable_accessibility_service` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_need_to_enable_accessibility_service&quot;>需要启用无障碍服务&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="98"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_no_brower` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_no_brower&quot;>没有浏览器耶o(╯□╰)o快去安装一个吧&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="100"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.key_stable_mode` appears to be unused"
-        errorLine1="    &lt;string name=&quot;key_stable_mode&quot;>key_stable_mode&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="144"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.not_login` appears to be unused"
-        errorLine1="    &lt;string name=&quot;not_login&quot;>未登录&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="152"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_download` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_download&quot;>下载&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="183"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.format_file_downloaded` appears to be unused"
-        errorLine1="    &lt;string name=&quot;format_file_downloaded&quot; formatted=&quot;true&quot;>文件已保存到 %s&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="184"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_select_file_to_upload` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_select_file_to_upload&quot;>选择要上传的文件&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="186"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_build_failed` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_build_failed&quot;>打包失败，错误信息：&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="198"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.no_apk_builder_plugin` appears to be unused"
-        errorLine1="    &lt;string name=&quot;no_apk_builder_plugin&quot;>没有安装打包插件，是否立即下载？&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="256"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_apk_builder_plugin_unavailable` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_apk_builder_plugin_unavailable&quot;>打包插件不可用&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="257"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_open` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_open&quot;>打开&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="259"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.description_stable_mode` appears to be unused"
-        errorLine1="    &lt;string name=&quot;description_stable_mode&quot;>稳定模式通过省略布局细节使脚本抓取布局时更稳定，但同时获取到的屏幕上的控件可能会减少。\n\n重新启动无障碍服务才能生效。&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="268"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_notification` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_notification&quot;>通知&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="276"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.apk_builder_plugin_version_too_low` appears to be unused"
-        errorLine1="    &lt;string name=&quot;apk_builder_plugin_version_too_low&quot;>打包插件版本过低，打包的应用可能无法正常运行。是否立即下载对应版本的打包插件？&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="277"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_error_copy_file` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_error_copy_file&quot; formatted=&quot;true&quot;>发生错误: %s&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="285"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_open_with` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_open_with&quot;>打开方式&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="358"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_root` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_root&quot;>Root&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="359"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_no_root` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_no_root&quot;>免Root&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="360"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_star` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_star&quot;>收藏&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="361"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_upvote` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_upvote&quot;>赞&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="362"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_downvote` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_downvote&quot;>踩&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="363"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.text_sign_config_required` appears to be unused"
-        errorLine1="    &lt;string name=&quot;text_sign_config_required&quot;>请填写签名配置&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="369"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.upvote` appears to be unused">
-        <location
-            file="src/main/res/drawable-xhdpi/upvote.png"/>
     </issue>
 
     <issue
@@ -3343,24 +2646,13 @@
     </issue>
 
     <issue
-        id="TypographyDashes"
-        message="Replace &quot;-&quot; with an &quot;en dash&quot; character (–, &amp;#8211;) ?"
-        errorLine1="    &lt;string name=&quot;copyright&quot;>Copyright©2018-2019 All right reserves.&lt;/string>"
-        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="34"
-            column="30"/>
-    </issue>
-
-    <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
         errorLine1="    &lt;string name=&quot;text_layout_inspector_is_dumping&quot;>Inspecting layout...&lt;/string>"
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="126"
+            line="113"
             column="53"/>
     </issue>
 
@@ -3369,13 +2661,6 @@
         message="Suspicious file name `ic_insert_photo_white_48dp.png`: The implied 48 `dp` size does not match the actual `dp` size (pixel size 180×180 in a `drawable-xhdpi` folder computes to 90×90 `dp`)">
         <location
             file="src/main/res/drawable-xhdpi/ic_insert_photo_white_48dp.png"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
-        message="Found bitmap drawable `res/drawable/android_eating_half.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/android_eating_half.png"/>
     </issue>
 
     <issue
@@ -3404,20 +2689,6 @@
         message="Found bitmap drawable `res/drawable/autojs_material.png` in densityless folder">
         <location
             file="src/main/res/drawable/autojs_material.png"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
-        message="Found bitmap drawable `res/drawable/download.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/download.png"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
-        message="Found bitmap drawable `res/drawable/downvote.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/downvote.png"/>
     </issue>
 
     <issue
@@ -3541,13 +2812,6 @@
 
     <issue
         id="IconLocation"
-        message="Found bitmap drawable `res/drawable/ic_close_gray600_48dp.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/ic_close_gray600_48dp.png"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
         message="Found bitmap drawable `res/drawable/ic_collapsed.png` in densityless folder">
         <location
             file="src/main/res/drawable/ic_collapsed.png"/>
@@ -3586,13 +2850,6 @@
         message="Found bitmap drawable `res/drawable/ic_descending_order.png` in densityless folder">
         <location
             file="src/main/res/drawable/ic_descending_order.png"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
-        message="Found bitmap drawable `res/drawable/ic_developer.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/ic_developer.png"/>
     </issue>
 
     <issue
@@ -3646,13 +2903,6 @@
 
     <issue
         id="IconLocation"
-        message="Found bitmap drawable `res/drawable/ic_github_mark.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/ic_github_mark.png"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
         message="Found bitmap drawable `res/drawable/ic_menu.png` in densityless folder">
         <location
             file="src/main/res/drawable/ic_menu.png"/>
@@ -3691,13 +2941,6 @@
         message="Found bitmap drawable `res/drawable/ic_project.png` in densityless folder">
         <location
             file="src/main/res/drawable/ic_project.png"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
-        message="Found bitmap drawable `res/drawable/ic_qq_black.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/ic_qq_black.png"/>
     </issue>
 
     <issue
@@ -3765,13 +3008,6 @@
 
     <issue
         id="IconLocation"
-        message="Found bitmap drawable `res/drawable/ic_stable.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/ic_stable.png"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
         message="Found bitmap drawable `res/drawable/ic_undo_white_48dp.png` in densityless folder">
         <location
             file="src/main/res/drawable/ic_undo_white_48dp.png"/>
@@ -3785,20 +3021,6 @@
     </issue>
 
     <issue
-        id="IconLocation"
-        message="Found bitmap drawable `res/drawable/profile_avatar_placeholder.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/profile_avatar_placeholder.png"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
-        message="Found bitmap drawable `res/drawable/star.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/star.png"/>
-    </issue>
-
-    <issue
         id="IconDensities"
         message="Missing the following drawables in `drawable-hdpi`: ic_ali_log.png, ic_ali_notification.png, ic_build_apk.png, ic_connect_to_pc.png, ic_debug.png... (5 more)">
         <location
@@ -3807,14 +3029,14 @@
 
     <issue
         id="IconDensities"
-        message="Missing the following drawables in `drawable-mdpi`: ic_ali_log.png, ic_ali_notification.png, ic_build_apk.png, ic_connect_to_pc.png, ic_debug.png... (5 more)">
+        message="Missing the following drawables in `drawable-mdpi`: ic_ali_log.png, ic_ali_notification.png, ic_build_apk.png, ic_connect_to_pc.png, ic_debug.png... (4 more)">
         <location
             file="src/main/res/drawable-mdpi"/>
     </issue>
 
     <issue
         id="IconDensities"
-        message="Missing the following drawables in `drawable-xxhdpi`: ic_ali_log.png, ic_ali_notification.png, ic_build_apk.png, ic_connect_to_pc.png, ic_debug.png... (5 more)">
+        message="Missing the following drawables in `drawable-xxhdpi`: ic_ali_log.png, ic_ali_notification.png, ic_build_apk.png, ic_connect_to_pc.png, ic_debug.png... (4 more)">
         <location
             file="src/main/res/drawable-xxhdpi"/>
     </issue>
@@ -3854,17 +3076,6 @@
             file="src/main/res/layout/dialog_code_evaluate.xml"
             line="14"
             column="6"/>
-    </issue>
-
-    <issue
-        id="ReportShortcutUsage"
-        message="Calling this method indicates use of dynamic shortcuts, but there are no calls to methods that track shortcut usage, such as `pushDynamicShortcut` or `reportShortcutUsed`. Calling these methods is recommended, as they track shortcut usage and allow launchers to adjust which shortcuts appear based on activation history. Please see https://developer.android.com/develop/ui/views/launch/shortcuts/managing-shortcuts#track-usage"
-        errorLine1="        mShortcutManager.addDynamicShortcuts(Collections.singletonList(shortcut));"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/shortcut/ShortcutManager.java"
-            line="85"
-            column="9"/>
     </issue>
 
     <issue
@@ -4008,17 +3219,6 @@
             file="src/main/res/layout/activity_tasker_edit.xml"
             line="35"
             column="10"/>
-    </issue>
-
-    <issue
-        id="ContentDescription"
-        message="Missing `contentDescription` attribute on image"
-        errorLine1="&lt;ImageView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2=" ~~~~~~~~~">
-        <location
-            file="src/main/res/layout/app_icon_list_item.xml"
-            line="2"
-            column="2"/>
     </issue>
 
     <issue
@@ -4398,17 +3598,6 @@
     <issue
         id="ContentDescription"
         message="Missing `contentDescription` attribute on image"
-        errorLine1="        &lt;ImageView"
-        errorLine2="         ~~~~~~~~~">
-        <location
-            file="src/main/res/layout/shortcut_create_dialog.xml"
-            line="13"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="ContentDescription"
-        message="Missing `contentDescription` attribute on image"
         errorLine1="    &lt;ImageView"
         errorLine2="     ~~~~~~~~~">
         <location
@@ -4589,7 +3778,7 @@
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/project/ProjectConfigActivity.kt"
-            line="94"
+            line="97"
             column="41"/>
     </issue>
 
@@ -5933,39 +5122,6 @@
             file="src/main/res/layout/script_file_list_file.xml"
             line="39"
             column="13"/>
-    </issue>
-
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;8dp&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_marginLeft=&quot;8dp&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/shortcut_create_dialog.xml"
-            line="17"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_marginRight` with `android:layout_marginEnd=&quot;16dp&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_marginRight=&quot;16dp&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/shortcut_create_dialog.xml"
-            line="18"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;20dp&quot;` to better support right-to-left layouts"
-        errorLine1="        android:layout_marginLeft=&quot;20dp&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/shortcut_create_dialog.xml"
-            line="41"
-            column="9"/>
     </issue>
 
     <issue

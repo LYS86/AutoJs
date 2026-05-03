@@ -85,40 +85,4 @@
             column="30"/>
     </issue>
 
-    <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.autojs` appears to be unused">
-        <location
-            file="src/main/res/drawable/autojs.png"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.key_stable_mode` appears to be unused"
-        errorLine1="    &lt;string name=&quot;key_stable_mode&quot;>key_stable_mode&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="14"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.powered_by_autojs` appears to be unused"
-        errorLine1="    &lt;string name=&quot;powered_by_autojs&quot;>Powered by Auto.js&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="23"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
-        message="Found bitmap drawable `res/drawable/autojs.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/autojs.png"/>
-    </issue>
-
 </issues>
