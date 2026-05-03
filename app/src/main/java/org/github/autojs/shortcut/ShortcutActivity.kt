@@ -1,4 +1,4 @@
-package org.autojs.autojs.external.shortcut
+package org.github.autojs.shortcut
 
 import android.app.Activity
 import android.os.Bundle

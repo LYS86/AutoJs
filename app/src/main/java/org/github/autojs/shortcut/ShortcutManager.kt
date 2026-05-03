@@ -1,4 +1,4 @@
-package org.autojs.autojs.external.shortcut
+package org.github.autojs.shortcut
 
 import android.annotation.SuppressLint
 import android.content.Context

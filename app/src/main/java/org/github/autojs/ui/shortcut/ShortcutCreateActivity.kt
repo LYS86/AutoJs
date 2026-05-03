@@ -25,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.autojs.autojs.R
-import org.autojs.autojs.external.shortcut.ShortcutManager
+import org.github.autojs.shortcut.ShortcutManager
 import org.autojs.autojs.model.script.ScriptFile
 import org.github.autojs.shortcut.EXTRA_PACKAGE_NAME
 import timber.log.Timber
