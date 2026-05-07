@@ -10,6 +10,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Search
+import org.autojs.autojs.ui.log.LogScreen
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -45,6 +46,7 @@ private val tabs = listOf(
     MainTab(R.string.text_file),
     MainTab(R.string.text_tutorial),
     MainTab(R.string.text_manage),
+    MainTab(R.string.text_log),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,6 +90,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         0 -> ScriptsPlaceholder()
                         1 -> DocsPlaceholder()
                         2 -> TaskPlaceholder()
+                        3 -> LogScreen()
                     }
                 }
             }
