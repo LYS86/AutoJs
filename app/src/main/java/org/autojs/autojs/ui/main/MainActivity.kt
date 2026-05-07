@@ -162,6 +162,10 @@ class MainActivity : BaseActivity() {
             }
             return true
         }
+        if (item.itemId == R.id.action_new_ui) {
+            startActivity(Intent(this, org.github.autojs.ui.main.MainActivity::class.java))
+            return true
+        }
         return super.onOptionsItemSelected(item)
     }
 
