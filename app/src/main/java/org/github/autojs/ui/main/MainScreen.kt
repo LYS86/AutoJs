@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Search
 import org.autojs.autojs.ui.log.LogScreen
+import org.github.autojs.ui.main.task.TaskManagerScreen
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -89,7 +90,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     when (page) {
                         0 -> ScriptsPlaceholder()
                         1 -> DocsPlaceholder()
-                        2 -> TaskPlaceholder()
+                        2 -> TaskManagerScreen()
                         3 -> LogScreen()
                     }
                 }
@@ -146,11 +147,6 @@ private fun ScriptsPlaceholder(modifier: Modifier = Modifier) {
 @Composable
 private fun DocsPlaceholder(modifier: Modifier = Modifier) {
     PlaceholderBox(label = "Docs", modifier = modifier)
-}
-
-@Composable
-private fun TaskPlaceholder(modifier: Modifier = Modifier) {
-    PlaceholderBox(label = "Tasks", modifier = modifier)
 }
 
 @Composable

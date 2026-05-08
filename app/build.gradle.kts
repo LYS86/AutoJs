@@ -124,6 +124,8 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.material.icons.extended)
+    implementation(libs.compose.lifecycle.viewmodel)
+    implementation(libs.compose.animation)
     debugImplementation(libs.compose.ui.tooling)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
