@@ -16,7 +16,7 @@ import org.autojs.autojs.external.receiver.DynamicBroadcastReceivers
 import org.autojs.autojs.pluginclient.DevPluginService
 import org.autojs.autojs.theme.ThemeColorManagerCompat
 import org.autojs.autojs.timing.TimedTaskManager
-import org.autojs.autojs.timing.TimedTaskScheduler
+import org.github.autojs.timing.TimedTaskScheduler
 import org.autojs.autojs.tool.CrashHandler
 import org.autojs.autojs.ui.error.ErrorReportActivity
 import timber.log.Timber

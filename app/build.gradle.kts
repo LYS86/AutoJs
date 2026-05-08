@@ -107,7 +107,7 @@ dependencies {
         exclude(group = "com.android.support")
     }
 
-    implementation(libs.android.job)
+    implementation(libs.work.runtime.ktx)
 
     debugImplementation(libs.leakcanary)
 

@@ -12,7 +12,7 @@ import com.stardust.util.MapBuilder;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.timing.IntentTask;
-import org.autojs.autojs.timing.TimedTask;
+import org.github.autojs.timing.TimedTask;
 import org.autojs.autojs.timing.TimedTaskManager;
 
 import org.joda.time.format.DateTimeFormat;

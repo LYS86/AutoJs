@@ -34,7 +34,7 @@ commons-io = "2.5"
 junit = "4.12"
 leakcanary = "2.14"
 material-dialogs = "0.9.2.3"
-android-job = "1.4.3"
+work-runtime = "2.11.2"
 bugly = "2.6.6"
 tasker-plugin = "4.0.3"
 apksig = "8.7.3"
@@ -88,7 +88,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 material-dialogs-core = { module = "com.afollestad.material-dialogs:core", version.ref = "material-dialogs" }
 material-dialogs-commons = { module = "com.afollestad.material-dialogs:commons", version.ref = "material-dialogs" }
-android-job = { module = "com.evernote:android-job", version.ref = "android-job" }
+work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work-runtime" }
 bugly = { module = "com.tencent.bugly:crashreport", version.ref = "bugly" }
 tasker-plugin = { module = "com.twofortyfouram:android-plugin-client-sdk-for-locale", version.ref = "tasker-plugin" }
 apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }

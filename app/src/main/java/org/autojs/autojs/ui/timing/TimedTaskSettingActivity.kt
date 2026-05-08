@@ -32,7 +32,7 @@ import org.autojs.autojs.external.receiver.DynamicBroadcastReceivers
 import org.autojs.autojs.model.script.ScriptFile
 import org.autojs.autojs.timing.IntentTask
 import org.autojs.autojs.timing.TaskReceiver
-import org.autojs.autojs.timing.TimedTask
+import org.github.autojs.timing.TimedTask
 import org.autojs.autojs.timing.TimedTaskManager
 import org.autojs.autojs.ui.BaseActivity
 import org.joda.time.LocalDate

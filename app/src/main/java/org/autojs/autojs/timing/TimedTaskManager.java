@@ -13,6 +13,9 @@ import org.autojs.autojs.storage.database.ModelChange;
 import org.autojs.autojs.storage.database.TimedTaskDatabase;
 import org.autojs.autojs.tool.Observers;
 
+import org.github.autojs.timing.TimedTask;
+import org.github.autojs.timing.TimedTaskScheduler;
+
 import java.util.List;
 
 import io.reactivex.Flowable;

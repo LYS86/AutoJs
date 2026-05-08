@@ -9,7 +9,7 @@ import com.stardust.autojs.execution.ScriptExecution;
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
 import org.autojs.autojs.timing.IntentTask;
-import org.autojs.autojs.timing.TimedTask;
+import org.github.autojs.timing.TimedTask;
 import org.autojs.autojs.timing.TimedTaskManager;
 
 import java.util.ArrayList;
