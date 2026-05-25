@@ -42,10 +42,6 @@ android {
         compose = true
     }
 
-    configurations.all {
-        resolutionStrategy.force("com.google.code.findbugs:jsr305:3.0.1")
-    }
-
     splits {
         abi {
             isEnable = true
