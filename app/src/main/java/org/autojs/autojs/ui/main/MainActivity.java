@@ -28,7 +28,6 @@ import com.stardust.autojs.core.permission.OnRequestPermissionsResultCallback;
 import com.stardust.autojs.core.permission.PermissionRequestProxyActivity;
 import com.stardust.autojs.core.permission.RequestPermissionCallbacks;
 import com.stardust.enhancedfloaty.FloatyService;
-import com.stardust.pio.PFiles;
 import com.stardust.theme.ThemeColorManager;
 import com.stardust.util.BackPressedHandler;
 import com.stardust.util.DeveloperUtils;
@@ -57,7 +56,6 @@ import org.autojs.autojs.ui.main.scripts.MyScriptListFragment_;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment_;
 import org.autojs.autojs.ui.settings.SettingsActivity_;
 import org.autojs.autojs.ui.update.VersionGuard;
-import org.autojs.autojs.ui.widget.CommonMarkdownView;
 import org.autojs.autojs.ui.widget.SearchViewItem;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -98,7 +96,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         checkPermissions();
         showAccessibilitySettingPromptIfDisabled();
         mVersionGuard = new VersionGuard(this);
-        showAnnunciationIfNeeded();
         EventBus.getDefault().register(this);
         applyDayNightMode();
     }
@@ -118,20 +115,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
             }
         });
     }
-
-    private void showAnnunciationIfNeeded() {
-        if (!Pref.shouldShowAnnunciation()) {
-            return;
-        }
-        new CommonMarkdownView.DialogBuilder(this)
-                .padding(36, 0, 36, 0)
-                .markdown(PFiles.read(getResources().openRawResource(R.raw.annunciation)))
-                .title(R.string.text_annunciation)
-                .positiveText(R.string.ok)
-                .canceledOnTouchOutside(false)
-                .show();
-    }
-
 
     private void registerBackPressHandlers() {
         mBackPressObserver.registerHandler(new DrawerAutoClose(mDrawerLayout, Gravity.START));
