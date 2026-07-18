@@ -44,6 +44,7 @@ android {
     }
     lintOptions {
         abortOnError false
+        baseline file('lint-baseline.xml')
         disable 'MissingTranslation'
         disable 'ExtraTranslation'
     }
