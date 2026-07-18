@@ -11,8 +11,6 @@
     <string name="text_file_create_fail">File create fail</string>
     <string name="text_please_input_name">Please input name</string>
     <string name="text_name">Name</string>
-    <string name="text_go_to_setting">Go to setting</string>
-    <string name="explain_accessibility_permission">软件需要打开\"自动操作服务\"才能运行，请在随后的设置中选择\"免Root脚本精灵\"并开启服务。\n您也可以稍后在侧拉菜单中设置。</string>
     <string name="text_cancel">取消</string>
     <string name="text_path_is_empty">Path is empty</string>
     <string name="text_file_not_exists">File not exists</string>

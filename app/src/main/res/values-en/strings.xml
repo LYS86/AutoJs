@@ -5,8 +5,6 @@
     <string name="text_create_fail">Creation failed</string>
     <string name="text_please_input_name">Input name</string>
     <string name="text_name">Name</string>
-    <string name="text_go_to_setting">Go to setting</string>
-    <string name="explain_accessibility_permission">Need to enable the Accessibility service.\nYou can also enable it later in the side menu.</string>
     <string name="text_cancel">Cancel</string>
     <string name="text_path_is_empty">Path is empty</string>
     <string name="text_file_not_exists">File dost not exist</string>
@@ -95,7 +93,6 @@
     <string name="text_script_running">Script</string>
     <string name="key_use_volume_control_running">key_use_volume_control_running</string>
     <string name="text_use_volume_to_stop_running">Stop all scripts when volume changes</string>
-    <string name="text_need_to_enable_accessibility_service">Need to enable Accessibility Service</string>
     <string name="text_refresh">Refresh</string>
     <string name="notice_no_running_script"><![CDATA[No running script φ(>ω<*)]]></string>
     <string name="text_checking_update">Checking for updates</string>
