@@ -25,14 +25,7 @@
     <string name="text_about">关于</string>
     <string name="text_licenses">开放源代码许可</string>
     <string name="text_do_not_remind_again">不再提示</string>
-    <string name="copyright">Copyright©2018-2019 All right reserves.</string>
-    <string name="developer">星尘幻影</string>
-    <string name="qq" translatable="false">2732014414</string>
-    <string name="email" translatable="false">hybbbb1996@gmail.com</string>
-    <string name="github">软件源代码</string>
     <string name="text_already_copy_to_clip">已复制到剪贴板</string>
-    <string name="my_github">https://github.com/hyb1996/NoRootScriptDroid</string>
-    <string name="share_app">[Auto.js]下载地址：http://www.coolapk.com/apk/org.autojs.autojs </string>
     <string name="text_floating_window">悬浮窗</string>
     <string name="text_error_report">错误报告</string>
     <string name="text_press_again_to_exit">再按一次退出程序</string>
@@ -46,7 +39,6 @@
     <string name="text_already_delete">已删除</string>
     <string name="text_error">错误</string>
     <string name="text_copy_debug_info">复制调试信息</string>
-    <string name="text_it_is_the_developer_of_app">这是软件开发者(。・・)ノ</string>
     <string name="text_please_choose">请选择</string>
     <string name="text_crash">崩溃了o(≧口≦)o</string>
     <string name="crash_feedback">将会自动提交错误信息。您也可以手动复制调试信息提交给开发者(*^▽^*)或者点击\"退出\"退出程序o(╥﹏╥)o</string>
@@ -64,7 +56,6 @@
     <string name="text_use_volume_control_record">使用音量下键控制</string>
     <string name="summary_use_volume_control_record">开启悬浮窗后每次音量下键会开始或停止脚本录制</string>
     <string name="key_use_volume_control_record">key_use_volume_control_record</string>
-    <string name="text_mobile_qq_not_installed">未安装手机QQ</string>
     <string name="text_edit">编辑</string>
     <string name="key_max_length_for_code_completion">key_max_length_for_code_completion</string>
     <string name="text_max_length_for_code_completion">代码补全最大文件长度</string>
