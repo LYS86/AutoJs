@@ -19,7 +19,6 @@ import com.stardust.app.GlobalAppContext
 import com.stardust.autojs.core.ui.inflater.ImageLoader
 import com.stardust.autojs.core.ui.inflater.util.Drawables
 import com.stardust.theme.ThemeColor
-import com.tencent.bugly.Bugly
 import com.tencent.bugly.crashreport.CrashReport
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.autojs.key.GlobalKeyObserver
@@ -58,7 +57,7 @@ class App : MultiDexApplication() {
     }
 
     private fun setUpDebugEnvironment() {
-        Bugly.isDev = false
+        CrashReport.setIsDevelopmentDevice(applicationContext, false)
         val crashHandler = CrashHandler(ErrorReportActivity::class.java)
 
         val strategy = CrashReport.UserStrategy(applicationContext)
