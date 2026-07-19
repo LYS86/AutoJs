@@ -49,7 +49,6 @@ import org.autojs.autojs.ui.log.LogActivity_;
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment_;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment_;
 import org.autojs.autojs.ui.settings.SettingsActivity_;
-import org.autojs.autojs.ui.update.VersionGuard;
 import org.autojs.autojs.ui.widget.SearchViewItem;
 import org.greenrobot.eventbus.EventBus;
 
@@ -76,7 +75,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     private FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter mPagerAdapter;
     private OnActivityResultDelegate.Mediator mActivityResultMediator = new OnActivityResultDelegate.Mediator();
     private RequestPermissionCallbacks mRequestPermissionCallbacks = new RequestPermissionCallbacks();
-    private VersionGuard mVersionGuard;
     private BackPressedHandler.Observer mBackPressObserver = new BackPressedHandler.Observer();
     private SearchViewItem mSearchViewItem;
     private MenuItem mLogMenuItem;
@@ -87,7 +85,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkPermissions();
-        mVersionGuard = new VersionGuard(this);
         applyDayNightMode();
     }
 
@@ -185,7 +182,6 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     @Override
     protected void onResume() {
         super.onResume();
-        mVersionGuard.checkForDeprecatesAndUpdates();
     }
 
     @Override

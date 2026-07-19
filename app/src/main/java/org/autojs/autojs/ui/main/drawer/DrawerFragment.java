@@ -34,12 +34,8 @@ import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.floating.CircularMenu;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
-import org.autojs.autojs.network.VersionService;
-import org.autojs.autojs.network.entity.VersionInfo;
-import org.autojs.autojs.tool.SimpleObserver;
 import org.autojs.autojs.ui.main.MainActivity;
 import org.autojs.autojs.ui.settings.SettingsActivity;
-import org.autojs.autojs.ui.update.UpdateInfoDialogBuilder;
 
 import com.stardust.theme.ThemeColorManager;
 
@@ -97,7 +93,6 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     private DrawerMenuItem mForegroundServiceItem = new DrawerMenuItem(R.drawable.ic_service_green, R.string.text_foreground_service, R.string.key_foreground_servie, this::toggleForegroundService);
 
     private DrawerMenuItem mFloatingWindowItem = new DrawerMenuItem(R.drawable.ic_robot_64, R.string.text_floating_window, 0, this::showOrDismissFloatingWindow);
-    private DrawerMenuItem mCheckForUpdatesItem = new DrawerMenuItem(R.drawable.ic_check_for_updates, R.string.text_check_for_updates, this::checkForUpdates);
 
     private DrawerMenuAdapter mDrawerMenuAdapter;
     private Disposable mConnectionStateDisposable;
@@ -152,8 +147,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 new DrawerMenuGroup(R.string.text_others),
                 mConnectionItem,
                 new DrawerMenuItem(R.drawable.ic_personalize, R.string.text_theme_color, this::openThemeColorSettings),
-                new DrawerMenuItem(R.drawable.ic_night_mode, R.string.text_night_mode, R.string.key_night_mode, this::toggleNightMode),
-                mCheckForUpdatesItem
+                new DrawerMenuItem(R.drawable.ic_night_mode, R.string.text_night_mode, R.string.key_night_mode, this::toggleNightMode)
         )));
         mDrawerMenu.setAdapter(mDrawerMenuAdapter);
         mDrawerMenu.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -283,33 +277,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 Toast.LENGTH_LONG).show();
     }
 
-    void checkForUpdates(DrawerMenuItemViewHolder holder) {
-        setProgress(mCheckForUpdatesItem, true);
-        VersionService.getInstance().checkForUpdates()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SimpleObserver<VersionInfo>() {
 
-                    @Override
-                    public void onNext(@io.reactivex.annotations.NonNull VersionInfo versionInfo) {
-                        if (getActivity() == null)
-                            return;
-                        if (versionInfo.isNewer()) {
-                            new UpdateInfoDialogBuilder(getActivity(), versionInfo)
-                                    .show();
-                        } else {
-                            Toast.makeText(GlobalAppContext.get(), R.string.text_is_latest_version, Toast.LENGTH_SHORT).show();
-                        }
-                        setProgress(mCheckForUpdatesItem, false);
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        e.printStackTrace();
-                        Toast.makeText(GlobalAppContext.get(), R.string.text_check_update_error, Toast.LENGTH_SHORT).show();
-                        setProgress(mCheckForUpdatesItem, false);
-                    }
-                });
-    }
 
 
     @Override
