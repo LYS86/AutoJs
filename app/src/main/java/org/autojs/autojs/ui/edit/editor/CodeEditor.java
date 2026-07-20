@@ -2,6 +2,7 @@ package org.autojs.autojs.ui.edit.editor;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import com.google.android.material.snackbar.Snackbar;
 import android.text.Layout;
 import android.util.AttributeSet;
@@ -114,25 +115,40 @@ public class CodeEditor extends HVScrollView {
 
     public void jumpToStart() {
         mCodeEditText.setSelection(0);
+        ensureOffsetVisible(0);
     }
 
     public void jumpToEnd() {
-        mCodeEditText.setSelection(mCodeEditText.getText().length());
+        int end = mCodeEditText.getText().length();
+        mCodeEditText.setSelection(end);
+        ensureOffsetVisible(end);
     }
 
     public void jumpToLineStart() {
         int line = LayoutHelper.getLineOfChar(mCodeEditText.getLayout(), mCodeEditText.getSelectionStart());
         if (line < 0 || line >= mCodeEditText.getLayout().getLineCount())
             return;
-        mCodeEditText.setSelection(mCodeEditText.getLayout().getLineStart(line));
+        int offset = mCodeEditText.getLayout().getLineStart(line);
+        mCodeEditText.setSelection(offset);
+        ensureOffsetVisible(offset);
     }
 
     public void jumpToLineEnd() {
         int line = LayoutHelper.getLineOfChar(mCodeEditText.getLayout(), mCodeEditText.getSelectionStart());
         if (line < 0 || line >= mCodeEditText.getLayout().getLineCount())
             return;
-        mCodeEditText.setSelection(mCodeEditText.getLayout().getLineEnd(line) - 1);
+        int offset = mCodeEditText.getLayout().getLineEnd(line) - 1;
+        mCodeEditText.setSelection(offset);
+        ensureOffsetVisible(offset);
+    }
 
+    private void ensureOffsetVisible(int offset) {
+        Layout layout = mCodeEditText.getLayout();
+        if (layout == null) return;
+        int line = layout.getLineForOffset(offset);
+        Rect rect = new Rect(0, layout.getLineTop(line),
+                mCodeEditText.getWidth(), layout.getLineBottom(line));
+        mCodeEditText.requestRectangleOnScreen(rect);
     }
 
     public void setTheme(Theme theme) {
@@ -173,10 +189,12 @@ public class CodeEditor extends HVScrollView {
 
     public void jumpTo(int line, int col) {
         Layout layout = mCodeEditText.getLayout();
-        if (line < 0 || (layout != null && line >= layout.getLineCount())) {
+        if (line < 0 || layout == null || line >= layout.getLineCount()) {
             return;
         }
-        mCodeEditText.setSelection(mCodeEditText.getLayout().getLineStart(line) + col);
+        int offset = layout.getLineStart(line) + col;
+        mCodeEditText.setSelection(offset);
+        ensureOffsetVisible(offset);
     }
 
     public void setReadOnly(boolean readOnly) {
