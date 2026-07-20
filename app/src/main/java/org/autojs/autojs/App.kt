@@ -157,7 +157,7 @@ class App : MultiDexApplication() {
     companion object {
 
         private val TAG = "App"
-        private val BUGLY_APP_ID = "19b3607b53"
+        private val BUGLY_APP_ID = "bc035dd237"
 
         private lateinit var instance: WeakReference<App>
 
