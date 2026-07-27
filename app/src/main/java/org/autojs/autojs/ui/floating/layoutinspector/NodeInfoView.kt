@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindView
 import com.google.android.material.snackbar.Snackbar
 import com.stardust.util.ClipboardUtil
 import com.stardust.util.sortedArrayOf
@@ -96,7 +95,6 @@ class NodeInfoView : RecyclerView {
 
     internal inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        @BindView(R.id.name)
         val attrName: TextView = itemView.findViewById(R.id.name)
 
         val attrValue: TextView = itemView.findViewById(R.id.value)

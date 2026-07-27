@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jakewharton.butterknife'
 
-def AAVersion = '4.5.2'
+def AAVersion = '4.8.0'
 def SupportLibVersion = '28.0.0'
 
 configurations.all {
@@ -144,7 +144,6 @@ dependencies {
     implementation('com.github.bumptech.glide:glide:4.8.0', {
         exclude group: 'com.android.support'
     })
-    kapt 'com.github.bumptech.glide:compiler:4.8.0'
     //joda time
     implementation 'joda-time:joda-time:2.9.9'
     // Tasker Plugin
