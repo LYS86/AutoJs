@@ -98,12 +98,6 @@ tasks.whenTaskAdded { task ->
     }
 }
 
-repositories {
-    flatDir {
-        dirs 'libs'
-    }
-    google()
-}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])

@@ -31,13 +31,6 @@ android {
     }
 }
 
-repositories {
-    flatDir {
-        dirs 'libs'
-    }
-    google()
-}
-
 dependencies {
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1-alpha01', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -52,8 +45,7 @@ dependencies {
     api 'com.google.android.material:material:1.1.0-alpha01'
     api 'com.github.hyb1996:EnhancedFloaty:0.31'
     api 'com.makeramen:roundedimageview:2.3.0'
-    // OpenCv
-    api(name: 'opencv-3.4.3', ext: 'aar')
+    api 'local:opencv:3.4.3'
     // OkHttp
     api 'com.squareup.okhttp3:okhttp:3.10.0'
     // JDeferred
@@ -65,10 +57,9 @@ dependencies {
     // log4j
     api group: 'de.mindpipe.android', name: 'android-logging-log4j', version: '1.0.3'
     api group: 'log4j', name: 'log4j', version: '1.2.17'
-    // Terminal emulator
-    api(name: 'libtermexec-release', ext: 'aar')
-    api(name: 'emulatorview-release', ext: 'aar')
-    api(name: 'term-debug', ext: 'aar')
+    api 'local:libtermexec:1.0'
+    api 'local:emulatorview:1.0'
+    api 'local:term:1.0'
     api files('libs/rhino-1.7.7.2.jar')
     api project(path: ':common')
     api project(path: ':automator')
