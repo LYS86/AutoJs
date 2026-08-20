@@ -77,7 +77,6 @@
     <string name="text_scrolled">Scrolled</string>
     <string name="text_long_clicked">Long Clicked</string>
     <string name="text_clicked">Clicked</string>
-    <string name="text_copy_to_my_scripts">Import to my scripts</string>
     <string name="text_import_succeed">Import successful</string>
     <string name="text_current_activity">Current Activity:</string>
     <string name="text_current_package">Current Package:</string>

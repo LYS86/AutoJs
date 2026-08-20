@@ -31,7 +31,6 @@ import org.autojs.autojs.model.explorer.ExplorerFileItem;
 import org.autojs.autojs.model.explorer.ExplorerPage;
 import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.storage.file.TmpScriptFiles;
-import org.autojs.autojs.model.sample.SampleFile;
 import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.model.script.Scripts;
 import org.autojs.autojs.network.download.DownloadManager;
@@ -253,16 +252,6 @@ public class ScriptOperations {
 
     private CharSequence getString(int resId) {
         return mContext.getString(resId);
-    }
-
-    public Observable<String> importSample(SampleFile sample) {
-        try {
-            return importFile(sample.getSimplifiedName(), sample.openInputStream(), sample.getExtension());
-        } catch (IOException e) {
-            e.printStackTrace();
-            showMessage(R.string.text_import_fail);
-            return Observable.error(e);
-        }
     }
 
     public Observable<ExplorerFileItem> rename(final ExplorerFileItem item) {

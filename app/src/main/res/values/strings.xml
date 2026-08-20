@@ -77,7 +77,6 @@
     <string name="text_scrolled">滑动</string>
     <string name="text_long_clicked">长按</string>
     <string name="text_clicked">点击</string>
-    <string name="text_copy_to_my_scripts">导入到我的脚本</string>
     <string name="text_import_succeed">导入成功</string>
     <string name="text_current_activity">当前活动:</string>
     <string name="text_current_package">当前应用包名:</string>

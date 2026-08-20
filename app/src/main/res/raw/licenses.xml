@@ -7,11 +7,6 @@
         <license>Mozilla Public License 2.0</license>
     </notice>
     <notice>
-        <name>StorIO</name>
-        <url>https://github.com/pushtorefresh/storio</url>
-        <license>Apache Software License 2.0</license>
-    </notice>
-    <notice>
         <name>Material Dialogs</name>
         <url>https://github.com/afollestad/material-dialogs</url>
         <copyright>Copyright (c) 2014-2016 Aidan Michael Follestad</copyright>
@@ -28,18 +23,6 @@
         <url>https://github.com/atlassian/commonmark-java</url>
         <copyright>Copyright (c) 2015-2016 Atlassian and others.</copyright>
         <license>BSD 2-Clause License</license>
-    </notice>
-    <notice>
-        <name>Alipay ZeroSdk</name>
-        <copyright>Copyright 2016 Fung Go (fython)</copyright>
-        <url>https://github.com/fython/AlipayZeroSdk</url>
-        <license>Apache Software License 2.0</license>
-    </notice>
-    <notice>
-        <name>SortableTableView</name>
-        <copyright>Copyright 2015 Ingo Schwarz</copyright>
-        <url>https://github.com/ISchwarz23/SortableTableView</url>
-        <license>Apache Software License 2.0</license>
     </notice>
     <notice>
         <name>MultiLevelListView</name>
@@ -69,12 +52,6 @@
         <name>RecyclerView-FlexibleDivider</name>
         <copyright>Copyright 2016 yqritc</copyright>
         <url>https://github.com/yqritc/RecyclerView-FlexibleDivider</url>
-        <license>Apache Software License 2.0</license>
-    </notice>
-    <notice>
-        <name>Volley</name>
-        <copyright/>
-        <url>https://github.com/google/volley</url>
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
