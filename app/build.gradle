@@ -39,6 +39,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         encoding = 'utf-8'
     }
+    buildFeatures {
+        viewBinding true
+    }
     lintOptions {
         abortOnError false
         baseline file('lint-baseline.xml')
