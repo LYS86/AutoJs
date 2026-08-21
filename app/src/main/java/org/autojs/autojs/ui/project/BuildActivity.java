@@ -35,7 +35,6 @@ import org.autojs.autojs.tool.BitmapTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder;
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity;
-import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity_;
 
 import java.io.File;
 import java.io.InputStream;
@@ -197,8 +196,7 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
 
     @Click(R.id.icon)
     void selectIcon() {
-        ShortcutIconSelectActivity_.intent(this)
-                .startForResult(REQUEST_CODE);
+        startActivityForResult(new Intent(this, ShortcutIconSelectActivity.class), REQUEST_CODE);
     }
 
     @Click(R.id.fab)

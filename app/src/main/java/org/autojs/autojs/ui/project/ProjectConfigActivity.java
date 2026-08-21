@@ -29,7 +29,6 @@ import org.autojs.autojs.model.project.ProjectTemplate;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity;
-import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity_;
 import org.autojs.autojs.ui.widget.SimpleTextWatcher;
 
 import java.io.File;
@@ -188,8 +187,7 @@ public class ProjectConfigActivity extends BaseActivity {
 
     @Click(R.id.icon)
     void selectIcon() {
-        ShortcutIconSelectActivity_.intent(this)
-                .startForResult(REQUEST_CODE);
+        startActivityForResult(new Intent(this, ShortcutIconSelectActivity.class), REQUEST_CODE);
     }
 
     private void syncProjectConfig() {

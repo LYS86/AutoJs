@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,10 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ActivityShortcutIconSelectBinding;
 import org.autojs.autojs.tool.BitmapTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.workground.WrapContentGridLayoutManger;
@@ -27,6 +26,7 @@ import org.autojs.autojs.workground.WrapContentGridLayoutManger;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -35,18 +35,24 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * Created by Stardust on 2017/10/25.
  */
-@EActivity(R.layout.activity_shortcut_icon_select)
 public class ShortcutIconSelectActivity extends BaseActivity {
 
     public static final String EXTRA_PACKAGE_NAME = "extra_package_name";
 
-    @ViewById(R.id.apps)
     RecyclerView mApps;
 
     private PackageManager mPackageManager;
     private List<AppItem> mAppList = new ArrayList<>();
 
-    @AfterViews
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ActivityShortcutIconSelectBinding binding = ActivityShortcutIconSelectBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        mApps = binding.apps;
+        setupViews();
+    }
+
     void setupViews() {
         mPackageManager = getPackageManager();
         setToolbarAsBack(getString(R.string.text_select_icon));
