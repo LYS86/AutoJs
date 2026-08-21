@@ -31,7 +31,7 @@ class GlobalKeyObserver internal constructor() : OnKeyListener, ShellKeyObserver
     fun onVolumeUp() {
         Log.d(LOG_TAG, "onVolumeUp at " + System.currentTimeMillis())
         if (Pref.shouldStopAllScriptsWhenVolumeUp()) {
-            AutoJs.instance!!.scriptEngineService.stopAllAndToast()
+            AutoJs.instance.scriptEngineService.stopAllAndToast()
         }
     }
 

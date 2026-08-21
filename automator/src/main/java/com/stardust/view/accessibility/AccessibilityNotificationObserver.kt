@@ -81,14 +81,14 @@ class AccessibilityNotificationObserver(private val mContext: Context) : Notific
                 return false
             }
             if (list != null) {
-                onToast(event, Toast(event.packageName.toString(), list))
+                onToast(Toast(event.packageName.toString(), list))
             }
         }
 
         return false
     }
 
-    private fun onToast(event: AccessibilityEvent, toast: Toast) {
+    private fun onToast(toast: Toast) {
         for (listener in mToastListeners) {
             try {
                 listener.onToast(toast)

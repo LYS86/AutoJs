@@ -33,7 +33,7 @@ object AccessibilityNodeInfoHelper {
         displayRect.left = 0
         displayRect.right = width
         displayRect.bottom = height
-        val intersect = nodeRect.intersect(displayRect)
+        nodeRect.intersect(displayRect)
         return nodeRect
     }
 

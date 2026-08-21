@@ -53,7 +53,7 @@ class SplashActivity : AppCompatActivity() {
                 runOnUiThread {
                     Toast.makeText(this@SplashActivity, e.message, Toast.LENGTH_LONG).show()
                     startActivity(Intent(this@SplashActivity, LogActivity::class.java))
-                    AutoJs.instance!!.globalConsole.printAllStackTrace(e)
+                    AutoJs.instance.globalConsole.printAllStackTrace(e)
                 }
             }
         }.start()

@@ -174,7 +174,7 @@ open class AccessibilityNodeInfoAllocator {
 
         fun recycleList(root: AccessibilityNodeInfo, list: List<AccessibilityNodeInfo>) {
             for (nodeInfo in list) {
-                if (nodeInfo !== root && nodeInfo != null) {
+                if (nodeInfo !== root) {
                     //// FIXME: 2017/5/1 Issue #180
                     nodeInfo.recycle()
                 }
