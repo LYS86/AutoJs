@@ -328,7 +328,8 @@ public class Dim {
             } finally {
                 is.close();
             }
-        } catch (IOException ex) {
+        // Android 的 URL.openStream() 底层由 OkHttp 实现, 非法 URI 会抛 RuntimeException 而非 IOException, 须一并捕获
+        } catch (IOException | RuntimeException ex) {
             System.err.println
                     ("Failed to load source from " + sourceUrl + ": " + ex);
         }
