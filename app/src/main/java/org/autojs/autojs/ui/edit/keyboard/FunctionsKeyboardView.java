@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.FunctionsKeyboardViewBinding;
 import org.autojs.autojs.model.indices.Module;
 import org.autojs.autojs.model.indices.Modules;
 import org.autojs.autojs.model.indices.Property;
@@ -33,8 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
@@ -52,10 +51,8 @@ public class FunctionsKeyboardView extends FrameLayout {
     }
 
     private static final int SPAN_COUNT = 4;
-    @BindView(R.id.module_list)
     RecyclerView mModulesView;
 
-    @BindView(R.id.properties)
     RecyclerView mPropertiesView;
 
     private List<Module> mModules;
@@ -91,8 +88,9 @@ public class FunctionsKeyboardView extends FrameLayout {
     }
 
     private void init() {
-        inflate(getContext(), R.layout.functions_keyboard_view, this);
-        ButterKnife.bind(this);
+        FunctionsKeyboardViewBinding binding = FunctionsKeyboardViewBinding.inflate(LayoutInflater.from(getContext()), this, true);
+        mModulesView = binding.moduleList;
+        mPropertiesView = binding.properties;
         initModulesView();
         initPropertiesView();
     }
