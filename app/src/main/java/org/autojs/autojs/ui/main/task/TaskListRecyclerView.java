@@ -25,6 +25,7 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
+import org.autojs.autojs.databinding.TaskListRecyclerViewItemBinding;
 import org.autojs.autojs.storage.database.ModelChange;
 import org.autojs.autojs.timing.TimedTaskManager;
 import org.autojs.autojs.ui.timing.TimedTaskSettingActivity;
@@ -34,9 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.ThemeColorRecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
@@ -205,11 +203,8 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
 
     class TaskViewHolder extends ChildViewHolder<Task> {
 
-        @BindView(R.id.first_char)
         TextView mFirstChar;
-        @BindView(R.id.name)
         TextView mName;
-        @BindView(R.id.desc)
         TextView mDesc;
 
         private Task mTask;
@@ -218,7 +213,11 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
         TaskViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this::onItemClick);
-            ButterKnife.bind(this, itemView);
+            TaskListRecyclerViewItemBinding binding = TaskListRecyclerViewItemBinding.bind(itemView);
+            mFirstChar = binding.firstChar;
+            mName = binding.name;
+            mDesc = binding.desc;
+            binding.stop.setOnClickListener(v -> stop());
             mFirstCharBackground = (GradientDrawable) mFirstChar.getBackground();
         }
 
@@ -236,7 +235,6 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
         }
 
 
-        @OnClick(R.id.stop)
         void stop() {
             if (mTask != null) {
                 mTask.cancel();
