@@ -32,14 +32,11 @@ import com.stardust.util.BackPressedHandler;
 import com.stardust.util.DeveloperUtils;
 import com.stardust.util.DrawerAutoClose;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 import org.autojs.autojs.BuildConfig;
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
+import org.autojs.autojs.databinding.ActivityMainBinding;
 import org.autojs.autojs.external.foreground.ForegroundService;
 import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.ui.BaseActivity;
@@ -54,7 +51,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.Arrays;
 
-@EActivity(R.layout.activity_main)
 public class MainActivity extends BaseActivity implements OnActivityResultDelegate.DelegateHost, BackPressedHandler.HostActivity, PermissionRequestProxyActivity {
 
     public static class DrawerOpenEvent {
@@ -63,13 +59,10 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
 
     private static final String LOG_TAG = "MainActivity";
 
-    @ViewById(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
-    @ViewById(R.id.viewpager)
     ViewPager mViewPager;
 
-    @ViewById(R.id.fab)
     FloatingActionButton mFab;
 
     private FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter mPagerAdapter;
@@ -86,9 +79,16 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         super.onCreate(savedInstanceState);
         checkPermissions();
         applyDayNightMode();
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        mDrawerLayout = binding.drawerLayout;
+        mViewPager = binding.viewpager;
+        mFab = binding.fab;
+        findViewById(R.id.setting).setOnClickListener(v -> startSettingActivity());
+        findViewById(R.id.exit).setOnClickListener(v -> exitCompletely());
+        setUpViews();
     }
 
-    @AfterViews
     void setUpViews() {
         setUpToolbar();
         setUpTabViewPager();
@@ -160,12 +160,10 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     }
 
 
-    @Click(R.id.setting)
     void startSettingActivity() {
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
-    @Click(R.id.exit)
     public void exitCompletely() {
         finish();
         FloatyWindowManger.hideCircularMenu();
