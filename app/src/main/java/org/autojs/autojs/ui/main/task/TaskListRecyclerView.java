@@ -234,10 +234,10 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
             mDesc.setText(task.getDesc());
             if (AutoFileSource.ENGINE.equals(mTask.getEngineName())) {
                 mFirstChar.setText("R");
-                mFirstCharBackground.setColor(getResources().getColor(R.color.color_r));
+                mFirstCharBackground.setColor(ContextCompat.getColor(getContext(), R.color.color_r));
             } else {
                 mFirstChar.setText("J");
-                mFirstCharBackground.setColor(getResources().getColor(R.color.color_j));
+                mFirstCharBackground.setColor(ContextCompat.getColor(getContext(), R.color.color_j));
             }
         }
 

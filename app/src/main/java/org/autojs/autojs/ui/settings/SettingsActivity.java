@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
 import androidx.core.util.Pair;
+import androidx.core.content.ContextCompat;
 import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 
@@ -56,7 +57,7 @@ public class SettingsActivity extends BaseActivity {
         List<ColorSelectActivity.ColorItem> colorItems = new ArrayList<>(COLOR_ITEMS.size());
         for (Pair<Integer, Integer> item : COLOR_ITEMS) {
             colorItems.add(new ColorSelectActivity.ColorItem(context.getString(item.second),
-                    context.getResources().getColor(item.first)));
+                    ContextCompat.getColor(context, item.first)));
         }
         ColorSelectActivity.startColorSelect(context, context.getString(R.string.mt_color_picker_title), colorItems);
     }
