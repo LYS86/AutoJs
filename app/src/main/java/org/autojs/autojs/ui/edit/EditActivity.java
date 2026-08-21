@@ -24,14 +24,12 @@ import com.stardust.autojs.execution.ScriptExecution;
 import com.stardust.pio.PFiles;
 
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ActivityEditBinding;
 import org.autojs.autojs.storage.file.TmpScriptFiles;
 import org.autojs.autojs.tool.Observers;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 import org.autojs.autojs.ui.main.MainActivity;
 
 import java.io.File;
@@ -49,13 +47,11 @@ import static org.autojs.autojs.ui.edit.EditorView.EXTRA_READ_ONLY;
 /**
  * Created by Stardust on 2017/1/29.
  */
-@EActivity(R.layout.activity_edit)
 public class EditActivity extends BaseActivity implements OnActivityResultDelegate.DelegateHost, PermissionRequestProxyActivity {
 
     private OnActivityResultDelegate.Mediator mMediator = new OnActivityResultDelegate.Mediator();
     private static final String LOG_TAG = "EditActivity";
 
-    @ViewById(R.id.editor_view)
     EditorView mEditorView;
 
     private EditorMenu mEditorMenu;
@@ -85,7 +81,7 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
     }
 
     private static Intent newIntent(Context context, boolean newTask) {
-        Intent intent = new Intent(context, EditActivity_.class);
+        Intent intent = new Intent(context, EditActivity.class);
         if (newTask || !(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
@@ -96,10 +92,13 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mNewTask = (getIntent().getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0;
+        ActivityEditBinding binding = ActivityEditBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        mEditorView = binding.editorView;
+        setUpViews();
     }
 
     @SuppressLint("CheckResult")
-    @AfterViews
     void setUpViews() {
         mEditorView.handleIntent(getIntent())
                 .observeOn(AndroidSchedulers.mainThread())
