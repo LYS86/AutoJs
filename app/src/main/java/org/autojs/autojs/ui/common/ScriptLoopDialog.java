@@ -12,11 +12,9 @@ import com.stardust.app.DialogUtils;
 import com.stardust.app.GlobalAppContext;
 
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.DialogScriptLoopBinding;
 import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.model.script.Scripts;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by Stardust on 2017/7/8.
@@ -27,13 +25,10 @@ public class ScriptLoopDialog {
     private ScriptFile mScriptFile;
     private MaterialDialog mDialog;
 
-    @BindView(R.id.loop_times)
     EditText mLoopTimes;
 
-    @BindView(R.id.loop_interval)
     EditText mLoopInterval;
 
-    @BindView(R.id.loop_delay)
     EditText mLoopDelay;
 
 
@@ -46,7 +41,10 @@ public class ScriptLoopDialog {
                 .positiveText(R.string.ok)
                 .onPositive((dialog, which) -> startScriptRunningLoop())
                 .build();
-        ButterKnife.bind(this, view);
+        DialogScriptLoopBinding binding = DialogScriptLoopBinding.bind(view);
+        mLoopTimes = binding.loopTimes;
+        mLoopInterval = binding.loopInterval;
+        mLoopDelay = binding.loopDelay;
     }
 
     private void startScriptRunningLoop() {
