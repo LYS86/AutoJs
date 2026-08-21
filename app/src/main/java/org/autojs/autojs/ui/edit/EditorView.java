@@ -64,7 +64,6 @@ import org.autojs.autojs.ui.edit.theme.Themes;
 import org.autojs.autojs.ui.edit.toolbar.DebugToolbarFragment;
 import org.autojs.autojs.ui.edit.toolbar.DebugToolbarFragment_;
 import org.autojs.autojs.ui.edit.toolbar.NormalToolbarFragment;
-import org.autojs.autojs.ui.edit.toolbar.NormalToolbarFragment_;
 import org.autojs.autojs.ui.edit.toolbar.SearchToolbarFragment;
 import org.autojs.autojs.ui.edit.toolbar.SearchToolbarFragment_;
 import org.autojs.autojs.ui.edit.toolbar.ToolbarFragment;
@@ -155,7 +154,7 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
 
     private SparseBooleanArray mMenuItemStatus = new SparseBooleanArray();
     private String mRestoredText;
-    private NormalToolbarFragment mNormalToolbar = new NormalToolbarFragment_();
+    private NormalToolbarFragment mNormalToolbar = new NormalToolbarFragment();
     private boolean mDebugging = false;
 
     public EditorView(Context context) {
