@@ -1,34 +1,32 @@
 package com.stardust.app;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.OperationDialogItemBinding;
 
 import java.util.ArrayList;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by Stardust on 2017/6/26.
  */
-
 public class OperationDialogBuilder extends MaterialDialog.Builder {
 
     private RecyclerView mOperations;
     private ArrayList<Integer> mIds = new ArrayList<>();
     private ArrayList<Integer> mIcons = new ArrayList<>();
     private ArrayList<String> mTexts = new ArrayList<>();
-    private Object mOnItemClickTarget;
+    private ArrayList<View.OnClickListener> mListeners = new ArrayList<>();
 
     public OperationDialogBuilder(@NonNull Context context) {
         super(context);
@@ -37,7 +35,7 @@ public class OperationDialogBuilder extends MaterialDialog.Builder {
         mOperations.setAdapter(new RecyclerView.Adapter<ViewHolder>() {
             @Override
             public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.operation_dialog_item, parent, false));
+                return new ViewHolder(OperationDialogItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
             }
 
             @Override
@@ -45,10 +43,7 @@ public class OperationDialogBuilder extends MaterialDialog.Builder {
                 holder.itemView.setId(mIds.get(position));
                 holder.text.setText(mTexts.get(position));
                 holder.icon.setImageResource(mIcons.get(position));
-                if (mOnItemClickTarget != null) {
-                    //// TODO: 2017/6/26   效率
-                    ButterKnife.bind(mOnItemClickTarget, holder.itemView);
-                }
+                holder.itemView.setOnClickListener(mListeners.get(position));
             }
 
             @Override
@@ -59,33 +54,27 @@ public class OperationDialogBuilder extends MaterialDialog.Builder {
         customView(mOperations, false);
     }
 
-    public OperationDialogBuilder item(int id, int iconRes, int textRes) {
-        return item(id, iconRes, getContext().getString(textRes));
+    public OperationDialogBuilder item(int id, int iconRes, int textRes, View.OnClickListener listener) {
+        return item(id, iconRes, getContext().getString(textRes), listener);
     }
 
-    public OperationDialogBuilder item(int id, int iconRes, String text) {
+    public OperationDialogBuilder item(int id, int iconRes, String text, View.OnClickListener listener) {
         mIds.add(id);
         mIcons.add(iconRes);
         mTexts.add(text);
-        return this;
-    }
-
-    public OperationDialogBuilder bindItemClick(Object target) {
-        mOnItemClickTarget = target;
+        mListeners.add(listener);
         return this;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.icon)
         ImageView icon;
-        @BindView(R.id.text)
         TextView text;
 
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-
+        public ViewHolder(OperationDialogItemBinding binding) {
+            super(binding.getRoot());
+            icon = binding.icon;
+            text = binding.text;
         }
 
     }
