@@ -3,17 +3,19 @@ package org.autojs.autojs.ui.main.scripts;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.stardust.app.GlobalAppContext;
 import com.stardust.util.IntentUtil;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.FragmentMyScriptListBinding;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
 import org.autojs.autojs.model.explorer.ExplorerDirPage;
 import org.autojs.autojs.model.explorer.Explorers;
@@ -35,7 +37,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 /**
  * Created by Stardust on 2017/3/13.
  */
-@EFragment(R.layout.fragment_my_script_list)
 public class MyScriptListFragment extends ViewPagerFragment implements FloatingActionMenu.OnFloatingActionButtonClickListener {
 
     private static final String TAG = "MyScriptListFragment";
@@ -44,7 +45,6 @@ public class MyScriptListFragment extends ViewPagerFragment implements FloatingA
         super(0);
     }
 
-    @ViewById(R.id.script_file_list)
     ExplorerView mExplorerView;
 
     private FloatingActionMenu mFloatingActionMenu;
@@ -55,7 +55,15 @@ public class MyScriptListFragment extends ViewPagerFragment implements FloatingA
         EventBus.getDefault().register(this);
     }
 
-    @AfterViews
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        FragmentMyScriptListBinding binding = FragmentMyScriptListBinding.inflate(inflater, container, false);
+        mExplorerView = binding.scriptFileList;
+        setUpViews();
+        return binding.getRoot();
+    }
+
     void setUpViews() {
         ExplorerItemList.SortConfig sortConfig = ExplorerItemList.SortConfig.from(PreferenceManager.getDefaultSharedPreferences(getContext()));
         mExplorerView.setSortConfig(sortConfig);

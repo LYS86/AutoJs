@@ -46,7 +46,7 @@ import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.doc.DocsFragment_;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.log.LogActivity;
-import org.autojs.autojs.ui.main.scripts.MyScriptListFragment_;
+import org.autojs.autojs.ui.main.scripts.MyScriptListFragment;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment;
 import org.autojs.autojs.ui.settings.SettingsActivity;
 import org.autojs.autojs.ui.widget.SearchViewItem;
@@ -126,7 +126,7 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     private void setUpTabViewPager() {
         TabLayout tabLayout = $(R.id.tab);
         mPagerAdapter = new FragmentPagerAdapterBuilder(this)
-                .add(new MyScriptListFragment_(), R.string.text_file)
+                .add(new MyScriptListFragment(), R.string.text_file)
                 .add(new DocsFragment_(), R.string.text_tutorial)
                 .add(new TaskManagerFragment(), R.string.text_manage)
                 .build();
