@@ -11,10 +11,8 @@ import android.view.MenuItem;
 
 import com.twofortyfouram.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ActivityTaskerEditBinding;
 import org.autojs.autojs.external.ScriptIntents;
 import org.autojs.autojs.model.explorer.ExplorerDirPage;
 import org.autojs.autojs.model.explorer.Explorers;
@@ -27,13 +25,20 @@ import static org.autojs.autojs.ui.edit.EditorView.EXTRA_CONTENT;
 /**
  * Created by Stardust on 2017/3/27.
  */
-@EActivity(R.layout.activity_tasker_edit)
 public class TaskPrefEditActivity extends AbstractAppCompatPluginActivity {
 
     private String mSelectedScriptFilePath;
     private String mPreExecuteScript;
 
-    @AfterViews
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ActivityTaskerEditBinding binding = ActivityTaskerEditBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        binding.editScript.setOnClickListener(v -> editPreExecuteScript());
+        setUpViews();
+    }
+
     void setUpViews() {
         BaseActivity.setToolbarAsBack(this, R.id.toolbar, getString(R.string.text_please_choose_a_script));
         initScriptListRecyclerView();
@@ -50,7 +55,6 @@ public class TaskPrefEditActivity extends AbstractAppCompatPluginActivity {
     }
 
 
-    @Click(R.id.edit_script)
     void editPreExecuteScript() {
         TaskerScriptEditActivity.edit(this, getString(R.string.text_pre_execute_script), getString(R.string.summary_pre_execute_script), mPreExecuteScript == null ? "" : mPreExecuteScript);
     }
