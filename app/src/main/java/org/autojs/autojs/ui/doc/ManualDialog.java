@@ -10,11 +10,8 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.FloatingManualDialogBinding;
 import org.autojs.autojs.ui.widget.EWebView;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by Stardust on 2017/10/24.
@@ -22,13 +19,10 @@ import butterknife.OnClick;
 
 public class ManualDialog {
 
-    @BindView(R.id.title)
     TextView mTitle;
 
-    @BindView(R.id.eweb_view)
     EWebView mEWebView;
 
-    @BindView(R.id.pin_to_left)
     View mPinToLeft;
 
     Dialog mDialog;
@@ -37,7 +31,12 @@ public class ManualDialog {
     public ManualDialog(Context context) {
         mContext = context;
         View view = View.inflate(context, R.layout.floating_manual_dialog, null);
-        ButterKnife.bind(this, view);
+        FloatingManualDialogBinding binding = FloatingManualDialogBinding.bind(view);
+        mTitle = binding.title;
+        mEWebView = binding.ewebView;
+        mPinToLeft = binding.pinToLeft;
+        binding.close.setOnClickListener(v -> close());
+        binding.fullscreen.setOnClickListener(v -> viewInNewActivity());
         mDialog = new MaterialDialog.Builder(context)
                 .customView(view, false)
                 .build();
@@ -68,12 +67,10 @@ public class ManualDialog {
         return this;
     }
 
-    @OnClick(R.id.close)
     void close() {
         mDialog.dismiss();
     }
 
-    @OnClick(R.id.fullscreen)
     void viewInNewActivity() {
         mDialog.dismiss();
         mContext.startActivity(new Intent(mContext, DocumentationActivity.class)
