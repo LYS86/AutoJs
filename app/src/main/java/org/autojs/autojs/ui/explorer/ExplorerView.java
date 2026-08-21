@@ -24,6 +24,9 @@ import android.widget.TextView;
 import com.stardust.pio.PFiles;
 
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ScriptFileListCategoryBinding;
+import org.autojs.autojs.databinding.ScriptFileListDirectoryBinding;
+import org.autojs.autojs.databinding.ScriptFileListFileBinding;
 import org.autojs.autojs.model.explorer.Explorer;
 import org.autojs.autojs.model.explorer.ExplorerChangeEvent;
 import org.autojs.autojs.model.explorer.ExplorerDirPage;
@@ -50,9 +53,6 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Stack;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
@@ -508,17 +508,11 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
 
     protected class ExplorerItemViewHolder extends BindableViewHolder<ExplorerItem> {
 
-        @BindView(R.id.name)
         TextView mName;
-        @BindView(R.id.first_char)
         TextView mFirstChar;
-        @BindView(R.id.desc)
         TextView mDesc;
-        @BindView(R.id.more)
         View mOptions;
-        @BindView(R.id.edit)
         View mEdit;
-        @BindView(R.id.run)
         View mRun;
 
         GradientDrawable mFirstCharBackground;
@@ -526,7 +520,17 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
 
         ExplorerItemViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            ScriptFileListFileBinding binding = ScriptFileListFileBinding.bind(itemView);
+            mName = binding.name;
+            mFirstChar = binding.firstChar;
+            mDesc = binding.desc;
+            mOptions = binding.more;
+            mEdit = binding.edit;
+            mRun = binding.run;
+            binding.item.setOnClickListener(v -> onItemClick());
+            binding.run.setOnClickListener(v -> run());
+            binding.edit.setOnClickListener(v -> edit());
+            binding.more.setOnClickListener(v -> showOptionMenu());
             mFirstCharBackground = (GradientDrawable) mFirstChar.getBackground();
         }
 
@@ -541,7 +545,6 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
             mRun.setVisibility(item.isExecutable() ? VISIBLE : GONE);
         }
 
-        @OnClick(R.id.item)
         void onItemClick() {
             if (mOnItemClickListener != null) {
                 mOnItemClickListener.onItemClick(itemView, mExplorerItem);
@@ -549,19 +552,16 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
             notifyOperated();
         }
 
-        @OnClick(R.id.run)
         void run() {
             Scripts.INSTANCE.run(new ScriptFile(mExplorerItem.getPath()));
             notifyOperated();
         }
 
-        @OnClick(R.id.edit)
         void edit() {
             Scripts.INSTANCE.edit(getContext(), new ScriptFile(mExplorerItem.getPath()));
             notifyOperated();
         }
 
-        @OnClick(R.id.more)
         void showOptionMenu() {
             mSelectedItem = mExplorerItem;
             PopupMenu popupMenu = new PopupMenu(getContext(), mOptions);
@@ -587,20 +587,22 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
 
     protected class ExplorerPageViewHolder extends BindableViewHolder<ExplorerPage> {
 
-        @BindView(R.id.name)
         public TextView mName;
 
-        @BindView(R.id.more)
         public View mOptions;
 
-        @BindView(R.id.icon)
         public ImageView mIcon;
 
         private ExplorerPage mExplorerPage;
 
         ExplorerPageViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            ScriptFileListDirectoryBinding binding = ScriptFileListDirectoryBinding.bind(itemView);
+            mName = binding.name;
+            mOptions = binding.more;
+            mIcon = binding.icon;
+            binding.item.setOnClickListener(v -> onItemClick());
+            binding.more.setOnClickListener(v -> showOptionMenu());
         }
 
         @Override
@@ -612,12 +614,10 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
 
         }
 
-        @OnClick(R.id.item)
         void onItemClick() {
             enterDirectChildPage(mExplorerPage);
         }
 
-        @OnClick(R.id.more)
         void showOptionMenu() {
             mSelectedItem = mExplorerPage;
             PopupMenu popupMenu = new PopupMenu(getContext(), mOptions);
@@ -629,26 +629,30 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
 
     class CategoryViewHolder extends BindableViewHolder<Boolean> {
 
-        @BindView(R.id.title)
         TextView mTitle;
 
-        @BindView(R.id.sort)
         ImageView mSort;
 
-        @BindView(R.id.order)
         ImageView mSortOrder;
 
-        @BindView(R.id.back)
         ImageView mGoBack;
 
-        @BindView(R.id.collapse)
         ImageView mArrow;
 
         private boolean mIsDir;
 
         CategoryViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            ScriptFileListCategoryBinding binding = ScriptFileListCategoryBinding.bind(itemView);
+            mTitle = binding.title;
+            mSort = binding.sort;
+            mSortOrder = binding.order;
+            mGoBack = binding.back;
+            mArrow = binding.collapse;
+            binding.order.setOnClickListener(v -> changeSortOrder());
+            binding.sort.setOnClickListener(v -> showSortOptions());
+            binding.back.setOnClickListener(v -> back());
+            binding.titleContainer.setOnClickListener(v -> collapseOrExpand());
         }
 
         @Override
@@ -671,7 +675,6 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
             }
         }
 
-        @OnClick(R.id.order)
         void changeSortOrder() {
             if (mIsDir) {
                 mSortOrder.setImageResource(mExplorerItemList.isDirSortedAscending() ?
@@ -686,7 +689,6 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
             }
         }
 
-        @OnClick(R.id.sort)
         void showSortOptions() {
             PopupMenu popupMenu = new PopupMenu(getContext(), mSort);
             popupMenu.inflate(R.menu.menu_sort_options);
@@ -696,14 +698,12 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
 
         }
 
-        @OnClick(R.id.back)
         void back() {
             if (canGoBack()) {
                 goBack();
             }
         }
 
-        @OnClick(R.id.title_container)
         void collapseOrExpand() {
             if (mIsDir) {
                 mCurrentPageState.dirsCollapsed = !mCurrentPageState.dirsCollapsed;
