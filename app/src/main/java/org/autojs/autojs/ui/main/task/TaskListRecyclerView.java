@@ -1,6 +1,7 @@
 package org.autojs.autojs.ui.main.task;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,7 +30,6 @@ import org.autojs.autojs.databinding.TaskListRecyclerViewItemBinding;
 import org.autojs.autojs.storage.database.ModelChange;
 import org.autojs.autojs.timing.TimedTaskManager;
 import org.autojs.autojs.ui.timing.TimedTaskSettingActivity;
-import org.autojs.autojs.ui.timing.TimedTaskSettingActivity_;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -253,9 +253,8 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
                 Task.PendingTask task = (Task.PendingTask) mTask;
                 String extra = task.getTimedTask() == null ? TimedTaskSettingActivity.EXTRA_INTENT_TASK_ID
                         : TimedTaskSettingActivity.EXTRA_TASK_ID;
-                TimedTaskSettingActivity_.intent(getContext())
-                        .extra(extra, task.getId())
-                        .start();
+                getContext().startActivity(new Intent(getContext(), TimedTaskSettingActivity.class)
+                        .putExtra(extra, task.getId()));
             }
         }
     }

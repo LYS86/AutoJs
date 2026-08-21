@@ -38,12 +38,8 @@ import com.stardust.util.BiMap;
 import com.stardust.util.BiMaps;
 import com.stardust.util.MapBuilder;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.CheckedChange;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ActivityTimedTaskSettingBinding;
 import org.autojs.autojs.external.ScriptIntents;
 import org.autojs.autojs.external.receiver.DynamicBroadcastReceivers;
 import org.autojs.autojs.model.script.ScriptFile;
@@ -65,7 +61,6 @@ import java.util.Map;
 /**
  * Created by Stardust on 2017/11/28.
  */
-@EActivity(R.layout.activity_timed_task_setting)
 public class TimedTaskSettingActivity extends BaseActivity {
 
     public static final String EXTRA_INTENT_TASK_ID = "intent_task_id";
@@ -114,46 +109,32 @@ public class TimedTaskSettingActivity extends BaseActivity {
             .put(R.id.run_on_time_tick, Intent.ACTION_TIME_TICK)
             .build();
 
-    @ViewById(R.id.toolbar)
     Toolbar mToolbar;
 
-    @ViewById(R.id.timing_group)
     RadioGroup mTimingGroup;
 
-    @ViewById(R.id.disposable_task_radio)
     RadioButton mDisposableTaskRadio;
 
-    @ViewById(R.id.daily_task_radio)
     RadioButton mDailyTaskRadio;
 
-    @ViewById(R.id.weekly_task_radio)
     RadioButton mWeeklyTaskRadio;
 
-    @ViewById(R.id.run_on_broadcast)
     RadioButton mRunOnBroadcastRadio;
 
-    @ViewById(R.id.run_on_other_broadcast)
     RadioButton mRunOnOtherBroadcast;
 
-    @ViewById(R.id.action)
     EditText mOtherBroadcastAction;
 
-    @ViewById(R.id.broadcast_group)
     RadioGroup mBroadcastGroup;
 
-    @ViewById(R.id.disposable_task_time)
     TextView mDisposableTaskTime;
 
-    @ViewById(R.id.disposable_task_date)
     TextView mDisposableTaskDate;
 
-    @ViewById(R.id.daily_task_time_picker)
     TimePicker mDailyTaskTimePicker;
 
-    @ViewById(R.id.weekly_task_time_picker)
     TimePicker mWeeklyTaskTimePicker;
 
-    @ViewById(R.id.weekly_task_container)
     LinearLayout mWeeklyTaskContainer;
 
     private List<CheckBox> mDayOfWeekCheckBoxes = new ArrayList<>();
@@ -187,9 +168,31 @@ public class TimedTaskSettingActivity extends BaseActivity {
             }
         }
 
+        ActivityTimedTaskSettingBinding binding = ActivityTimedTaskSettingBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        mToolbar = binding.toolbar;
+        mTimingGroup = binding.timingGroup;
+        mDisposableTaskRadio = binding.disposableTaskRadio;
+        mDailyTaskRadio = binding.dailyTaskRadio;
+        mWeeklyTaskRadio = binding.weeklyTaskRadio;
+        mRunOnBroadcastRadio = binding.runOnBroadcast;
+        mRunOnOtherBroadcast = binding.runOnOtherBroadcast;
+        mOtherBroadcastAction = binding.action;
+        mBroadcastGroup = binding.broadcastGroup;
+        mDisposableTaskTime = binding.disposableTaskTime;
+        mDisposableTaskDate = binding.disposableTaskDate;
+        mDailyTaskTimePicker = binding.dailyTaskTimePicker;
+        mWeeklyTaskTimePicker = binding.weeklyTaskTimePicker;
+        mWeeklyTaskContainer = binding.weeklyTaskContainer;
+        binding.dailyTaskRadio.setOnCheckedChangeListener((button, isChecked) -> onCheckedChanged(button));
+        binding.weeklyTaskRadio.setOnCheckedChangeListener((button, isChecked) -> onCheckedChanged(button));
+        binding.disposableTaskRadio.setOnCheckedChangeListener((button, isChecked) -> onCheckedChanged(button));
+        binding.runOnBroadcast.setOnCheckedChangeListener((button, isChecked) -> onCheckedChanged(button));
+        binding.disposableTaskTimeContainer.setOnClickListener(v -> showDisposableTaskTimePicker());
+        binding.disposableTaskDateContainer.setOnClickListener(v -> showDisposableTaskDatePicker());
+        setupViews();
     }
 
-    @AfterViews
     void setupViews() {
         setToolbarAsBack(getString(R.string.text_timed_task));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -263,7 +266,6 @@ public class TimedTaskSettingActivity extends BaseActivity {
     }
 
 
-    @CheckedChange({R.id.daily_task_radio, R.id.weekly_task_radio, R.id.disposable_task_radio, R.id.run_on_broadcast})
     void onCheckedChanged(CompoundButton button) {
         ExpandableRelativeLayout relativeLayout = findExpandableLayoutOf(button);
         if (button.isChecked()) {
@@ -284,7 +286,6 @@ public class TimedTaskSettingActivity extends BaseActivity {
         throw new IllegalStateException("findExpandableLayout: button = " + button + ", parent = " + parent + ", childCount = " + parent.getChildCount());
     }
 
-    @Click(R.id.disposable_task_time_container)
     void showDisposableTaskTimePicker() {
         LocalTime time = TIME_FORMATTER.parseLocalTime(mDisposableTaskTime.getText().toString());
         new TimePickerDialog(this, (view, hourOfDay, minute) -> mDisposableTaskTime.setText(TIME_FORMATTER.print(new LocalTime(hourOfDay, minute))), time.getHourOfDay(), time.getMinuteOfHour(), true)
@@ -293,7 +294,6 @@ public class TimedTaskSettingActivity extends BaseActivity {
     }
 
 
-    @Click(R.id.disposable_task_date_container)
     void showDisposableTaskDatePicker() {
         LocalDate date = DATE_FORMATTER.parseLocalDate(mDisposableTaskDate.getText().toString());
         new DatePickerDialog(this, (view, year, month, dayOfMonth) ->
