@@ -1,6 +1,7 @@
 package org.autojs.autojs.ui.explorer;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import android.util.AttributeSet;
@@ -11,8 +12,8 @@ import com.stardust.autojs.project.ProjectConfig;
 import com.stardust.autojs.project.ProjectLauncher;
 import com.stardust.pio.PFile;
 
-import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
+import org.autojs.autojs.databinding.ExplorerProjectToolbarBinding;
 import org.autojs.autojs.model.explorer.ExplorerChangeEvent;
 import org.autojs.autojs.model.explorer.ExplorerItem;
 import org.autojs.autojs.model.explorer.Explorers;
@@ -22,16 +23,11 @@ import org.autojs.autojs.ui.project.ProjectConfigActivity;
 import org.autojs.autojs.ui.project.ProjectConfigActivity_;
 import org.greenrobot.eventbus.Subscribe;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 public class ExplorerProjectToolbar extends CardView {
 
     private ProjectConfig mProjectConfig;
     private PFile mDirectory;
 
-    @BindView(R.id.project_name)
     TextView mProjectName;
 
     public ExplorerProjectToolbar(Context context) {
@@ -50,8 +46,11 @@ public class ExplorerProjectToolbar extends CardView {
     }
 
     private void init() {
-        inflate(getContext(), R.layout.explorer_project_toolbar, this);
-        ButterKnife.bind(this);
+        ExplorerProjectToolbarBinding binding = ExplorerProjectToolbarBinding.inflate(LayoutInflater.from(getContext()), this, true);
+        mProjectName = binding.projectName;
+        binding.run.setOnClickListener(v -> run());
+        binding.build.setOnClickListener(v -> build());
+        binding.sync.setOnClickListener(v -> sync());
         setOnClickListener(view -> edit());
     }
 
@@ -71,7 +70,6 @@ public class ExplorerProjectToolbar extends CardView {
         }
     }
 
-    @OnClick(R.id.run)
     void run() {
         try {
             new ProjectLauncher(mDirectory.getPath())
@@ -82,14 +80,12 @@ public class ExplorerProjectToolbar extends CardView {
         }
     }
 
-    @OnClick(R.id.build)
     void build() {
         BuildActivity_.intent(getContext())
                 .extra(BuildActivity.EXTRA_SOURCE, mDirectory.getPath())
                 .start();
     }
 
-    @OnClick(R.id.sync)
     void sync() {
 
     }
