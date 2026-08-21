@@ -19,7 +19,8 @@ import org.autojs.autojs.ui.project.BuildActivity;
 import org.autojs.autojs.ui.project.BuildActivity_;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
 import org.autojs.autojs.ui.edit.editor.CodeEditor;
-import org.autojs.autojs.ui.log.LogActivity_;
+import android.content.Intent;
+import org.autojs.autojs.ui.log.LogActivity;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 
 import com.stardust.util.ClipboardUtil;
@@ -292,7 +293,7 @@ public class EditorMenu {
 
 
     private void showLog() {
-        LogActivity_.intent(mContext).start();
+        mContext.startActivity(new Intent(mContext, LogActivity.class));
     }
 
     private void showConsole() {
