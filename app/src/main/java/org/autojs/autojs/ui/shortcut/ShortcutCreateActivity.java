@@ -28,12 +28,10 @@ import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.tool.BitmapTool;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import org.autojs.autojs.databinding.ShortcutCreateDialogBinding;
 
 /**
  * Created by Stardust on 2017/10/25.
@@ -46,13 +44,10 @@ public class ShortcutCreateActivity extends AppCompatActivity {
     private ScriptFile mScriptFile;
     private boolean mIsDefaultIcon = true;
 
-    @BindView(R.id.name)
     TextView mName;
 
-    @BindView(R.id.icon)
     ImageView mIcon;
 
-    @BindView(R.id.use_android_n_shortcut)
     CheckBox mUseAndroidNShortcut;
 
     @Override
@@ -63,8 +58,12 @@ public class ShortcutCreateActivity extends AppCompatActivity {
     }
 
     private void showDialog() {
-        View view = View.inflate(this, R.layout.shortcut_create_dialog, null);
-        ButterKnife.bind(this, view);
+        ShortcutCreateDialogBinding binding = ShortcutCreateDialogBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        mName = binding.name;
+        mIcon = binding.icon;
+        mUseAndroidNShortcut = binding.useAndroidNShortcut;
+        binding.icon.setOnClickListener(v -> selectIcon());
         mUseAndroidNShortcut.setVisibility(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ?
                 View.VISIBLE : View.GONE);
         mName.setText(mScriptFile.getSimplifiedName());
@@ -81,7 +80,6 @@ public class ShortcutCreateActivity extends AppCompatActivity {
     }
 
 
-    @OnClick(R.id.icon)
     void selectIcon() {
         startActivityForResult(new Intent(this, ShortcutIconSelectActivity.class), 21209);
     }
