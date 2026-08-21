@@ -2,32 +2,28 @@ package org.autojs.autojs.ui.main.task;
 
 import android.app.Activity;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
-import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
+import org.autojs.autojs.databinding.FragmentTaskManagerBinding;
 import org.autojs.autojs.ui.main.ViewPagerFragment;
 import org.autojs.autojs.ui.widget.SimpleAdapterDataObserver;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
 
 /**
  * Created by Stardust on 2017/3/24.
  */
-@EFragment(R.layout.fragment_task_manager)
 public class TaskManagerFragment extends ViewPagerFragment {
 
-    @ViewById(R.id.task_list)
     TaskListRecyclerView mTaskListRecyclerView;
 
-    @ViewById(R.id.notice_no_running_script)
     View mNoRunningScriptNotice;
 
-    @ViewById(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
 
@@ -36,7 +32,17 @@ public class TaskManagerFragment extends ViewPagerFragment {
         setArguments(new Bundle());
     }
 
-    @AfterViews
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        FragmentTaskManagerBinding binding = FragmentTaskManagerBinding.inflate(inflater, container, false);
+        mTaskListRecyclerView = binding.taskList;
+        mNoRunningScriptNotice = binding.noticeNoRunningScript;
+        mSwipeRefreshLayout = binding.swipeRefreshLayout;
+        setUpViews();
+        return binding.getRoot();
+    }
+
     void setUpViews() {
         init();
         final boolean noRunningScript = mTaskListRecyclerView.getAdapter().getItemCount() == 0;
