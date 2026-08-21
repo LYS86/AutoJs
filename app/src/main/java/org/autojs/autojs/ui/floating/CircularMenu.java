@@ -317,6 +317,7 @@ public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInsp
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } finally {
+            FloatyWindowManger.onCircularMenuClosed(this);
             EventBus.getDefault().post(new StateChangeEvent(STATE_CLOSED, mState));
             mState = STATE_CLOSED;
         }

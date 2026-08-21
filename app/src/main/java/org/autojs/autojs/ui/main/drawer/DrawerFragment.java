@@ -28,6 +28,8 @@ import com.stardust.app.GlobalAppContext;
 import com.stardust.notification.NotificationListenerService;
 import com.stardust.util.ViewUtil;
 
+import com.stardust.autojs.util.FloatingPermission;
+
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.external.foreground.ForegroundService;
@@ -48,6 +50,8 @@ import org.autojs.autojs.tool.AccessibilityServiceTool;
 import org.autojs.autojs.tool.WifiTool;
 
 import com.stardust.util.IntentUtil;
+
+import static com.stardust.autojs.util.FloatingPermission.manageDrawOverlays;
 
 import org.autojs.autojs.databinding.FragmentDrawerBinding;
 import org.greenrobot.eventbus.EventBus;
@@ -125,10 +129,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     void setUpViews() {
         mDrawerMenu.setPadding(0, ViewUtil.getStatusBarHeight(getContext()), 0, 0);
         initMenuItems();
-        if (Pref.isFloatingMenuShown()) {
-            FloatyWindowManger.showCircularMenuIfNeeded();
-            setChecked(mFloatingWindowItem, true);
-        }
+        syncFloatingWindowState();
         setChecked(mConnectionItem, DevPluginService.getInstance().isConnected());
         if (Pref.isForegroundServiceEnabled()) {
             ForegroundService.start(GlobalAppContext.get());
@@ -206,14 +207,20 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     void showOrDismissFloatingWindow(DrawerMenuItemViewHolder holder) {
         boolean isFloatingWindowShowing = FloatyWindowManger.isCircularMenuShowing();
         boolean checked = holder.getSwitchCompat().isChecked();
-        if (getActivity() != null && !getActivity().isFinishing()) {
-            Pref.setFloatingMenuShown(checked);
-        }
         if (checked && !isFloatingWindowShowing) {
-            setChecked(mFloatingWindowItem, FloatyWindowManger.showCircularMenu());
-            enableAccessibilityServiceByRootIfNeeded();
+            Pref.setFloatingMenuShown(true);
+            boolean shown = FloatyWindowManger.showCircularMenu();
+            if (shown) {
+                setChecked(mFloatingWindowItem, true);
+                enableAccessibilityServiceByRootIfNeeded();
+            } else {
+                setChecked(mFloatingWindowItem, false);
+                GlobalAppContext.toast(R.string.text_no_floating_window_permission);
+                manageDrawOverlays(GlobalAppContext.get());
+            }
         } else if (!checked && isFloatingWindowShowing) {
             FloatyWindowManger.hideCircularMenu();
+            Pref.setFloatingMenuShown(false);
         }
     }
 
@@ -299,6 +306,23 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setChecked(mUsageStatsPermissionItem, AppOpsKt.isOpPermissionGranted(getContext(), AppOpsManager.OPSTR_GET_USAGE_STATS));
         }
+        syncFloatingWindowState();
+    }
+
+    private void syncFloatingWindowState() {
+        boolean wantShown = Pref.isFloatingMenuShown();
+        boolean showing = FloatyWindowManger.isCircularMenuShowing();
+        if (wantShown && !showing) {
+            if (FloatingPermission.canDrawOverlays(requireContext())) {
+                showing = FloatyWindowManger.showCircularMenuIfNeeded();
+            } else {
+                showing = false;
+            }
+            if (!showing) {
+                Pref.setFloatingMenuShown(false);
+            }
+        }
+        setChecked(mFloatingWindowItem, showing);
     }
 
     private void enableAccessibilityService() {
@@ -326,7 +350,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
 
     @Subscribe
     public void onCircularMenuStateChange(CircularMenu.StateChangeEvent event) {
-        setChecked(mFloatingWindowItem, event.getCurrentState() != CircularMenu.STATE_CLOSED);
+        boolean shown = event.getCurrentState() != CircularMenu.STATE_CLOSED;
+        Pref.setFloatingMenuShown(shown);
+        setChecked(mFloatingWindowItem, shown);
     }
 
     private void showStableModePromptIfNeeded() {

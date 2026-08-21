@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.stardust.app.GlobalAppContext;
 import com.stardust.autojs.util.FloatingPermission;
@@ -53,24 +52,21 @@ public class FloatyWindowManger {
         return sCircularMenu != null && sCircularMenu.get() != null;
     }
 
-    public static void showCircularMenuIfNeeded() {
+    public static boolean showCircularMenuIfNeeded() {
         if (isCircularMenuShowing()) {
-            return;
+            return true;
         }
-        showCircularMenu();
+        return showCircularMenu();
     }
 
     public static boolean showCircularMenu() {
         if (!FloatingPermission.canDrawOverlays(GlobalAppContext.get())) {
-            Toast.makeText(GlobalAppContext.get(), R.string.text_no_floating_window_permission, Toast.LENGTH_SHORT).show();
-            manageDrawOverlays(GlobalAppContext.get());
             return false;
-        } else {
-            GlobalAppContext.get().startService(new Intent(GlobalAppContext.get(), FloatyService.class));
-            CircularMenu menu = new CircularMenu(GlobalAppContext.get());
-            sCircularMenu = new WeakReference<>(menu);
-            return true;
         }
+        GlobalAppContext.get().startService(new Intent(GlobalAppContext.get(), FloatyService.class));
+        CircularMenu menu = new CircularMenu(GlobalAppContext.get());
+        sCircularMenu = new WeakReference<>(menu);
+        return true;
     }
 
     public static void hideCircularMenu() {
@@ -80,6 +76,12 @@ public class FloatyWindowManger {
         if (menu != null)
             menu.close();
         sCircularMenu = null;
+    }
+
+    static void onCircularMenuClosed(CircularMenu menu) {
+        if (sCircularMenu != null && sCircularMenu.get() == menu) {
+            sCircularMenu = null;
+        }
     }
 
     public static int getWindowType() {
