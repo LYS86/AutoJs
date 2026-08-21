@@ -48,7 +48,7 @@ import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.log.LogActivity;
 import org.autojs.autojs.ui.main.scripts.MyScriptListFragment_;
 import org.autojs.autojs.ui.main.task.TaskManagerFragment_;
-import org.autojs.autojs.ui.settings.SettingsActivity_;
+import org.autojs.autojs.ui.settings.SettingsActivity;
 import org.autojs.autojs.ui.widget.SearchViewItem;
 import org.greenrobot.eventbus.EventBus;
 
@@ -162,7 +162,7 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
 
     @Click(R.id.setting)
     void startSettingActivity() {
-        startActivity(new Intent(this, SettingsActivity_.class));
+        startActivity(new Intent(this, SettingsActivity.class));
     }
 
     @Click(R.id.exit)

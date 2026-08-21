@@ -90,7 +90,7 @@
             android:theme="@style/EditorTheme">
         </activity>
         <activity
-            android:name=".ui.settings.SettingsActivity_"
+            android:name=".ui.settings.SettingsActivity"
             android:theme="@style/AppTheme.Settings"/>
         <activity android:name=".ui.error.ErrorReportActivity"/>
         <activity
