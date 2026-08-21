@@ -8,12 +8,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.DrawerMenuItemBinding;
 import org.autojs.autojs.ui.widget.BindableViewHolder;
 import org.autojs.autojs.ui.widget.PrefSwitch;
 import org.autojs.autojs.ui.widget.SwitchCompat;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 import static android.view.View.GONE;
@@ -26,19 +25,14 @@ import static android.view.View.VISIBLE;
 public class DrawerMenuItemViewHolder extends BindableViewHolder<DrawerMenuItem> {
 
     private static final long CLICK_TIMEOUT = 1000;
-    @BindView(R.id.sw)
     PrefSwitch mSwitchCompat;
 
-    @BindView(R.id.progress_bar)
     MaterialProgressBar mProgressBar;
 
-    @BindView(R.id.icon)
     ImageView mIcon;
 
-    @BindView(R.id.title)
     TextView mTitle;
 
-    @BindView(R.id.notifications)
     TextView mNotifications;
 
     private boolean mAntiShake;
@@ -47,7 +41,12 @@ public class DrawerMenuItemViewHolder extends BindableViewHolder<DrawerMenuItem>
 
     public DrawerMenuItemViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        DrawerMenuItemBinding binding = DrawerMenuItemBinding.bind(itemView);
+        mSwitchCompat = binding.sw;
+        mProgressBar = binding.progressBar;
+        mIcon = binding.icon;
+        mTitle = binding.title;
+        mNotifications = binding.notifications;
         mSwitchCompat.setOnCheckedChangeListener((buttonView, isChecked) -> onClick());
         itemView.setOnClickListener(v -> {
             if (mSwitchCompat.getVisibility() == VISIBLE) {
