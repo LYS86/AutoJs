@@ -56,8 +56,12 @@ public abstract class JavaScriptEngine extends ScriptEngine.AbstractScriptEngine
 
     @Override
     public synchronized void destroy() {
-        mRuntime.onExit();
-        super.destroy();
+        //保证 onExit 抛出异常时引擎仍能从 ScriptEngineManager 注销, 避免任务列表残留无法停止的引擎
+        try {
+            mRuntime.onExit();
+        } finally {
+            super.destroy();
+        }
     }
 
     @Override

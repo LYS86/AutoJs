@@ -405,10 +405,11 @@ public class ScriptRuntime {
         } catch (Throwable e) {
             console.error("exception on exit: ", e);
         }
-        ignoresException(threads::shutDownAll);
-        ignoresException(events::recycle);
+        //以下字段在 runtime.init() 之前为 null, 绑定方法引用会在求值时即抛出 NPE, 须用 lambda 延迟到 ignoresException 内部捕获
+        ignoresException(() -> threads.shutDownAll());
+        ignoresException(() -> events.recycle());
         ignoresException(media::recycle);
-        ignoresException(loopers::recycle);
+        ignoresException(() -> loopers.recycle());
         ignoresException(() -> {
             if (mRootShell != null) mRootShell.exit();
             mRootShell = null;
@@ -417,8 +418,8 @@ public class ScriptRuntime {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             ignoresException(images::releaseScreenCapturer);
         }
-        ignoresException(sensors::unregisterAll);
-        ignoresException(timers::recycle);
+        ignoresException(() -> sensors.unregisterAll());
+        ignoresException(() -> timers.recycle());
         ignoresException(ui::recycle);
     }
 
