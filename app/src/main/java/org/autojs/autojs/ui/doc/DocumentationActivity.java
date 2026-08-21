@@ -1,30 +1,36 @@
 package org.autojs.autojs.ui.doc;
 
+import android.os.Bundle;
 import android.webkit.WebView;
+
+import androidx.annotation.Nullable;
 
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ActivityDocumentationBinding;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.widget.EWebView;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 
 /**
  * Created by Stardust on 2017/10/24.
  */
-@EActivity(R.layout.activity_documentation)
 public class DocumentationActivity extends BaseActivity {
 
     public static final String EXTRA_URL = "url";
 
-    @ViewById(R.id.eweb_view)
     EWebView mEWebView;
 
     WebView mWebView;
 
-    @AfterViews
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ActivityDocumentationBinding binding = ActivityDocumentationBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        mEWebView = binding.ewebView;
+        setUpViews();
+    }
+
     void setUpViews() {
         setToolbarAsBack(getString(R.string.text_tutorial));
         mWebView = mEWebView.getWebView();
