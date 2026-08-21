@@ -25,6 +25,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -39,12 +40,10 @@ import com.stardust.util.BackPressedHandler;
 import com.stardust.util.Callback;
 import com.stardust.util.ViewUtils;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EViewGroup;
-import org.androidannotations.annotations.ViewById;
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
+import org.autojs.autojs.databinding.EditorViewBinding;
 import org.autojs.autojs.model.autocomplete.AutoCompletion;
 import org.autojs.autojs.model.autocomplete.CodeCompletion;
 import org.autojs.autojs.model.autocomplete.CodeCompletions;
@@ -84,7 +83,6 @@ import static org.autojs.autojs.model.script.Scripts.EXTRA_EXCEPTION_MESSAGE;
 /**
  * Created by Stardust on 2017/9/28.
  */
-@EViewGroup(R.layout.editor_view)
 public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintClickListener, FunctionsKeyboardView.ClickCallback, ToolbarFragment.OnMenuItemClickListener {
 
     public static final String EXTRA_PATH = "path";
@@ -94,31 +92,22 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     public static final String EXTRA_SAVE_ENABLED = "saveEnabled";
     public static final String EXTRA_RUN_ENABLED = "runEnabled";
 
-    @ViewById(R.id.editor)
     CodeEditor mEditor;
 
-    @ViewById(R.id.code_completion_bar)
     CodeCompletionBar mCodeCompletionBar;
 
-    @ViewById(R.id.input_method_enhance_bar)
     View mInputMethodEnhanceBar;
 
-    @ViewById(R.id.symbol_bar)
     CodeCompletionBar mSymbolBar;
 
-    @ViewById(R.id.functions)
     ImageView mShowFunctionsButton;
 
-    @ViewById(R.id.functions_keyboard)
     FunctionsKeyboardView mFunctionsKeyboard;
 
-    @ViewById(R.id.debug_bar)
     DebugBar mDebugBar;
 
-    @ViewById(R.id.docs)
     EWebView mDocsWebView;
 
-    @ViewById(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
     private String mName;
@@ -154,6 +143,7 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     private String mRestoredText;
     private NormalToolbarFragment mNormalToolbar = new NormalToolbarFragment();
     private boolean mDebugging = false;
+    private boolean mAlreadyInflated = false;
 
     public EditorView(Context context) {
         super(context);
@@ -165,6 +155,25 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
 
     public EditorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        if (!mAlreadyInflated) {
+            mAlreadyInflated = true;
+            EditorViewBinding binding = EditorViewBinding.inflate(LayoutInflater.from(getContext()), this, true);
+            mEditor = binding.editor;
+            mCodeCompletionBar = binding.codeCompletionBar;
+            mInputMethodEnhanceBar = binding.inputMethodEnhanceBar;
+            mSymbolBar = binding.symbolBar;
+            mShowFunctionsButton = binding.functions;
+            mFunctionsKeyboard = binding.functionsKeyboard;
+            mDebugBar = binding.debugBar;
+            mDocsWebView = binding.docs;
+            mDrawerLayout = binding.drawerLayout;
+            init();
+        }
+        super.onFinishInflate();
     }
 
     @Override
@@ -274,7 +283,6 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         return mMenuItemStatus.get(id, defValue);
     }
 
-    @AfterViews
     void init() {
         //setTheme(Theme.getDefault(getContext()));
         setUpEditor();
