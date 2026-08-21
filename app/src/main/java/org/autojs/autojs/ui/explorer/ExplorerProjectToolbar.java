@@ -20,7 +20,6 @@ import org.autojs.autojs.model.explorer.ExplorerItem;
 import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.ui.project.BuildActivity;
 import org.autojs.autojs.ui.project.ProjectConfigActivity;
-import org.autojs.autojs.ui.project.ProjectConfigActivity_;
 import org.greenrobot.eventbus.Subscribe;
 
 public class ExplorerProjectToolbar extends CardView {
@@ -114,9 +113,8 @@ public class ExplorerProjectToolbar extends CardView {
     }
 
     void edit() {
-        ProjectConfigActivity_.intent(getContext())
-                .extra(ProjectConfigActivity.EXTRA_DIRECTORY, mDirectory.getPath())
-                .start();
+        getContext().startActivity(new Intent(getContext(), ProjectConfigActivity.class)
+                .putExtra(ProjectConfigActivity.EXTRA_DIRECTORY, mDirectory.getPath()));
     }
 
 }

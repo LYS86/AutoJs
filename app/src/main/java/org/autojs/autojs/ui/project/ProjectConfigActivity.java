@@ -17,11 +17,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.stardust.autojs.project.ProjectConfig;
 import com.stardust.pio.PFiles;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 import org.autojs.autojs.R;
+import org.autojs.autojs.databinding.ActivityProjectConfigBinding;
 import org.autojs.autojs.model.explorer.ExplorerDirPage;
 import org.autojs.autojs.model.explorer.ExplorerFileItem;
 import org.autojs.autojs.model.explorer.Explorers;
@@ -39,7 +36,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-@EActivity(R.layout.activity_project_config)
 public class ProjectConfigActivity extends BaseActivity {
 
     public static final String EXTRA_PARENT_DIRECTORY = "parent_directory";
@@ -52,25 +48,18 @@ public class ProjectConfigActivity extends BaseActivity {
     private static final Pattern REGEX_PACKAGE_NAME = Pattern.compile("^([A-Za-z][A-Za-z\\d_]*\\.)+([A-Za-z][A-Za-z\\d_]*)$");
 
 
-    @ViewById(R.id.project_location)
     EditText mProjectLocation;
 
-    @ViewById(R.id.app_name)
     EditText mAppName;
 
-    @ViewById(R.id.package_name)
     EditText mPackageName;
 
-    @ViewById(R.id.version_name)
     EditText mVersionName;
 
-    @ViewById(R.id.version_code)
     EditText mVersionCode;
 
-    @ViewById(R.id.main_file_name)
     EditText mMainFileName;
 
-    @ViewById(R.id.icon)
     ImageView mIcon;
 
     private File mDirectory;
@@ -107,9 +96,24 @@ public class ProjectConfigActivity extends BaseActivity {
                         .show();
             }
         }
+        initViews();
     }
 
-    @AfterViews
+    private void initViews() {
+        ActivityProjectConfigBinding binding = ActivityProjectConfigBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        mProjectLocation = binding.projectLocation;
+        mAppName = binding.appName;
+        mPackageName = binding.packageName;
+        mVersionName = binding.versionName;
+        mVersionCode = binding.versionCode;
+        mMainFileName = binding.mainFileName;
+        mIcon = binding.icon;
+        binding.fab.setOnClickListener(v -> commit());
+        binding.icon.setOnClickListener(v -> selectIcon());
+        setupViews();
+    }
+
     void setupViews() {
         if (mProjectConfig == null) {
             return;
@@ -136,7 +140,6 @@ public class ProjectConfigActivity extends BaseActivity {
     }
 
     @SuppressLint("CheckResult")
-    @Click(R.id.fab)
     void commit() {
         if (!checkInputs()) {
             return;
@@ -185,7 +188,6 @@ public class ProjectConfigActivity extends BaseActivity {
         }
     }
 
-    @Click(R.id.icon)
     void selectIcon() {
         startActivityForResult(new Intent(this, ShortcutIconSelectActivity.class), REQUEST_CODE);
     }
