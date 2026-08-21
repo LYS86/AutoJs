@@ -116,9 +116,16 @@ public class TaskListRecyclerView extends ThemeColorRecyclerView {
         for (TaskGroup group : mTaskGroups) {
             group.refresh();
         }
-        mAdapter = new Adapter(mTaskGroups);
-        setAdapter(mAdapter);
-        //notifyDataSetChanged not working...
+        mAdapter.notifyParentDataSetChanged(false);
+    }
+
+    public boolean hasNoTasks() {
+        for (TaskGroup group : mTaskGroups) {
+            if (!group.getChildList().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

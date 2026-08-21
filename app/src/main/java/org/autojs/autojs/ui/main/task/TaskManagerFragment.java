@@ -45,7 +45,7 @@ public class TaskManagerFragment extends ViewPagerFragment {
 
     void setUpViews() {
         init();
-        final boolean noRunningScript = mTaskListRecyclerView.getAdapter().getItemCount() == 0;
+        final boolean noRunningScript = mTaskListRecyclerView.hasNoTasks();
         mNoRunningScriptNotice.setVisibility(noRunningScript ? View.VISIBLE : View.GONE);
     }
 
@@ -54,7 +54,7 @@ public class TaskManagerFragment extends ViewPagerFragment {
 
             @Override
             public void onSomethingChanged() {
-                final boolean noRunningScript = mTaskListRecyclerView.getAdapter().getItemCount() == 0;
+                final boolean noRunningScript = mTaskListRecyclerView.hasNoTasks();
                 mTaskListRecyclerView.postDelayed(() -> {
                     if (mNoRunningScriptNotice == null)
                         return;
