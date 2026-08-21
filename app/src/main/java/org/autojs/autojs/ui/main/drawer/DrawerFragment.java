@@ -13,7 +13,9 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,10 +49,7 @@ import org.autojs.autojs.tool.WifiTool;
 
 import com.stardust.util.IntentUtil;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
+import org.autojs.autojs.databinding.FragmentDrawerBinding;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -68,12 +67,10 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Stardust on 2017/1/30.
  * TODO these codes are so ugly!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  */
-@EFragment(R.layout.fragment_drawer)
 public class DrawerFragment extends androidx.fragment.app.Fragment {
 
     private static final String URL_DEV_PLUGIN = "https://www.autojs.org/topic/968/";
 
-    @ViewById(R.id.drawer_menu)
     RecyclerView mDrawerMenu;
 
 
@@ -116,7 +113,15 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
 
     }
 
-    @AfterViews
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        FragmentDrawerBinding binding = FragmentDrawerBinding.inflate(inflater, container, false);
+        mDrawerMenu = binding.drawerMenu;
+        setUpViews();
+        return binding.getRoot();
+    }
+
     void setUpViews() {
         mDrawerMenu.setPadding(0, ViewUtil.getStatusBarHeight(getContext()), 0, 0);
         initMenuItems();
