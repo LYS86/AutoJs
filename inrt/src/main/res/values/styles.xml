@@ -13,6 +13,12 @@
         <item name="windowActionBar">false</item>
     </style>
 
+    <!-- 静默启动用的透明变体：无 starting window 预览、透明背景，避免"不显示主界面"模式下的白屏闪烁 -->
+    <style name="AppTheme.Splash.Transparent">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 

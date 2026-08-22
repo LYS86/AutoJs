@@ -64,6 +64,7 @@ open class AssetsProjectLauncher(private val mAssetsProjectDir: String, private 
     private fun runScript(activity: Activity?) {
         if (mScriptExecution != null && mScriptExecution!!.engine != null &&
                 !mScriptExecution!!.engine.isDestroyed) {
+            activity?.finish()
             return
         }
         try {
