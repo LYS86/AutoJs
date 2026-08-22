@@ -97,17 +97,20 @@
             android:name=".external.tasker.TaskerScriptEditActivity"
             android:configChanges="orientation|screenSize"
             />
-    <activity
-        android:name=".ui.project.BuildActivity"
-        android:configChanges="orientation|screenSize"/>
-        <activity android:name=".ui.project.ProjectConfigActivity"/>
-        <activity android:name=".ui.log.LogActivity"/>
-        <activity android:name=".ui.doc.DocumentationActivity"/>
-        <activity android:name=".ui.shortcut.ShortcutIconSelectActivity"/>
-        <activity android:name=".ui.timing.TimedTaskSettingActivity"/>
+        <activity
+            android:name=".ui.project.BuildActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".ui.project.ProjectConfigActivity" />
+        <activity android:name=".ui.log.LogActivity" />
+        <activity android:name=".ui.doc.DocumentationActivity" />
+        <activity android:name=".ui.shortcut.ShortcutIconSelectActivity" />
+        <activity android:name=".ui.timing.TimedTaskSettingActivity" />
+        <activity
+            android:name="com.stardust.theme.app.ColorSelectActivity"
+            android:theme="@style/MtAppTheme.FullScreen" />
         <activity
             android:name=".ui.shortcut.ShortcutCreateActivity"
-            android:theme="@style/AppTheme.Transparent"/>
+            android:theme="@style/AppTheme.Transparent" />
         <activity android:name=".external.widget.ScriptWidgetSettingsActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
