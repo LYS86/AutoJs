@@ -6,6 +6,9 @@
         <activity
             android:name="com.stardust.auojs.inrt.SettingsActivity"
             android:exported="true"/>
+        <activity
+            android:name="com.stardust.auojs.inrt.LogActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>
