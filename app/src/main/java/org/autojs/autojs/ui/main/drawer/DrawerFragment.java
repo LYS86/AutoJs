@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AppOpsManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -123,7 +124,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         FragmentDrawerBinding binding = FragmentDrawerBinding.inflate(inflater, container, false);
         mDrawerMenu = binding.drawerMenu;
         setUpViews();
-        return binding.getRoot();
+        View root = binding.getRoot();
+        root.setBackground(new InsetDrawable(root.getBackground(),
+                0, ViewUtil.getStatusBarHeight(requireContext()), 0, 0));
+        return root;
     }
 
     void setUpViews() {
