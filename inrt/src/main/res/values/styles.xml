@@ -18,5 +18,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
+    <!-- PreferenceFragmentCompat 要求主题必须声明 preferenceTheme-->
+    <style name="ScriptTheme.Settings" parent="ScriptTheme">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+    </style>
 
 </resources>

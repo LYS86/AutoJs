@@ -44,7 +44,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SettingsActivity"/>
+        <activity
+            android:name=".SettingsActivity"
+            android:theme="@style/ScriptTheme.Settings"/>
 
         <service
             android:name="com.stardust.notification.NotificationListenerService"
