@@ -197,7 +197,6 @@
     <string name="text_source_file_path">脚本文件(夹)路径</string>
     <string name="text_search">搜索</string>
     <string name="text_select_icon">选择图标</string>
-    <string name="text_use_android_n_shortcut">添加到安卓7.0 Shortcut</string>
 
     <string name="text_sample">示例代码</string>
     <string name="text_reset_to_initial_content">重置为初始内容</string>
