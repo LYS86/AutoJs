@@ -5,15 +5,20 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableKt;
 import androidx.core.graphics.drawable.IconCompat;
 import android.util.Log;
 import android.view.View;
+
+import java.util.Objects;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.external.shortcut.ShortcutManager;
@@ -76,7 +81,7 @@ public class ShortcutCreateActivity extends AppCompatActivity {
     private void createShortcut() {
         IconCompat icon;
         if (mIsDefaultIcon) {
-            icon = IconCompat.createWithResource(this, R.drawable.ic_node_js_black);
+            icon = createDefaultShortcutIcon();
         } else {
             Bitmap bitmap = BitmapTool.drawableToBitmap(mIcon.getDrawable());
             icon = IconCompat.createWithBitmap(bitmap);
@@ -84,6 +89,13 @@ public class ShortcutCreateActivity extends AppCompatActivity {
         String name = mName.getText().toString();
         String path = mScriptFile.getPath();
         ShortcutManager.createPinnedShortcut(this, name, path, icon, path);
+    }
+
+    // 老版 MIUI 桌面无法加载三方包的矢量资源图标, 统一栅格化为位图以保证兼容
+    private IconCompat createDefaultShortcutIcon() {
+        Drawable drawable = Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.ic_node_js_black));
+        return IconCompat.createWithBitmap(DrawableKt.toBitmap(
+                drawable, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), null));
     }
 
 
