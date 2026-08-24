@@ -139,7 +139,7 @@ dependencies {
         exclude group: 'com.android.support'
     })
     // Android job
-    implementation 'com.evernote:android-job:1.2.6'
+    implementation 'com.evernote:android-job:1.4.3'
     implementation project(':automator')
     implementation project(':common')
     implementation project(':autojs')
