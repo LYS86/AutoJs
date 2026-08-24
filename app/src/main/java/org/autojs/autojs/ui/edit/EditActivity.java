@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -30,8 +29,6 @@ import org.autojs.autojs.storage.file.TmpScriptFiles;
 import org.autojs.autojs.tool.Observers;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
-
-import org.autojs.autojs.ui.main.MainActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +55,6 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
 
     private EditorMenu mEditorMenu;
     private RequestPermissionCallbacks mRequestPermissionCallbacks = new RequestPermissionCallbacks();
-    private boolean mNewTask;
 
     public static void editFile(Context context, String path, boolean newTask) {
         editFile(context, null, path, newTask);
@@ -93,7 +89,6 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mNewTask = (getIntent().getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0;
         ActivityEditBinding binding = ActivityEditBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         mEditorView = binding.editorView;
@@ -213,18 +208,15 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
             showExitConfirmDialog();
             return;
         }
-        finishAndRemoveFromRecents();
+        super.finish();
     }
 
-    private void finishAndRemoveFromRecents() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            finishAndRemoveTask();
-        } else {
-            super.finish();
-        }
-        if (mNewTask) {
-            startActivity(new Intent(this, MainActivity.class));
-        }
+    /**
+     * 编辑器与主页同任务栈后（移除 taskAffinity），不能用 finishAndRemoveTask()
+     * 关闭整个任务，普通 finish 即可，返回自然回到下方的页面。
+     */
+    private void finishDirectly() {
+        super.finish();
     }
 
     private void showExitConfirmDialog() {
@@ -236,9 +228,9 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
                 .neutralText(R.string.text_exit_directly)
                 .onNegative((dialog, which) -> {
                     mEditorView.saveFile();
-                    finishAndRemoveFromRecents();
+                    finishDirectly();
                 })
-                .onNeutral((dialog, which) -> finishAndRemoveFromRecents())
+                .onNeutral((dialog, which) -> finishDirectly())
                 .show();
     }
 
