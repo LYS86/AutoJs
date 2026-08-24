@@ -19,6 +19,7 @@ import com.stardust.enhancedfloaty.FloatyWindow;
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.autojs.AutoJs;
+import org.autojs.autojs.autojs.key.GlobalKeyObserver;
 import org.autojs.autojs.autojs.record.GlobalActionRecorder;
 import org.autojs.autojs.databinding.CircularActionMenuBinding;
 import org.autojs.autojs.model.explorer.ExplorerDirPage;
@@ -47,7 +48,7 @@ import org.jdeferred.impl.DeferredObject;
  * Created by Stardust on 2017/10/18.
  */
 
-public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInspector.CaptureAvailableListener {
+public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInspector.CaptureAvailableListener, GlobalKeyObserver.OnVolumeDownListener {
 
 
     public static class StateChangeEvent {
@@ -83,6 +84,7 @@ public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInsp
     private MaterialDialog mLayoutInspectDialog;
     private String mRunningPackage, mRunningActivity;
     private Deferred<NodeInfo, Void, Void> mCaptureDeferred;
+    private long mLastVolumeDownEventTime;
 
     public CircularMenu(Context context) {
         mContext = new ContextThemeWrapper(context, R.style.AppTheme);
@@ -91,6 +93,7 @@ public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInsp
         mRecorder = GlobalActionRecorder.getSingleton(context);
         mRecorder.addOnStateChangedListener(this);
         AutoJs.getInstance().getLayoutInspector().addCaptureAvailableListener(this);
+        GlobalKeyObserver.getSingleton().addVolumeDownListener(this);
     }
 
     private void setupListeners() {
@@ -184,6 +187,24 @@ public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInsp
 
     private void stopRecord() {
         mRecorder.stop();
+    }
+
+    @Override
+    public void onVolumeDown() {
+        if (!Pref.isRecordVolumeControlEnabled()) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (now - mLastVolumeDownEventTime < 300) {
+            return;
+        }
+        mLastVolumeDownEventTime = now;
+        int state = mRecorder.getState();
+        if (state == Recorder.STATE_RECORDING || state == Recorder.STATE_PAUSED) {
+            mRecorder.stop();
+        } else {
+            mRecorder.start();
+        }
     }
 
     void inspectLayout() {
@@ -323,6 +344,7 @@ public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInsp
         }
         mRecorder.removeOnStateChangedListener(this);
         AutoJs.getInstance().getLayoutInspector().removeCaptureAvailableListener(this);
+        GlobalKeyObserver.getSingleton().removeVolumeDownListener(this);
     }
 
 
