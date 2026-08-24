@@ -104,7 +104,7 @@ dependencies {
     //MultiLevelListView
     implementation 'com.github.hyb1996:android-multi-level-listview:1.1'
     //Licenses Dialog
-    implementation 'de.psdev.licensesdialog:licensesdialog:1.8.1'
+    implementation 'de.psdev.licensesdialog:licensesdialog:2.2.0'
     implementation 'com.github.aakira:expandable-layout:1.4.3'
     //Expandable RecyclerView
     implementation 'com.bignerdranch.android:expandablerecyclerview:3.0.0-RC1'

@@ -22,9 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import de.psdev.licensesdialog.LicenseResolver;
 import de.psdev.licensesdialog.LicensesDialog;
-import de.psdev.licensesdialog.licenses.License;
 
 /**
  * Created by Stardust on 2017/2/2.
@@ -122,42 +120,11 @@ public class SettingsActivity extends BaseActivity {
         }
 
         private void showLicenseDialog() {
-            LicenseResolver.registerLicense(MozillaPublicLicense20.instance);
             new LicensesDialog.Builder(getActivity())
                     .setNotices(R.raw.licenses)
                     .setIncludeOwnLicense(true)
                     .build()
-                    .showAppCompat();
-        }
-
-        public static class MozillaPublicLicense20 extends License {
-
-            public static MozillaPublicLicense20 instance = new MozillaPublicLicense20();
-
-            @Override
-            public String getName() {
-                return "Mozilla Public License 2.0";
-            }
-
-            @Override
-            public String readSummaryTextFromResources(Context context) {
-                return getContent(context, R.raw.mpl_20_summary);
-            }
-
-            @Override
-            public String readFullTextFromResources(Context context) {
-                return getContent(context, R.raw.mpl_20_full);
-            }
-
-            @Override
-            public String getVersion() {
-                return "2.0";
-            }
-
-            @Override
-            public String getUrl() {
-                return "https://www.mozilla.org/en-US/MPL/2.0/";
-            }
+                    .show();
         }
 
     }
