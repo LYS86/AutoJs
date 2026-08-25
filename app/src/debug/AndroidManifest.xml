@@ -7,6 +7,10 @@
             android:name="org.autojs.autojs.ui.settings.SettingsActivity"
             android:exported="true"
             tools:replace="android:name"/>
+        <activity
+            android:name="org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity"
+            android:exported="true"
+            tools:replace="android:name"/>
     </application>
 
 </manifest>
