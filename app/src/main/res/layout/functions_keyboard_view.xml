@@ -7,19 +7,19 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/divider_functions_keyboard"/>
+        android:background="@color/divider"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/properties"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#fafafa"/>
+        android:background="@color/item_background_dark"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/divider_functions_keyboard"/>
+        android:background="@color/divider"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/module_list"

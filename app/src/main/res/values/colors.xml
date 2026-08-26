@@ -9,7 +9,7 @@
     <color name="color_j">#99CC99</color>
     <color name="prefTextColorSecondary">#9DA0A2</color>
     <color name="prefTextColorPrimary">#282C2F</color>
-    <color name="divider_functions_keyboard">#f0f0f0</color>
+    <color name="functions_keyboard_item_highlight">#e5e5e5</color>
     <color name="theme_color_black">#111214</color>
 
     <color name="window_background">#FFFFFF</color>

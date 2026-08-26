@@ -4,7 +4,7 @@
           android:layout_height="45dp"
           android:background="@drawable/bg_item_property"
           android:gravity="center"
-          android:textColor="#414141"
+          android:textColor="@color/text_color_secondary"
           android:textSize="@dimen/textSize_item_property">
 
 </TextView>

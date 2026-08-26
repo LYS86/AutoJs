@@ -3,13 +3,13 @@
 
     <item android:state_pressed="true">
         <shape>
-            <solid android:color="#e5e5e5"/>
+            <solid android:color="@color/functions_keyboard_item_highlight" />
         </shape>
     </item>
 
     <item>
         <shape>
-            <solid android:color="@android:color/transparent"/>
+            <solid android:color="@android:color/transparent" />
         </shape>
     </item>
 </selector>
