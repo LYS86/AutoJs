@@ -22,6 +22,7 @@ import com.stardust.autojs.core.permission.PermissionRequestProxyActivity;
 import com.stardust.autojs.core.permission.RequestPermissionCallbacks;
 import com.stardust.autojs.execution.ScriptExecution;
 import com.stardust.pio.PFiles;
+import com.stardust.util.BackPressedHandler;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.ActivityEditBinding;
@@ -47,9 +48,10 @@ import static org.autojs.autojs.ui.edit.EditorView.EXTRA_READ_ONLY;
 /**
  * Created by Stardust on 2017/1/29.
  */
-public class EditActivity extends BaseActivity implements OnActivityResultDelegate.DelegateHost, PermissionRequestProxyActivity {
+public class EditActivity extends BaseActivity implements OnActivityResultDelegate.DelegateHost, PermissionRequestProxyActivity, BackPressedHandler.HostActivity {
 
     private OnActivityResultDelegate.Mediator mMediator = new OnActivityResultDelegate.Mediator();
+    private final BackPressedHandler.Observer mBackPressedObserver = new BackPressedHandler.Observer();
     private static final String LOG_TAG = "EditActivity";
 
     EditorView mEditorView;
@@ -191,9 +193,18 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
 
     @Override
     public void onBackPressed() {
-        if (!mEditorView.onBackPressed()) {
-            super.onBackPressed();
+        if (mEditorView.onBackPressed()) {
+            return;
         }
+        if (mBackPressedObserver.onBackPressed(this)) {
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    public BackPressedHandler.Observer getBackPressedObserver() {
+        return mBackPressedObserver;
     }
 
     @Override
