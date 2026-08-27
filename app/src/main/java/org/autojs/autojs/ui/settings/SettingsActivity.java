@@ -5,21 +5,15 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
-import androidx.core.util.Pair;
-import androidx.core.content.ContextCompat;
 import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 
-import com.stardust.theme.app.ColorSelectActivity;
 import com.stardust.theme.preference.ThemeColorPreferenceFragment;
-import com.stardust.theme.util.ListBuilder;
 import com.stardust.util.MapBuilder;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.ui.BaseActivity;
 import com.stardust.autojs.util.Browser;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import de.psdev.licensesdialog.LicensesDialog;
@@ -29,35 +23,8 @@ import de.psdev.licensesdialog.LicensesDialog;
  */
 public class SettingsActivity extends BaseActivity {
 
-    private static final List<Pair<Integer, Integer>> COLOR_ITEMS = new ListBuilder<Pair<Integer, Integer>>()
-            .add(new Pair<>(R.color.theme_color_red, R.string.theme_color_red))
-            .add(new Pair<>(R.color.theme_color_pink, R.string.theme_color_pink))
-            .add(new Pair<>(R.color.theme_color_purple, R.string.theme_color_purple))
-            .add(new Pair<>(R.color.theme_color_dark_purple, R.string.theme_color_dark_purple))
-            .add(new Pair<>(R.color.theme_color_indigo, R.string.theme_color_indigo))
-            .add(new Pair<>(R.color.theme_color_blue, R.string.theme_color_blue))
-            .add(new Pair<>(R.color.theme_color_light_blue, R.string.theme_color_light_blue))
-            .add(new Pair<>(R.color.theme_color_blue_green, R.string.theme_color_blue_green))
-            .add(new Pair<>(R.color.theme_color_cyan, R.string.theme_color_cyan))
-            .add(new Pair<>(R.color.theme_color_green, R.string.theme_color_green))
-            .add(new Pair<>(R.color.theme_color_light_green, R.string.theme_color_light_green))
-            .add(new Pair<>(R.color.theme_color_yellow_green, R.string.theme_color_yellow_green))
-            .add(new Pair<>(R.color.theme_color_yellow, R.string.theme_color_yellow))
-            .add(new Pair<>(R.color.theme_color_amber, R.string.theme_color_amber))
-            .add(new Pair<>(R.color.theme_color_orange, R.string.theme_color_orange))
-            .add(new Pair<>(R.color.theme_color_dark_orange, R.string.theme_color_dark_orange))
-            .add(new Pair<>(R.color.theme_color_brown, R.string.theme_color_brown))
-            .add(new Pair<>(R.color.theme_color_gray, R.string.theme_color_gray))
-            .add(new Pair<>(R.color.theme_color_blue_gray, R.string.theme_color_blue_gray))
-            .list();
-
     public static void selectThemeColor(Context context) {
-        List<ColorSelectActivity.ColorItem> colorItems = new ArrayList<>(COLOR_ITEMS.size());
-        for (Pair<Integer, Integer> item : COLOR_ITEMS) {
-            colorItems.add(new ColorSelectActivity.ColorItem(context.getString(item.second),
-                    ContextCompat.getColor(context, item.first)));
-        }
-        ColorSelectActivity.startColorSelect(context, context.getString(R.string.mt_color_picker_title), colorItems);
+        ColorSelectActivity.startColorSelect(context);
     }
 
     @Override

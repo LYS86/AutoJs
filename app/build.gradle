@@ -64,8 +64,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.1.0-alpha01'
     implementation 'androidx.multidex:multidex:2.0.0'
-    // Personal libraries
-    implementation 'com.jrummyapps:colorpicker:2.1.5'
+    implementation 'com.jaredrummler:colorpicker:1.1.0'
     // Material Dialogs
     implementation('com.afollestad.material-dialogs:core:0.9.2.3', {
         exclude group: 'com.android.support'

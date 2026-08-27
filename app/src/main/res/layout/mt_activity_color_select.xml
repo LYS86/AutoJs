@@ -3,6 +3,7 @@
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:fitsSystemWindows="true"
               android:orientation="vertical">
 
     <FrameLayout
@@ -14,7 +15,6 @@
             android:id="@+id/appBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="16dp"
             android:theme="@style/MtAppTheme.AppBarOverlay">
 
             <androidx.appcompat.widget.Toolbar
@@ -29,9 +29,8 @@
 
     </FrameLayout>
 
-    <view
+    <org.autojs.autojs.ui.settings.ColorSettingRecyclerView
         android:id="@+id/color_setting_recycler_view"
-        class="com.stardust.theme.app.ColorSelectActivity$ColorSettingRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>

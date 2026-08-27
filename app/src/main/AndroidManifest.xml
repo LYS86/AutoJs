@@ -105,7 +105,7 @@
         <activity android:name=".ui.shortcut.ShortcutIconSelectActivity" />
         <activity android:name=".ui.timing.TimedTaskSettingActivity" />
         <activity
-            android:name="com.stardust.theme.app.ColorSelectActivity"
+            android:name=".ui.settings.ColorSelectActivity"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name=".ui.shortcut.ShortcutCreateActivity"
