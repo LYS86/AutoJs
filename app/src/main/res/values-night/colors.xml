@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="window_background">#202020</color>
+    <color name="prefTextColorPrimary">#E6E6E6</color>
+    <color name="prefTextColorSecondary">#9A9A9A</color>
     <color name="functions_keyboard_item_highlight">#333333</color>
     <color name="item_background">#333333</color>
     <color name="item_background_dark">#252525</color>
