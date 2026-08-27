@@ -11,6 +11,10 @@
             android:name="org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity"
             android:exported="true"
             tools:replace="android:name"/>
+        <activity
+            android:name="com.stardust.theme.app.ColorSelectActivity"
+            android:exported="true"
+            tools:replace="android:name"/>
     </application>
 
 </manifest>
