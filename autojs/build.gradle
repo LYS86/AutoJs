@@ -27,6 +27,7 @@ android {
         abortOnError false
         baseline file('lint-baseline.xml')
     }
+    namespace 'com.stardust.autojs'
 }
 
 dependencies {
