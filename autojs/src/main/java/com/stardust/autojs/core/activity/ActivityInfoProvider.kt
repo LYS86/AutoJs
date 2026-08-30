@@ -102,7 +102,8 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
             Log.w(LOG_TAG, "invalid format: $output")
             return
         }
-        val latestPackage = matcher.group(1)
+        // group(1) 为必匹配组，find() 成功后不可能为 null，此处判空仅为满足编译器
+        val latestPackage = matcher.group(1) ?: return
         if (latestPackage.contains(":")) {
             return
         }
