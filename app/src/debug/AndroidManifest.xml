@@ -15,6 +15,10 @@
             android:name=".ui.settings.ColorSelectActivity"
             android:exported="true"
             tools:replace="android:name"/>
+        <activity
+            android:name=".ui.edit.EditActivity"
+            android:exported="true"
+            tools:replace="android:name"/>
     </application>
 
 </manifest>

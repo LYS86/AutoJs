@@ -34,9 +34,7 @@ import android.util.Log;
 import android.util.TimingLogger;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.widget.TextView;
-import android.widget.TextViewHelper;
-
+import android.view.View;
 import org.autojs.autojs.ui.edit.theme.Theme;
 import org.autojs.autojs.ui.edit.theme.TokenMapping;
 
@@ -446,14 +444,12 @@ public class CodeEditText extends AppCompatEditText {
 
     @Override
     public Parcelable onSaveInstanceState() {
+        //调用super但丢弃其返回值：TextView.SavedState携带全文文本，大文件时会超出Binder事务上限
+        //导致TransactionTooLargeException。文本由EditActivity负责恢复，这里只保存轻量状态。
+        super.onSaveInstanceState();
         Bundle bundle = new Bundle();
-        Editable text = getText();
-        TextView.SavedState savedState = (SavedState) super.onSaveInstanceState();
-        if (text != null && text.length() > 50 * 1024) {
-            // avoid TransactionTooLargeException
-            TextViewHelper.setText(savedState, "");
-        }
-        bundle.putParcelable("super_data", savedState);
+        bundle.putInt("sel_start", getSelectionStart());
+        bundle.putInt("sel_end", getSelectionEnd());
         bundle.putInt("debugging_line", mDebuggingLine);
         int[] breakpoints = new int[mBreakpoints.size()];
         int i = 0;
@@ -464,10 +460,13 @@ public class CodeEditText extends AppCompatEditText {
         return bundle;
     }
 
+    private int mPendingSelectionStart = -1;
+    private int mPendingSelectionEnd = -1;
+
     @Override
     public void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(View.BaseSavedState.EMPTY_STATE);
         Bundle bundle = (Bundle) state;
-        Parcelable superData = bundle.getParcelable("super_data");
         mDebuggingLine = bundle.getInt("debugging_line", -1);
         int[] breakpoints = bundle.getIntArray("breakpoints");
         if (breakpoints != null) {
@@ -475,7 +474,22 @@ public class CodeEditText extends AppCompatEditText {
                 mBreakpoints.put(breakpoint, new CodeEditor.Breakpoint(breakpoint));
             }
         }
-        super.onRestoreInstanceState(superData);
+        //文本是异步恢复的，此时尚未就绪，先记录光标位置，待onTextChanged时再应用
+        mPendingSelectionStart = bundle.getInt("sel_start", -1);
+        mPendingSelectionEnd = bundle.getInt("sel_end", -1);
+    }
+
+    @Override
+    protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
+        super.onTextChanged(text, start, lengthBefore, lengthAfter);
+        if (mPendingSelectionStart < 0 || text.length() == 0) {
+            return;
+        }
+        int selStart = mPendingSelectionStart;
+        int selEnd = mPendingSelectionEnd < 0 ? mPendingSelectionStart : mPendingSelectionEnd;
+        mPendingSelectionStart = -1;
+        mPendingSelectionEnd = -1;
+        setSelection(Math.min(selStart, text.length()), Math.min(selEnd, text.length()));
     }
 
     private int mTouchedLine = -1;
