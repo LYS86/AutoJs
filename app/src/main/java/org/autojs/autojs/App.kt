@@ -1,7 +1,6 @@
 package org.autojs.autojs
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
@@ -19,6 +18,8 @@ import com.stardust.autojs.core.ui.inflater.ImageLoader
 import com.stardust.autojs.core.ui.inflater.util.Drawables
 import com.stardust.theme.ThemeColor
 import com.tencent.bugly.crashreport.CrashReport
+import org.autojs.autojs.tool.ReleaseTree
+import timber.log.Timber
 import org.autojs.autojs.autojs.AutoJs
 import org.autojs.autojs.autojs.key.GlobalKeyObserver
 import org.autojs.autojs.external.receiver.DynamicBroadcastReceivers
@@ -42,6 +43,7 @@ class App : MultiDexApplication() {
         super.onCreate()
         GlobalAppContext.set(this)
         instance = WeakReference(this)
+        setupTimber()
         setUpDebugEnvironment()
         init()
     }
@@ -68,6 +70,14 @@ class App : MultiDexApplication() {
         setupDrawableImageLoader()
         TimedTaskScheduler.init(this)
         initDynamicBroadcastReceivers()
+    }
+
+    private fun setupTimber(){
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        } else {
+            Timber.plant(ReleaseTree())
+        }
     }
 
     @SuppressLint("CheckResult")

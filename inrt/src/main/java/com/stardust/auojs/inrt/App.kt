@@ -15,6 +15,7 @@ import com.stardust.auojs.inrt.autojs.AutoJs
 import com.stardust.auojs.inrt.autojs.GlobalKeyObserver
 import com.stardust.autojs.core.ui.inflater.ImageLoader
 import com.stardust.autojs.core.ui.inflater.util.Drawables
+import timber.log.Timber
 
 /**
  * Created by Stardust on 2017/7/1.
@@ -25,6 +26,9 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         GlobalAppContext.set(this)
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
         AutoJs.initInstance(this)
         GlobalKeyObserver.init()
         Drawables.setDefaultImageLoader(object : ImageLoader {
