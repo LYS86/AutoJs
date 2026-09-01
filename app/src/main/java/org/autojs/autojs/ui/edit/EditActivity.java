@@ -188,9 +188,6 @@ public class EditActivity extends BaseActivity implements OnActivityResultDelega
 
     @Override
     public void onBackPressed() {
-        if (mEditorView.onBackPressed()) {
-            return;
-        }
         if (mBackPressedObserver.onBackPressed(this)) {
             return;
         }

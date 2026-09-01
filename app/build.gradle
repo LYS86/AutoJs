@@ -115,4 +115,5 @@ dependencies {
     implementation project(':autojs')
     implementation 'org.mozilla:rhino:1.7.15.1'
     implementation libs.timber
+    implementation libs.nanohttpd
 }

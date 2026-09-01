@@ -15,8 +15,6 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -24,7 +22,6 @@ import androidx.fragment.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseBooleanArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -35,6 +32,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.stardust.autojs.engine.JavaScriptEngine;
 import com.stardust.autojs.engine.ScriptEngine;
 import com.stardust.autojs.execution.ScriptExecution;
+import com.stardust.autojs.util.Browser;
 import com.stardust.pio.PFiles;
 import com.stardust.util.BackPressedHandler;
 import com.stardust.util.Callback;
@@ -52,7 +50,7 @@ import org.autojs.autojs.model.indices.Module;
 import org.autojs.autojs.model.indices.Property;
 import org.autojs.autojs.model.script.Scripts;
 import org.autojs.autojs.tool.Observers;
-import org.autojs.autojs.ui.doc.ManualDialog;
+import org.autojs.autojs.ui.doc.DocsServer;
 import org.autojs.autojs.ui.edit.completion.CodeCompletionBar;
 import org.autojs.autojs.ui.edit.debug.DebugBar;
 import org.autojs.autojs.ui.edit.editor.CodeEditor;
@@ -65,7 +63,6 @@ import org.autojs.autojs.ui.edit.toolbar.NormalToolbarFragment;
 import org.autojs.autojs.ui.edit.toolbar.SearchToolbarFragment;
 import org.autojs.autojs.ui.edit.toolbar.ToolbarFragment;
 import org.autojs.autojs.ui.log.LogActivity;
-import org.autojs.autojs.ui.widget.EWebView;
 import org.autojs.autojs.ui.widget.SimpleTextWatcher;
 
 import java.io.File;
@@ -105,10 +102,6 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     FunctionsKeyboardView mFunctionsKeyboard;
 
     DebugBar mDebugBar;
-
-    EWebView mDocsWebView;
-
-    DrawerLayout mDrawerLayout;
 
     private String mName;
     private Uri mUri;
@@ -169,8 +162,6 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
             mShowFunctionsButton = binding.functions;
             mFunctionsKeyboard = binding.functionsKeyboard;
             mDebugBar = binding.debugBar;
-            mDocsWebView = binding.docs;
-            mDrawerLayout = binding.drawerLayout;
             init();
         }
         super.onFinishInflate();
@@ -289,8 +280,6 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         setUpInputMethodEnhancedBar();
         setUpFunctionsKeyboard();
         setMenuItemStatus(R.id.save, false);
-        mDocsWebView.getWebView().getSettings().setDisplayZoomControls(true);
-        mDocsWebView.getWebView().loadUrl(Pref.getDocumentationUrl() + "index.html");
         Themes.getCurrent(getContext())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::setTheme);
@@ -358,18 +347,6 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         mSymbolBar.setTextColor(textColor);
         mShowFunctionsButton.setColorFilter(textColor);
         invalidate();
-    }
-
-    public boolean onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            if (mDocsWebView.getWebView().canGoBack()) {
-                mDocsWebView.getWebView().goBack();
-            } else {
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-            }
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -627,24 +604,21 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         CodeCompletion completion = completions.get(pos);
         if (completion.getUrl() == null)
             return;
-        showManual(completion.getUrl(), completion.getHint());
+        showManual(completion.getUrl());
     }
 
-    private void showManual(String url, String title) {
-        String absUrl = Pref.getDocumentationUrl() + url;
-        new ManualDialog(getContext())
-                .title(title)
-                .url(absUrl)
-                .pinToLeft(v -> {
-                    mDocsWebView.getWebView().loadUrl(absUrl);
-                    mDrawerLayout.openDrawer(GravityCompat.START);
-                })
-                .show();
+    private void showManual(String url) {
+        String base = Pref.getDocumentationUrl();
+        if (base.startsWith("file:")) {
+            Browser.openUrl(getContext(), DocsServer.url(getContext(), url));
+        } else {
+            Browser.openUrl(getContext(), base + url);
+        }
     }
 
     @Override
     public void onModuleLongClick(Module module) {
-        showManual(module.getUrl(), module.getName());
+        showManual(module.getUrl());
     }
 
     @Override
@@ -667,9 +641,9 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     @Override
     public void onPropertyLongClick(Module m, Property property) {
         if (TextUtils.isEmpty(property.getUrl())) {
-            showManual(m.getUrl(), property.getKey());
+            showManual(m.getUrl());
         } else {
-            showManual(property.getUrl(), property.getKey());
+            showManual(property.getUrl());
         }
     }
 

@@ -1,5 +1,7 @@
 [versions]
 timber = "4.7.1"
+nanohttpd = "2.3.1"
 
 [libraries]
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+nanohttpd = { module = "org.nanohttpd:nanohttpd", version.ref = "nanohttpd" }
