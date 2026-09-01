@@ -239,14 +239,10 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
 
     @SuppressLint("CheckResult")
     private Observable<String> loadUri(final Uri uri) {
-        mEditor.setProgress(true);
         return Observable.fromCallable(() -> PFiles.read(getContext().getContentResolver().openInputStream(uri)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(s -> {
-                    setInitialText(s);
-                    mEditor.setProgress(false);
-                });
+                .doOnNext(this::setInitialText);
     }
 
     private void setInitialText(String text) {
@@ -496,14 +492,10 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     }
 
     public void selectEditorTheme() {
-        mEditor.setProgress(true);
         Themes.getAllThemes(getContext())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(themes -> {
-                    mEditor.setProgress(false);
-                    selectEditorTheme(themes);
-                });
+                .subscribe(this::selectEditorTheme);
     }
 
     public void selectTextSize() {
