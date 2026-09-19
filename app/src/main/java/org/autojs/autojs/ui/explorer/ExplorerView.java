@@ -319,64 +319,51 @@ public class ExplorerView extends ThemeColorSwipeRefreshLayout implements SwipeR
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.rename:
-                new ScriptOperations(getContext(), this, getCurrentPage())
-                        .rename((ExplorerFileItem) mSelectedItem)
-                        .subscribe(Observers.emptyObserver());
-                break;
-            case R.id.delete:
-                new ScriptOperations(getContext(), this, getCurrentPage())
-                        .delete(mSelectedItem.toScriptFile());
-                break;
-            case R.id.run_repeatedly:
-                new ScriptLoopDialog(getContext(), mSelectedItem.toScriptFile())
-                        .show();
-                notifyOperated();
-                break;
-            case R.id.create_shortcut:
-                new ScriptOperations(getContext(), this, getCurrentPage())
-                        .createShortcut(mSelectedItem.toScriptFile());
-                break;
-            case R.id.open_by_other_apps:
-                Scripts.INSTANCE.openByOtherApps(mSelectedItem.toScriptFile());
-                notifyOperated();
-                break;
-            case R.id.send:
-                Scripts.INSTANCE.send(mSelectedItem.toScriptFile());
-                notifyOperated();
-                break;
-            case R.id.timed_task:
-                new ScriptOperations(getContext(), this, getCurrentPage())
-                        .timedTask(mSelectedItem.toScriptFile());
-                notifyOperated();
-                break;
-            case R.id.action_build_apk:
-                getContext().startActivity(new Intent(getContext(), BuildActivity.class)
-                        .putExtra(BuildActivity.EXTRA_SOURCE, mSelectedItem.getPath()));
-                notifyOperated();
-                break;
-            case R.id.action_sort_by_date:
-                sort(ExplorerItemList.SORT_TYPE_DATE, mDirSortMenuShowing);
-                break;
-            case R.id.action_sort_by_type:
-                sort(ExplorerItemList.SORT_TYPE_TYPE, mDirSortMenuShowing);
-                break;
-            case R.id.action_sort_by_name:
-                sort(ExplorerItemList.SORT_TYPE_NAME, mDirSortMenuShowing);
-                break;
-            case R.id.action_sort_by_size:
-                sort(ExplorerItemList.SORT_TYPE_SIZE, mDirSortMenuShowing);
-                break;
-            case R.id.reset:
-                Explorers.Providers.workspace().resetSample(mSelectedItem.toScriptFile())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(ignored -> {
-                            Snackbar.make(this, R.string.text_reset_succeed, Snackbar.LENGTH_SHORT).show();
-                        }, Observers.toastMessage());
-                break;
-            default:
-                return false;
+        int id = item.getItemId();
+        if (id == R.id.rename) {
+            new ScriptOperations(getContext(), this, getCurrentPage())
+                    .rename((ExplorerFileItem) mSelectedItem)
+                    .subscribe(Observers.emptyObserver());
+        } else if (id == R.id.delete) {
+            new ScriptOperations(getContext(), this, getCurrentPage())
+                    .delete(mSelectedItem.toScriptFile());
+        } else if (id == R.id.run_repeatedly) {
+            new ScriptLoopDialog(getContext(), mSelectedItem.toScriptFile())
+                    .show();
+            notifyOperated();
+        } else if (id == R.id.create_shortcut) {
+            new ScriptOperations(getContext(), this, getCurrentPage())
+                    .createShortcut(mSelectedItem.toScriptFile());
+        } else if (id == R.id.open_by_other_apps) {
+            Scripts.INSTANCE.openByOtherApps(mSelectedItem.toScriptFile());
+            notifyOperated();
+        } else if (id == R.id.send) {
+            Scripts.INSTANCE.send(mSelectedItem.toScriptFile());
+            notifyOperated();
+        } else if (id == R.id.timed_task) {
+            new ScriptOperations(getContext(), this, getCurrentPage())
+                    .timedTask(mSelectedItem.toScriptFile());
+            notifyOperated();
+        } else if (id == R.id.action_build_apk) {
+            getContext().startActivity(new Intent(getContext(), BuildActivity.class)
+                    .putExtra(BuildActivity.EXTRA_SOURCE, mSelectedItem.getPath()));
+            notifyOperated();
+        } else if (id == R.id.action_sort_by_date) {
+            sort(ExplorerItemList.SORT_TYPE_DATE, mDirSortMenuShowing);
+        } else if (id == R.id.action_sort_by_type) {
+            sort(ExplorerItemList.SORT_TYPE_TYPE, mDirSortMenuShowing);
+        } else if (id == R.id.action_sort_by_name) {
+            sort(ExplorerItemList.SORT_TYPE_NAME, mDirSortMenuShowing);
+        } else if (id == R.id.action_sort_by_size) {
+            sort(ExplorerItemList.SORT_TYPE_SIZE, mDirSortMenuShowing);
+        } else if (id == R.id.reset) {
+            Explorers.Providers.workspace().resetSample(mSelectedItem.toScriptFile())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(ignored -> {
+                        Snackbar.make(this, R.string.text_reset_succeed, Snackbar.LENGTH_SHORT).show();
+                    }, Observers.toastMessage());
+        } else {
+            return false;
         }
         return true;
     }
