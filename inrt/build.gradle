@@ -36,6 +36,9 @@ android {
         }
     }
     namespace 'com.stardust.auojs.inrt'
+    buildFeatures {
+        buildConfig true
+    }
     lint {
         abortOnError false
         baseline file('lint-baseline.xml')

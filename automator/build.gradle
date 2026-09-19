@@ -22,6 +22,9 @@ android {
         }
     }
     namespace 'com.stardust.automator'
+    buildFeatures {
+        buildConfig true
+    }
     lint {
         abortOnError false
         baseline file('lint-baseline.xml')

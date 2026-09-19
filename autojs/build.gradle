@@ -24,6 +24,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     namespace 'com.stardust.autojs'
+    buildFeatures {
+        buildConfig true
+    }
     lint {
         abortOnError false
         baseline file('lint-baseline.xml')
