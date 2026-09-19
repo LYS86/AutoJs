@@ -23,13 +23,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    namespace 'com.stardust.autojs'
+    namespace = 'com.stardust.autojs'
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
     lint {
-        abortOnError false
-        baseline file('lint-baseline.xml')
+        abortOnError = false
+        baseline = file('lint-baseline.xml')
     }
 }
 

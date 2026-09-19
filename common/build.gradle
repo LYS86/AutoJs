@@ -18,13 +18,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    namespace 'com.stardust'
+    namespace = 'com.stardust'
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
     lint {
-        abortOnError false
-        baseline file('lint-baseline.xml')
+        abortOnError = false
+        baseline = file('lint-baseline.xml')
     }
 }
 

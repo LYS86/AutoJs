@@ -11,7 +11,7 @@ android {
         versionCode versions.appVersionCode - 200
         versionName versions.appVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
+        multiDexEnabled = true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -19,10 +19,10 @@ android {
     }
     splits {
         abi {
-            enable true
+            enable = true
             reset()
             include "x86_64", "arm64-v8a"
-            universalApk false
+            universalApk = false
         }
     }
     buildTypes {
@@ -35,13 +35,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    namespace 'com.stardust.auojs.inrt'
+    namespace = 'com.stardust.auojs.inrt'
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
     lint {
-        abortOnError false
-        baseline file('lint-baseline.xml')
+        abortOnError = false
+        baseline = file('lint-baseline.xml')
         disable 'MissingTranslation', 'ExtraTranslation'
     }
 }

@@ -4,8 +4,8 @@ import groovy.json.JsonSlurper
 
 buildscript {
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url = 'https://maven.aliyun.com/repository/google' }
+        maven { url = 'https://maven.aliyun.com/repository/central' }
         google()
         mavenCentral()
     }
@@ -17,15 +17,15 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url "${rootDir}/repo" }
-        maven { url 'https://maven.aliyun.com/repository/central' }
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url = "${rootDir}/repo" }
+        maven { url = 'https://maven.aliyun.com/repository/central' }
+        maven { url = 'https://maven.aliyun.com/repository/google' }
+        maven { url = 'https://maven.aliyun.com/repository/jcenter' }
         mavenCentral()
         google()
-        maven { url "https://jitpack.io" }
-        maven { url "https://repo.gradle.org/artifactory/jitpack/" }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url = "https://jitpack.io" }
+        maven { url = "https://repo.gradle.org/artifactory/jitpack/" }
+        maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 }
 
