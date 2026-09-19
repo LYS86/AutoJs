@@ -30,7 +30,7 @@ class LogActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val consoleView = findViewById<ConsoleView>(R.id.console)
         consoleView.setConsole(AutoJs.instance.globalConsole as ConsoleImpl)
-        consoleView.findViewById<View>(R.id.input_container).visibility = View.GONE
+        consoleView.findViewById<View>(com.stardust.autojs.R.id.input_container).visibility = View.GONE
         findViewById<MaterialButton>(R.id.btn_run_script).setOnClickListener {
             GlobalProjectLauncher.launch(this)
         }

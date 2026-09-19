@@ -38,7 +38,7 @@ public class ScriptLoopDialog {
         mDialog = new MaterialDialog.Builder(context)
                 .title(R.string.text_run_repeatedly)
                 .customView(view, true)
-                .positiveText(R.string.ok)
+                .positiveText(com.stardust.autojs.R.string.ok)
                 .onPositive((dialog, which) -> startScriptRunningLoop())
                 .build();
         DialogScriptLoopBinding binding = DialogScriptLoopBinding.bind(view);

@@ -145,7 +145,7 @@ public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInsp
         final MaterialDialog dialog = new ThemeColorMaterialDialogBuilder(mContext)
                 .title(R.string.text_run_script)
                 .customView(explorerView, false)
-                .positiveText(R.string.cancel)
+                .positiveText(com.stardust.autojs.R.string.cancel)
                 .build();
         explorerView.setOnItemOperatedListener(file -> dialog.dismiss());
         explorerView.setOnItemClickListener((view, item) -> Scripts.INSTANCE.run(item.toScriptFile()));
@@ -160,7 +160,7 @@ public class CircularMenu implements Recorder.OnStateChangedListener, LayoutInsp
                     .title(R.string.text_device_not_rooted)
                     .content(R.string.prompt_device_not_rooted)
                     .neutralText(R.string.text_device_rooted)
-                    .positiveText(R.string.ok)
+                    .positiveText(com.stardust.autojs.R.string.ok)
                     .onNeutral(((dialog, which) -> mRecorder.start()))
                     .build());
         } else {

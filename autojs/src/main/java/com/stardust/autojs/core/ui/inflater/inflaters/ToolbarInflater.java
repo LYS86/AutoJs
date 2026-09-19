@@ -23,8 +23,8 @@ public class ToolbarInflater<V extends Toolbar> extends BaseViewInflater<V> {
 
 
     private static final ValueMapper<Integer> POP_UP_THEMES = new ValueMapper<Integer>("popupTheme")
-            .map("dark", R.style.ThemeOverlay_AppCompat_Dark_ActionBar)
-            .map("light", R.style.ThemeOverlay_AppCompat_ActionBar);
+            .map("dark", androidx.appcompat.R.style.ThemeOverlay_AppCompat_Dark_ActionBar)
+            .map("light", androidx.appcompat.R.style.ThemeOverlay_AppCompat_ActionBar);
 
     public ToolbarInflater(ResourceParser resourceParser) {
         super(resourceParser);

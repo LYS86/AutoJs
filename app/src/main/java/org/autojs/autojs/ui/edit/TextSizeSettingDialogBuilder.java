@@ -39,8 +39,8 @@ public class TextSizeSettingDialogBuilder extends ThemeColorMaterialDialogBuilde
         View view = binding.getRoot();
         customView(view, false);
         title(R.string.text_text_size);
-        positiveText(R.string.ok);
-        negativeText(R.string.cancel);
+        positiveText(com.stardust.autojs.R.string.ok);
+        negativeText(com.stardust.autojs.R.string.cancel);
         mSeekBar = binding.seekbar;
         mPreviewText = binding.previewText;
         mSeekBar.setOnSeekBarChangeListener(this);

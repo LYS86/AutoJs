@@ -18,8 +18,8 @@ public class RxDialogs {
     public static Observable<Boolean> confirm(Context context, String text) {
         PublishSubject<Boolean> subject = PublishSubject.create();
         new ThemeColorMaterialDialogBuilder(context)
-                .positiveText(R.string.ok)
-                .negativeText(R.string.cancel)
+                .positiveText(com.stardust.autojs.R.string.ok)
+                .negativeText(com.stardust.autojs.R.string.cancel)
                 .onPositive((dialog, which) -> subject.onNext(true))
                 .onNegative((dialog, which) -> subject.onNext(false))
                 .content(text)

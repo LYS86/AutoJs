@@ -196,7 +196,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
             if(new NotAskAgainDialog.Builder(getContext(), "DrawerFragment.usage_stats")
                     .title(R.string.text_usage_stats_permission)
                     .content(R.string.description_usage_stats_permission)
-                    .positiveText(R.string.ok)
+                    .positiveText(com.stardust.autojs.R.string.ok)
                     .dismissListener(dialog -> IntentUtil.requestAppUsagePermission(getContext()))
                     .show() == null){
                 IntentUtil.requestAppUsagePermission(getContext());
@@ -362,7 +362,7 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         new NotAskAgainDialog.Builder(getContext(), "DrawerFragment.stable_mode")
                 .title(R.string.text_stable_mode)
                 .content(R.string.description_stable_mode)
-                .positiveText(R.string.ok)
+                .positiveText(com.stardust.autojs.R.string.ok)
                 .show();
     }
 

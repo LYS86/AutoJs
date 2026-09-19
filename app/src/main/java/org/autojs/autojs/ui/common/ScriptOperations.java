@@ -280,8 +280,8 @@ public class ScriptOperations {
     public void delete(final ScriptFile scriptFile) {
         DialogUtils.showDialog(new ThemeColorMaterialDialogBuilder(mContext)
                 .title(mContext.getString(R.string.text_are_you_sure_to_delete, scriptFile.getName()))
-                .positiveText(R.string.cancel)
-                .negativeText(R.string.ok)
+                .positiveText(com.stardust.autojs.R.string.cancel)
+                .negativeText(com.stardust.autojs.R.string.ok)
                 .onNegative((dialog, which) -> {
                     deleteWithoutConfirm(scriptFile);
                 })
@@ -351,7 +351,7 @@ public class ScriptOperations {
                 .justScriptFile()
                 .singleChoice(file -> importFile(file.getPath()).subscribe())
                 .title(R.string.text_select_file_to_import)
-                .positiveText(R.string.ok)
+                .positiveText(com.stardust.autojs.R.string.ok)
                 .show();
     }
 

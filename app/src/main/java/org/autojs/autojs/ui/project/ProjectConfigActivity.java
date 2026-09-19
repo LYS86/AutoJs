@@ -91,7 +91,7 @@ public class ProjectConfigActivity extends BaseActivity {
             if (mProjectConfig == null) {
                 new ThemeColorMaterialDialogBuilder(this)
                         .title(R.string.text_invalid_project)
-                        .positiveText(R.string.ok)
+                        .positiveText(com.stardust.autojs.R.string.ok)
                         .dismissListener(dialogInterface -> finish())
                         .show();
             }

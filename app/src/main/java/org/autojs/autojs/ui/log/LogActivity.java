@@ -33,7 +33,7 @@ public class LogActivity extends BaseActivity {
         setToolbarAsBack(getString(R.string.text_log));
         mConsoleImpl = AutoJs.getInstance().getGlobalConsole();
         mConsoleView.setConsole(mConsoleImpl);
-        mConsoleView.findViewById(R.id.input_container).setVisibility(View.GONE);
+        mConsoleView.findViewById(com.stardust.autojs.R.id.input_container).setVisibility(View.GONE);
     }
 
     void clearConsole() {

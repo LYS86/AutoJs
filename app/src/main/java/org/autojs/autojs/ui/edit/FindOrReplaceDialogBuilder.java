@@ -61,8 +61,8 @@ public class FindOrReplaceDialogBuilder extends ThemeColorMaterialDialogBuilder 
         binding.checkboxReplaceAll.setOnCheckedChangeListener((buttonView, isChecked) -> syncWithReplaceCheckBox());
         mReplacementEditText.addTextChangedListener(new SimpleTextWatcher((SimpleTextWatcher.OnTextChangedListener) (s, start, before, count) -> onTextChanged()));
         customView(view, true);
-        positiveText(R.string.ok);
-        negativeText(R.string.cancel);
+        positiveText(com.stardust.autojs.R.string.ok);
+        negativeText(com.stardust.autojs.R.string.cancel);
         title(R.string.text_find_or_replace);
     }
 
