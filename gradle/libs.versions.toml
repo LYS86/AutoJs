@@ -1,4 +1,6 @@
 [versions]
+agp = "8.13.0"
+kotlin = "1.7.22"
 timber = "4.7.1"
 nanohttpd = "2.3.1"
 r8 = "8.13.19"
@@ -7,3 +9,8 @@ r8 = "8.13.19"
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 nanohttpd = { module = "org.nanohttpd:nanohttpd", version.ref = "nanohttpd" }
 r8 = { module = "com.android.tools:r8", version.ref = "r8" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
