@@ -10,7 +10,6 @@ android {
 
     defaultConfig {
         minSdk = versions["mini"] as Int
-        targetSdk = versions["target"] as Int
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -32,6 +31,7 @@ android {
     lint {
         abortOnError = false
         baseline = file("lint-baseline.xml")
+        targetSdk = versions["target"] as Int
     }
 }
 
