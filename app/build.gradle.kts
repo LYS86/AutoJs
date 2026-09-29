@@ -3,16 +3,14 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-val versions = rootProject.extra["versions"] as Map<*, *>
-
 android {
-    compileSdk = versions["compile"] as Int
+    compileSdk = libs.versions.compile.get().toInt()
     defaultConfig {
         applicationId = "org.autojs.autojs"
-        minSdk = versions["mini"] as Int
-        targetSdk = versions["target"] as Int
-        versionCode = versions["appVersionCode"] as Int
-        versionName = versions["appVersionName"] as String
+        minSdk = libs.versions.mini.get().toInt()
+        targetSdk = libs.versions.target.get().toInt()
+        versionCode = libs.versions.appVersionCode.get().toInt()
+        versionName = libs.versions.appVersionName.get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }

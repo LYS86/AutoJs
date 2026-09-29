@@ -3,17 +3,15 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-val versions = rootProject.extra["versions"] as Map<*, *>
-
 android {
-    compileSdk = versions["compile"] as Int
+    compileSdk = libs.versions.compile.get().toInt()
 
     defaultConfig {
         applicationId = "com.stardust.auojs.inrt"
-        minSdk = versions["mini"] as Int
-        targetSdk = versions["target"] as Int
-        versionCode = (versions["appVersionCode"] as Int) - 200
-        versionName = versions["appVersionName"] as String
+        minSdk = libs.versions.mini.get().toInt()
+        targetSdk = libs.versions.target.get().toInt()
+        versionCode = libs.versions.appVersionCode.get().toInt() - 200
+        versionName = libs.versions.appVersionName.get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -51,7 +49,7 @@ android {
 }
 
 fun buildApkPluginForAbi(pluginProjectDir: File, abi: String) {
-    val appVersionName = versions["appVersionName"] as String
+    val appVersionName = libs.versions.appVersionName.get()
     copy {
         from("../app/release/")
         into(File(pluginProjectDir, "app/src/main/assets"))

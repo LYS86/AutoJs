@@ -3,13 +3,11 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-val versions = rootProject.extra["versions"] as Map<*, *>
-
 android {
-    compileSdk = versions["compile"] as Int
+    compileSdk = libs.versions.compile.get().toInt()
 
     defaultConfig {
-        minSdk = versions["mini"] as Int
+        minSdk = libs.versions.mini.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -31,7 +29,7 @@ android {
     lint {
         abortOnError = false
         baseline = file("lint-baseline.xml")
-        targetSdk = versions["target"] as Int
+        targetSdk = libs.versions.target.get().toInt()
     }
 }
 
