@@ -9,8 +9,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.twofortyfouram.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
-
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.ActivityTaskerEditBinding;
 import org.autojs.autojs.external.ScriptIntents;
@@ -25,7 +23,7 @@ import static org.autojs.autojs.ui.edit.EditorView.EXTRA_CONTENT;
 /**
  * Created by Stardust on 2017/3/27.
  */
-public class TaskPrefEditActivity extends AbstractAppCompatPluginActivity {
+public class TaskPrefEditActivity extends PluginEditActivity {
 
     private String mSelectedScriptFilePath;
     private String mPreExecuteScript;

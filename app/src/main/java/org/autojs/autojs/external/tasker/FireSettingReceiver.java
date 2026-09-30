@@ -7,24 +7,16 @@ import androidx.annotation.NonNull;
 
 import org.autojs.autojs.external.ScriptIntents;
 import org.autojs.autojs.external.open.RunIntentActivity;
-import com.twofortyfouram.locale.sdk.client.receiver.AbstractPluginSettingReceiver;
 
 /**
  * Created by Stardust on 2017/3/27.
  */
 
-public class FireSettingReceiver extends AbstractPluginSettingReceiver {
-
-    private static final String TAG = "FireSettingReceiver";
+public class FireSettingReceiver extends PluginSettingReceiver {
 
     @Override
     protected boolean isBundleValid(@NonNull Bundle bundle) {
         return ScriptIntents.isTaskerBundleValid(bundle);
-    }
-
-    @Override
-    protected boolean isAsync() {
-        return true;
     }
 
     @Override

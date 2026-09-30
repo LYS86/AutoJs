@@ -103,8 +103,6 @@ dependencies {
     }
     //joda time
     implementation("joda-time:joda-time:2.9.9")
-    // Tasker Plugin
-    implementation("com.twofortyfouram:android-plugin-client-sdk-for-locale:4.0.3")
     // Bugly
     implementation("com.tencent.bugly:crashreport:4.1.9.3")
     // MaterialDialogCommon
