@@ -2,12 +2,12 @@ package org.autojs.autojs.ui.floating;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 import com.stardust.enhancedfloaty.FloatyService;
 import com.stardust.enhancedfloaty.FloatyWindow;
 import com.stardust.enhancedfloaty.WindowBridge;
@@ -77,7 +77,7 @@ public class CircularMenuWindow extends FloatyWindow {
     }
 
     private void setInitialState() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences preferences = DefaultSharedPreferences.get(mContext);
         int y = preferences.getInt(KEY_POSITION_Y, ScreenMetrics.getDeviceScreenHeight() / 2);
         mActionViewWindowBridge.updatePosition(mActionViewWindowBridge.getX(), y);
         keepToSide();
@@ -205,7 +205,7 @@ public class CircularMenuWindow extends FloatyWindow {
     }
 
     public void close() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences preferences = DefaultSharedPreferences.get(mContext);
         preferences.edit()
                 .putInt(KEY_POSITION_X, mActionViewWindowBridge.getX())
                 .putInt(KEY_POSITION_Y, mActionViewWindowBridge.getY())

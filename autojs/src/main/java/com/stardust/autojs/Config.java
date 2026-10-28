@@ -2,7 +2,7 @@ package com.stardust.autojs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 
 /**
  * Created by Stardust on 2017/12/8.
@@ -16,7 +16,7 @@ public class Config {
 
     public Config(Context context) {
         mContext = context;
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        mSharedPreferences = DefaultSharedPreferences.get(context);
     }
 
     public static void setInstance(Config instance) {

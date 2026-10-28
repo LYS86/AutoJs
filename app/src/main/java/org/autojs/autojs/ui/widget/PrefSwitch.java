@@ -3,9 +3,9 @@ package org.autojs.autojs.ui.widget;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 import com.stardust.theme.ThemeColor;
 import com.stardust.theme.ThemeColorHelper;
 import com.stardust.theme.ThemeColorManager;
@@ -45,7 +45,7 @@ public class PrefSwitch extends SwitchCompat implements SharedPreferences.OnShar
         mPrefKey = a.getString(R.styleable.PrefSwitch_key);
         mDefaultChecked = a.getBoolean(R.styleable.PrefSwitch_default_value, false);
         if (mPrefKey != null) {
-            mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            mSharedPreferences = DefaultSharedPreferences.get(getContext());
             mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
             readInitialState();
         } else {
@@ -76,7 +76,7 @@ public class PrefSwitch extends SwitchCompat implements SharedPreferences.OnShar
     public void setPrefKey(String prefKey) {
         mPrefKey = prefKey;
         if (mSharedPreferences == null) {
-            mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            mSharedPreferences = DefaultSharedPreferences.get(getContext());
             mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
         }
         if(mPrefKey != null){

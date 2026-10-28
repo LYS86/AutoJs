@@ -1,13 +1,13 @@
 package org.autojs.autojs.ui.common;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import org.autojs.autojs.R;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 import com.stardust.util.HashUtils;
 
 
@@ -47,13 +47,13 @@ public class NotAskAgainDialog extends MaterialDialog {
 
         private void setRemindState(boolean remind) {
             mRemind = remind;
-            PreferenceManager.getDefaultSharedPreferences(getContext()).edit()
+            DefaultSharedPreferences.get(getContext()).edit()
                     .putBoolean(mKeyRemind, remind).apply();
         }
 
         private void readRemindStatus() {
             generatePreferenceKeyIfNeeded();
-            mRemind = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(mKeyRemind, true);
+            mRemind = DefaultSharedPreferences.get(getContext()).getBoolean(mKeyRemind, true);
         }
 
         private void generatePreferenceKeyIfNeeded() {

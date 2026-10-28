@@ -2,7 +2,6 @@ package org.autojs.autojs.ui.settings
 
 import androidx.fragment.app.FragmentActivity
 import android.content.Context
-import android.preference.PreferenceManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.ThemeColorRecyclerView
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
+import com.stardust.autojs.core.pref.DefaultSharedPreferences
 import com.stardust.theme.ThemeColor
 import com.stardust.theme.ThemeColorHelper
 import org.autojs.autojs.R
@@ -78,7 +78,7 @@ class ColorSettingRecyclerView @JvmOverloads constructor(
     }
 
     private val customColor: Int
-        get() = PreferenceManager.getDefaultSharedPreferences(context)
+        get() = DefaultSharedPreferences.get(context)
             .getInt(KEY_CUSTOM_COLOR, -0x1)
 
     private fun showColorPicker() {
@@ -94,7 +94,7 @@ class ColorSettingRecyclerView @JvmOverloads constructor(
 
     internal fun handleCustomColorSelected(@ColorInt color: Int) {
         val opaqueColor = 0xff000000.toInt() or color
-        PreferenceManager.getDefaultSharedPreferences(context)
+        DefaultSharedPreferences.get(context)
             .edit { putInt(KEY_CUSTOM_COLOR, opaqueColor) }
         colors[colors.size - 1].themeColor.colorPrimary = opaqueColor
         setSelectedPosition(colors.size - 1)

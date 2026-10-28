@@ -1,9 +1,9 @@
 package com.stardust.auojs.inrt
 
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 
 import com.stardust.app.GlobalAppContext
+import com.stardust.autojs.core.pref.DefaultSharedPreferences
 
 /**
  * Created by Stardust on 2017/12/8.
@@ -17,7 +17,7 @@ object Pref {
     val preferences: SharedPreferences
         get() {
             return sPreferences ?: {
-                val pref = PreferenceManager.getDefaultSharedPreferences(GlobalAppContext.get())
+                val pref = DefaultSharedPreferences.get(GlobalAppContext.get())
                 sPreferences = pref
                 pref
             }()

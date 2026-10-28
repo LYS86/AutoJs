@@ -2,9 +2,9 @@ package com.stardust.autojs.core.util;
 
 import android.content.Context;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 import com.stardust.autojs.runtime.ScriptRuntime;
 import com.stardust.autojs.runtime.api.AbstractShell;
 import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
@@ -96,7 +96,7 @@ public class Shell extends AbstractShell {
     protected void init(final String initialCommand) {
         Handler uiHandler = new Handler(mContext.getMainLooper());
         uiHandler.post(() -> {
-            TermSettings settings = new TermSettings(mContext.getResources(), PreferenceManager.getDefaultSharedPreferences(mContext));
+            TermSettings settings = new TermSettings(mContext.getResources(), DefaultSharedPreferences.get(mContext));
             try {
                 mTermSession = new MyShellTermSession(settings, initialCommand);
                 mTermSession.initializeEmulator(1024, 40);

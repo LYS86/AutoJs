@@ -2,11 +2,11 @@ package org.autojs.autojs.theme;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.stardust.app.GlobalAppContext;
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 
 import org.autojs.autojs.R;
 
@@ -39,7 +39,7 @@ public class ThemeColorManagerCompat {
     public static void setNightModeEnabled(boolean enabled) {
         if (enabled) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            ThemeColor currentTheme = ThemeColor.fromPreferences(PreferenceManager.getDefaultSharedPreferences(sContext), null);
+            ThemeColor currentTheme = ThemeColor.fromPreferences(DefaultSharedPreferences.get(sContext), null);
             if (currentTheme != null) {
                 currentTheme.saveIn(sSharedPreferences);
             }
@@ -58,6 +58,6 @@ public class ThemeColorManagerCompat {
         sSharedPreferences = context.getSharedPreferences("theme_color", Context.MODE_PRIVATE);
         ThemeColorManager.init(context);
         ThemeColorManager.setDefaultThemeColor(defaultThemeColor);
-        PreferenceManager.getDefaultSharedPreferences(context).registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+        DefaultSharedPreferences.get(context).registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
     }
 }

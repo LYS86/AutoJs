@@ -4,7 +4,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
@@ -13,6 +12,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 
 import org.autojs.autojs.BuildConfig;
 import org.autojs.autojs.ui.BaseActivity;
@@ -56,9 +56,9 @@ public class ErrorReportActivity extends BaseActivity {
     }
 
     private String getCrashCountText() {
-        int i = PreferenceManager.getDefaultSharedPreferences(this).getInt(KEY_CRASH_COUNT, 0);
+        int i = DefaultSharedPreferences.get(this).getInt(KEY_CRASH_COUNT, 0);
         i++;
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(KEY_CRASH_COUNT, i).apply();
+        DefaultSharedPreferences.get(this).edit().putInt(KEY_CRASH_COUNT, i).apply();
         if (i < 2)
             return "";
         if (i > 5)

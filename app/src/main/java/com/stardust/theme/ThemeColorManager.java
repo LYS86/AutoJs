@@ -5,11 +5,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Paint;
 import android.os.Build;
-import android.preference.PreferenceManager;
-
-import androidx.annotation.ColorRes;
-
 import android.view.View;
+
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
@@ -34,7 +32,7 @@ public class ThemeColorManager {
     public static void init(Context context, ThemeColor defaultThemeColor, boolean apply) {
         contextWeakReference = new WeakReference<>(context);
         ThemeColorManager.defaultThemeColor = defaultThemeColor;
-        themeColor = ThemeColor.fromPreferences(PreferenceManager.getDefaultSharedPreferences(context), defaultThemeColor);
+        themeColor = ThemeColor.fromPreferences(DefaultSharedPreferences.get(context), defaultThemeColor);
         shouldApplyDefaultThemeColor = apply;
     }
 
@@ -124,7 +122,7 @@ public class ThemeColorManager {
 
     private static void saveThemeColorIfNeeded() {
         if (contextWeakReference != null && contextWeakReference.get() != null) {
-            themeColor.saveIn(PreferenceManager.getDefaultSharedPreferences(contextWeakReference.get()));
+            themeColor.saveIn(DefaultSharedPreferences.get(contextWeakReference.get()));
         }
     }
 

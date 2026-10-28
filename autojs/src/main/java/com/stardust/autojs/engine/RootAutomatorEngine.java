@@ -1,9 +1,9 @@
 package com.stardust.autojs.engine;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 import com.stardust.autojs.core.util.ProcessShell;
 import com.stardust.autojs.core.inputevent.InputDevices;
 import com.stardust.autojs.runtime.exception.ScriptException;
@@ -102,11 +102,11 @@ public class RootAutomatorEngine extends ScriptEngine.AbstractScriptEngine<AutoF
 
     public static String getDeviceNameOrPath(Context context, String deviceNameOrPath) {
         if (sTouchDevice < 0) {
-            sTouchDevice = PreferenceManager.getDefaultSharedPreferences(context).getInt(KEY_TOUCH_DEVICE, -1);
+            sTouchDevice = DefaultSharedPreferences.get(context).getInt(KEY_TOUCH_DEVICE, -1);
         }
         if (sTouchDevice >= 0) {
             deviceNameOrPath = "/dev/input/event" + sTouchDevice;
-            PreferenceManager.getDefaultSharedPreferences(context)
+            DefaultSharedPreferences.get(context)
                     .edit()
                     .putInt(KEY_TOUCH_DEVICE, sTouchDevice)
                     .apply();
@@ -127,7 +127,7 @@ public class RootAutomatorEngine extends ScriptEngine.AbstractScriptEngine<AutoF
     public static int getTouchDevice(Context context) {
         if (sTouchDevice >= 0)
             return sTouchDevice;
-        return PreferenceManager.getDefaultSharedPreferences(context).getInt(KEY_TOUCH_DEVICE, -1);
+        return DefaultSharedPreferences.get(context).getInt(KEY_TOUCH_DEVICE, -1);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package org.autojs.autojs.ui.edit;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,6 +9,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.DialogFindOrReplaceBinding;
@@ -68,14 +68,14 @@ public class FindOrReplaceDialogBuilder extends ThemeColorMaterialDialogBuilder 
 
 
     private void storeState() {
-        PreferenceManager.getDefaultSharedPreferences(getContext()).edit()
+        DefaultSharedPreferences.get(getContext()).edit()
                 .putString(KEY_KEYWORDS, mKeywordsEditText.getText().toString())
                 .apply();
     }
 
 
     private void restoreState() {
-        mKeywordsEditText.setText(PreferenceManager.getDefaultSharedPreferences(getContext())
+        mKeywordsEditText.setText(DefaultSharedPreferences.get(getContext())
                 .getString(KEY_KEYWORDS, ""));
     }
 

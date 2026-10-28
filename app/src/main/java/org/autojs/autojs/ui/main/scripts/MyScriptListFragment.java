@@ -3,7 +3,6 @@ package org.autojs.autojs.ui.main.scripts;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.stardust.app.GlobalAppContext;
+import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 import com.stardust.util.IntentUtil;
 
 import org.autojs.autojs.Pref;
@@ -65,7 +65,7 @@ public class MyScriptListFragment extends ViewPagerFragment implements FloatingA
     }
 
     void setUpViews() {
-        ExplorerItemList.SortConfig sortConfig = ExplorerItemList.SortConfig.from(PreferenceManager.getDefaultSharedPreferences(getContext()));
+        ExplorerItemList.SortConfig sortConfig = ExplorerItemList.SortConfig.from(DefaultSharedPreferences.get(getContext()));
         mExplorerView.setSortConfig(sortConfig);
         mExplorerView.setExplorer(Explorers.workspace(), ExplorerDirPage.createRoot(Pref.getScriptDirPath()));
         mExplorerView.setOnItemClickListener((view, item) -> {
@@ -143,7 +143,7 @@ public class MyScriptListFragment extends ViewPagerFragment implements FloatingA
     @Override
     public void onStop() {
         super.onStop();
-        mExplorerView.getSortConfig().saveInto(PreferenceManager.getDefaultSharedPreferences(getContext()));
+        mExplorerView.getSortConfig().saveInto(DefaultSharedPreferences.get(getContext()));
     }
 
     @Override

@@ -1,10 +1,9 @@
 package com.stardust.autojs.core.pref
 
-import android.preference.PreferenceManager
 import com.stardust.app.GlobalAppContext
 
 object Pref {
-    private val preferences = PreferenceManager.getDefaultSharedPreferences(GlobalAppContext.get())
+    private val preferences = DefaultSharedPreferences.get(GlobalAppContext.get())
 
     val isStableModeEnabled: Boolean
         get() {
