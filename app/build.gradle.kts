@@ -113,6 +113,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":autojs"))
     implementation("org.mozilla:rhino:1.7.15.1")
+    implementation(libs.androidx.splashscreen)
     implementation(libs.timber)
     implementation(libs.nanohttpd)
 }

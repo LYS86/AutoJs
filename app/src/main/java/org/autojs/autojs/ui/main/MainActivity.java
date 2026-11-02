@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.splashscreen.SplashScreen;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -77,6 +78,7 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SplashScreen.installSplashScreen(this);
         checkPermissions();
         applyDayNightMode();
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());

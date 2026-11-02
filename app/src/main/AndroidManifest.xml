@@ -42,22 +42,16 @@
             android:value="2.1"/>
 
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name=".ui.main.MainActivity"
             android:hardwareAccelerated="true"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.Splash">
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>
 
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.main.MainActivity"
-            android:hardwareAccelerated="true"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:theme="@style/AppTheme.FullScreen">
         </activity>
         <activity
             android:name=".external.shortcut.ShortcutActivity"
