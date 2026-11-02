@@ -108,16 +108,6 @@
         <activity
             android:name=".ui.shortcut.ShortcutCreateActivity"
             android:theme="@style/AppTheme.Transparent" />
-        <activity android:name=".external.widget.ScriptWidgetSettingsActivity">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.CREATE_SHORTCUT"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-
         <service android:name=".external.foreground.ForegroundService"/>
         <service android:name=".external.ScriptExecutionIntentService"/>
 
@@ -274,16 +264,6 @@
                 <action android:name="android.service.notification.NotificationListenerService"/>
             </intent-filter>
         </service>
-
-        <receiver android:name=".external.widget.ScriptWidget">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/script_widget_config"/>
-        </receiver>
 
         <receiver android:name=".timing.TaskReceiver">
             <intent-filter>
