@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.ActivityTaskerScriptEditBinding;
-import org.autojs.autojs.timing.TaskReceiver;
+import org.autojs.autojs.timing.TimedTask;
 import org.autojs.autojs.tool.Observers;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.edit.EditorView;
@@ -28,7 +28,7 @@ import static org.autojs.autojs.ui.edit.EditorView.EXTRA_SAVE_ENABLED;
 public class TaskerScriptEditActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = 10016;
-    public static final String EXTRA_TASK_ID = TaskReceiver.EXTRA_TASK_ID;
+    public static final String EXTRA_TASK_ID = TimedTask.EXTRA_TASK_ID;
 
     public static void edit(Activity activity, String title, String summary, String content) {
         activity.startActivityForResult(new Intent(activity, TaskerScriptEditActivity.class)

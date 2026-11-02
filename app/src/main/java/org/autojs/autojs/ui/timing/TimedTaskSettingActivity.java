@@ -44,7 +44,6 @@ import org.autojs.autojs.external.ScriptIntents;
 import org.autojs.autojs.external.receiver.DynamicBroadcastReceivers;
 import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.timing.IntentTask;
-import org.autojs.autojs.timing.TaskReceiver;
 import org.autojs.autojs.timing.TimedTask;
 import org.autojs.autojs.timing.TimedTaskManager;
 import org.autojs.autojs.ui.BaseActivity;
@@ -64,7 +63,7 @@ import java.util.Map;
 public class TimedTaskSettingActivity extends BaseActivity {
 
     public static final String EXTRA_INTENT_TASK_ID = "intent_task_id";
-    public static final String EXTRA_TASK_ID = TaskReceiver.EXTRA_TASK_ID;
+    public static final String EXTRA_TASK_ID = TimedTask.EXTRA_TASK_ID;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yy-MM-dd");

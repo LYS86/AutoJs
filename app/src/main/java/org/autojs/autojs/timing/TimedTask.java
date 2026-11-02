@@ -1,7 +1,5 @@
 package org.autojs.autojs.timing;
 
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 
 import com.stardust.autojs.execution.ExecutionConfig;
@@ -20,6 +18,9 @@ public class TimedTask extends BaseModel {
 
     public static final String TABLE = "TimedTask";
 
+    public static final String ACTION_TASK = "com.stardust.autojs.action.task";
+    public static final String EXTRA_TASK_ID = "task_id";
+
     private static final int FLAG_DISPOSABLE = 0;
     public final static int FLAG_SUNDAY = 0x1;
     public final static int FLAG_MONDAY = 0x2;
@@ -29,7 +30,6 @@ public class TimedTask extends BaseModel {
     public final static int FLAG_FRIDAY = 0x20;
     public final static int FLAG_SATURDAY = 0x40;
     private static final int FLAG_EVERYDAY = 0x7F;
-    private static final int REQUEST_CODE = 2000;
 
     long mTimeFlag;
 
@@ -181,18 +181,12 @@ public class TimedTask extends BaseModel {
     }
 
     public Intent createIntent() {
-        return new Intent(TaskReceiver.ACTION_TASK)
-                .putExtra(TaskReceiver.EXTRA_TASK_ID, getId())
+        return new Intent(ACTION_TASK)
+                .putExtra(EXTRA_TASK_ID, getId())
                 .putExtra(ScriptIntents.EXTRA_KEY_PATH, mScriptPath)
                 .putExtra(ScriptIntents.EXTRA_KEY_DELAY, mDelay)
                 .putExtra(ScriptIntents.EXTRA_KEY_LOOP_TIMES, mLoopTimes)
                 .putExtra(ScriptIntents.EXTRA_KEY_LOOP_INTERVAL, mInterval);
-    }
-
-
-    public PendingIntent createPendingIntent(Context context) {
-        return PendingIntent.getBroadcast(context, (int) ((REQUEST_CODE + 1 + getId()) % 65535),
-                createIntent(), PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     @Override

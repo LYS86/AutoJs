@@ -265,12 +265,6 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".timing.TaskReceiver">
-            <intent-filter>
-                <action android:name="com.stardust.autojs.action.task"/>
-            </intent-filter>
-        </receiver>
-
     </application>
 
 </manifest>
