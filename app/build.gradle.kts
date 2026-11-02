@@ -51,9 +51,11 @@ android {
 
 
 dependencies {
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.1.1-alpha01") {
-        exclude(group = "com.android.support", module = "support-annotations")
-    }
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.test.uiautomator)
     testImplementation("junit:junit:4.12")
     // Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1")
