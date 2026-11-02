@@ -36,6 +36,7 @@
 
         <activity
             android:name=".SplashActivity"
+            android:exported="true"
             android:theme="@style/AppTheme.Splash.Transparent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -50,6 +51,7 @@
 
         <service
             android:name="com.stardust.notification.NotificationListenerService"
+            android:exported="true"
             android:label="inrt"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
