@@ -35,7 +35,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.1.1-alpha01") {
         exclude(group = "com.android.support", module = "support-annotations")
     }
-    testImplementation("junit:junit:4.12")
+    testImplementation(libs.junit)
     api(fileTree("libs") { include("*.jar") })
     api("org.greenrobot:eventbus:3.0.0")
     implementation(libs.r8)

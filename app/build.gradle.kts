@@ -56,7 +56,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.androidx.test.uiautomator)
-    testImplementation("junit:junit:4.12")
+    testImplementation(libs.junit)
     // Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1")
     // Android supports

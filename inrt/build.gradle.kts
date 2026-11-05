@@ -96,7 +96,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.2.0") {
         exclude(group = "com.android.support")
     }
-    testImplementation("junit:junit:4.12")
+    testImplementation(libs.junit)
     implementation(project(":automator"))
     implementation(project(":common"))
     implementation(project(":autojs"))

@@ -34,7 +34,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.1.1-alpha01") {
         exclude(group = "com.android.support", module = "support-annotations")
     }
-    testImplementation("junit:junit:4.12")
+    testImplementation(libs.junit)
     api("androidx.annotation:annotation:1.0.0")
     api("com.github.hyb1996:settingscompat:1.1.5")
 }

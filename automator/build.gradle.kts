@@ -33,7 +33,7 @@ android {
 dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    testImplementation("junit:junit:4.12")
+    testImplementation(libs.junit)
     api("androidx.appcompat:appcompat:1.1.0")
     api(project(":common"))
 }
