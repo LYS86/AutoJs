@@ -19,7 +19,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/project/BuildActivity.java"
-            line="349"
+            line="354"
             column="20"/>
     </issue>
 
@@ -63,7 +63,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/main/MainActivity.java"
-            line="186"
+            line="188"
             column="20"/>
     </issue>
 
@@ -74,18 +74,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/project/ProjectConfigActivity.java"
-            line="244"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="MissingSuperCall"
-        message="Overriding method should call `super.onActivityResult`"
-        errorLine1="    protected void onActivityResult(int requestCode, int resultCode, Intent data) {"
-        errorLine2="                   ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/ui/shortcut/ShortcutCreateActivity.java"
-            line="104"
+            line="246"
             column="20"/>
     </issue>
 
@@ -96,7 +85,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/shortcut/ShortcutIconSelectActivity.java"
-            line="105"
+            line="100"
             column="20"/>
     </issue>
 
@@ -316,7 +305,7 @@
         errorLine2="        ^">
         <location
             file="src/main/AndroidManifest.xml"
-            line="126"
+            line="111"
             column="9"/>
     </issue>
 
@@ -327,7 +316,7 @@
         errorLine2="        ^">
         <location
             file="src/main/AndroidManifest.xml"
-            line="139"
+            line="125"
             column="9"/>
     </issue>
 
@@ -470,7 +459,7 @@
         errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="189"
+            line="178"
             column="39"/>
     </issue>
 
@@ -514,18 +503,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="47"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="RedundantLabel"
-        message="Redundant label can be removed"
-        errorLine1="            android:label=&quot;@string/app_name&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="58"
+            line="48"
             column="13"/>
     </issue>
 
@@ -612,12 +590,23 @@
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.core:core-ktx than 1.9.0 is available: 1.10.1"
+        message="A newer version of androidx.appcompat:appcompat than 1.6.1 is available: 1.7.0"
+        errorLine1="    implementation(&quot;androidx.appcompat:appcompat:1.6.1&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="63"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.core:core-ktx than 1.9.0 is available: 1.13.0"
         errorLine1="    implementation(&quot;androidx.core:core-ktx:1.9.0&quot;)"
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="62"
+            line="64"
             column="20"/>
     </issue>
 
@@ -628,7 +617,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="64"
+            line="66"
             column="20"/>
     </issue>
 
@@ -639,18 +628,18 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="65"
+            line="67"
             column="20"/>
     </issue>
 
     <issue
-        id="NewerVersionAvailable"
-        message="A newer version of junit:junit than 4.12 is available: 4.13.2"
-        errorLine1="    testImplementation(&quot;junit:junit:4.12&quot;)"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
+        id="GradleDependency"
+        message="A newer version of androidx.core:core-splashscreen than 1.0.1 is available: 1.2.0"
+        errorLine1="androidxSplashscreen = &quot;1.0.1&quot;"
+        errorLine2="                       ~~~~~~~">
         <location
-            file="build.gradle.kts"
-            line="57"
+            file="../gradle/libs.versions.toml"
+            line="3"
             column="24"/>
     </issue>
 
@@ -661,7 +650,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="59"
+            line="61"
             column="20"/>
     </issue>
 
@@ -672,7 +661,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="85"
+            line="87"
             column="20"/>
     </issue>
 
@@ -683,7 +672,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="88"
+            line="90"
             column="20"/>
     </issue>
 
@@ -694,7 +683,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="89"
+            line="91"
             column="20"/>
     </issue>
 
@@ -705,40 +694,40 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="91"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of com.squareup.retrofit2:converter-gson than 2.3.0 is available: 3.0.0"
-        errorLine1="    implementation(&quot;com.squareup.retrofit2:converter-gson:2.3.0&quot;)"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="92"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of com.squareup.retrofit2:converter-gson than 2.3.0 is available: 3.0.0"
-        errorLine1="    implementation(&quot;com.squareup.retrofit2:converter-gson:2.3.0&quot;)"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
             line="93"
             column="20"/>
     </issue>
 
     <issue
         id="NewerVersionAvailable"
-        message="A newer version of joda-time:joda-time than 2.9.9 is available: 2.15.0"
+        message="A newer version of com.squareup.retrofit2:converter-gson than 2.3.0 is available: 3.0.0"
+        errorLine1="    implementation(&quot;com.squareup.retrofit2:converter-gson:2.3.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="94"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.squareup.retrofit2:converter-gson than 2.3.0 is available: 3.0.0"
+        errorLine1="    implementation(&quot;com.squareup.retrofit2:converter-gson:2.3.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="95"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of joda-time:joda-time than 2.9.9 is available: 2.15.1"
         errorLine1="    implementation(&quot;joda-time:joda-time:2.9.9&quot;)"
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="101"
+            line="103"
             column="20"/>
     </issue>
 
@@ -749,7 +738,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="103"
+            line="105"
             column="20"/>
     </issue>
 
@@ -760,7 +749,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="113"
+            line="115"
             column="20"/>
     </issue>
 
@@ -771,7 +760,7 @@
         errorLine2="         ~~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="6"
+            line="12"
             column="10"/>
     </issue>
 
@@ -782,7 +771,7 @@
         errorLine2="         ~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="11"
+            line="17"
             column="10"/>
     </issue>
 
@@ -793,7 +782,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="103"
+            line="105"
             column="20"/>
     </issue>
 
@@ -801,35 +790,35 @@
         id="Aligned16KB"
         message="The native library `x86_64/libBugly_Native.so` (from `com.tencent.bugly:crashreport:4.1.9.3`) is not 16 KB aligned">
         <location
-            file="$GRADLE_USER_HOME/caches/8.13/transforms/5a10d3616374cbe7ba41f62749c1b94c/transformed/jetified-crashreport-4.1.9.3/jni/x86_64/libBugly_Native.so"/>
+            file="$GRADLE_USER_HOME/caches/8.13/transforms/5d79bb0b286946e3be7a736f385f4428/transformed/jetified-crashreport-4.1.9.3/jni/x86_64/libBugly_Native.so"/>
     </issue>
 
     <issue
         id="Aligned16KB"
         message="The native library `x86_64/libBugly_Native.so` (from `com.tencent.bugly:crashreport:4.1.9.3`) is not 16 KB aligned">
         <location
-            file="$GRADLE_USER_HOME/caches/8.13/transforms/5a10d3616374cbe7ba41f62749c1b94c/transformed/jetified-crashreport-4.1.9.3/jni/x86_64/libBugly_Native.so"/>
+            file="$GRADLE_USER_HOME/caches/8.13/transforms/5d79bb0b286946e3be7a736f385f4428/transformed/jetified-crashreport-4.1.9.3/jni/x86_64/libBugly_Native.so"/>
     </issue>
 
     <issue
         id="Aligned16KB"
         message="The native library `arm64-v8a/libjackpal-androidterm5.so` (from `local:libtermexec:1.0`) is not 16 KB aligned">
         <location
-            file="$GRADLE_USER_HOME/caches/8.13/transforms/1954ab14f28aba0ede62bc47daac8de1/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
+            file="$GRADLE_USER_HOME/caches/8.13/transforms/44a5f6615ba00fccacdbcb17c3734a6d/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
     </issue>
 
     <issue
         id="Aligned16KB"
         message="The native library `arm64-v8a/libjackpal-androidterm5.so` (from `local:libtermexec:1.0`) is not 16 KB aligned">
         <location
-            file="$GRADLE_USER_HOME/caches/8.13/transforms/1954ab14f28aba0ede62bc47daac8de1/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
+            file="$GRADLE_USER_HOME/caches/8.13/transforms/44a5f6615ba00fccacdbcb17c3734a6d/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
     </issue>
 
     <issue
         id="Aligned16KB"
         message="The native library `arm64-v8a/libjackpal-androidterm5.so` (from `local:libtermexec:1.0`) is not 16 KB aligned">
         <location
-            file="$GRADLE_USER_HOME/caches/8.13/transforms/1954ab14f28aba0ede62bc47daac8de1/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
+            file="$GRADLE_USER_HOME/caches/8.13/transforms/44a5f6615ba00fccacdbcb17c3734a6d/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
     </issue>
 
     <issue
@@ -1235,7 +1224,7 @@
         errorLine2="                                                                                       ~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="259"
+            line="266"
             column="88"/>
     </issue>
 
@@ -1268,7 +1257,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/project/BuildActivity.java"
-            line="307"
+            line="312"
             column="9"/>
     </issue>
 
@@ -1792,50 +1781,6 @@
     <issue
         id="LogNotTimber"
         message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
-        errorLine1="        Log.d(LOG_TAG, &quot;updateWidget: id = &quot; + widgetId + &quot;, requestCode = &quot; + requestCode + &quot;, path = &quot; + path);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/widget/ScriptWidget.java"
-            line="46"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="LogNotTimber"
-        message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
-        errorLine1="                Log.w(LOG_TAG, &quot;illegal key: &quot; + entry.getKey());"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/widget/ScriptWidgets.java"
-            line="62"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="LogNotTimber"
-        message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
-        errorLine1="            Log.v(LOG_TAG, &quot;remove key: &quot; + key);"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/widget/ScriptWidgets.java"
-            line="69"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="LogNotTimber"
-        message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
-        errorLine1="                    Log.e(LOG_TAG, &quot;decode stream&quot;, error);"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/ui/shortcut/ShortcutCreateActivity.java"
-            line="129"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="LogNotTimber"
-        message="Using &apos;Log&apos; instead of &apos;Timber&apos;"
         errorLine1="                Log.w(LOG_TAG, &quot;data inconsistent on change: &quot; + taskChange);"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1950,7 +1895,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/timing/TimedTaskSettingActivity.java"
-            line="376"
+            line="375"
             column="13"/>
     </issue>
 
@@ -1963,28 +1908,6 @@
             file="src/main/res/values-en/strings.xml"
             line="33"
             column="5"/>
-    </issue>
-
-    <issue
-        id="UnsafeImplicitIntentLaunch"
-        message="The intent action `android.intent.action.VIEW (used to start an activity)` matches the intent filter of a non-exported component `org.autojs.autojs.external.open.EditIntentActivity` from a manifest. If you are trying to invoke this specific component via the action then you should make the intent explicit by calling `Intent.set{Component,Class,ClassName}`."
-        errorLine1="                getContext().startActivity(new Intent(Intent.ACTION_VIEW).setData(request.getUrl()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));"
-        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/ui/widget/CommonMarkdownView.java"
-            line="75"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="UnsafeImplicitIntentLaunch"
-        message="The intent action `android.intent.action.VIEW (used to start an activity)` matches the intent filter of a non-exported component `org.autojs.autojs.external.open.EditIntentActivity` from a manifest. If you are trying to invoke this specific component via the action then you should make the intent explicit by calling `Intent.set{Component,Class,ClassName}`."
-        errorLine1="                getContext().startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));"
-        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/autojs/autojs/ui/widget/CommonMarkdownView.java"
-            line="81"
-            column="44"/>
     </issue>
 
     <issue
@@ -2005,167 +1928,13 @@
         errorLine2="                                                                     ~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/shortcut/ShortcutIconSelectActivity.java"
-            line="105"
+            line="100"
             column="70"/>
         <location
             file="src/main/java/org/autojs/autojs/ui/shortcut/ShortcutIconSelectActivity.java"
-            line="107"
+            line="102"
             column="13"
             message="The unsafe intent is launched here."/>
-    </issue>
-
-    <issue
-        id="ExportedReceiver"
-        message="Exported receiver does not require permission"
-        errorLine1="        &lt;receiver android:name=&quot;.timing.TaskReceiver&quot;>"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="288"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise. For launcher activities, this should be set to `true`."
-        errorLine1="        &lt;activity"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="44"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise. For launcher activities, this should be set to `true`."
-        errorLine1="        &lt;activity"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="62"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;activity android:name=&quot;.external.widget.ScriptWidgetSettingsActivity&quot;>"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="111"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;service"
-        errorLine2="         ~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="126"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;service"
-        errorLine2="         ~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="139"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;receiver android:name=&quot;org.autojs.autojs.external.receiver.StaticBroadcastReceiver&quot;>"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="165"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;activity"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="214"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;activity"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="231"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;activity"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="250"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;service"
-        errorLine2="         ~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="269"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;receiver android:name=&quot;.external.widget.ScriptWidget&quot;>"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="278"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;receiver android:name=&quot;.timing.TaskReceiver&quot;>"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="288"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="UnspecifiedImmutableFlag"
-        message="Missing `PendingIntent` mutability flag"
-        errorLine1="        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);"
-        errorLine2="                                                                                                               ~">
-        <location
-            file="src/main/java/org/autojs/autojs/external/foreground/ForegroundService.java"
-            line="57"
-            column="112"/>
     </issue>
 
     <issue
@@ -2670,7 +2439,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/org/autojs/autojs/ui/timing/TimedTaskSettingActivity.java"
-            line="198"
+            line="197"
             column="13"/>
     </issue>
 
@@ -2789,17 +2558,6 @@
             file="src/main/res/layout/activity_project_config.xml"
             line="83"
             column="26"/>
-    </issue>
-
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `@android:color/white` with a theme that also paints a background (inferred theme is `@style/AppTheme_Splash`)"
-        errorLine1="              android:background=&quot;@android:color/white&quot;"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_splash.xml"
-            line="5"
-            column="15"/>
     </issue>
 
     <issue
@@ -3002,7 +2760,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="98"
+            line="105"
             column="13"/>
     </issue>
 
@@ -3013,19 +2771,8 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="99"
+            line="106"
             column="13"/>
-    </issue>
-
-    <issue
-        id="UselessParent"
-        message="This `LinearLayout` layout or its `LinearLayout` parent is unnecessary"
-        errorLine1="    &lt;LinearLayout"
-        errorLine2="     ~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/shortcut_create_dialog.xml"
-            line="7"
-            column="6"/>
     </issue>
 
     <issue
@@ -3101,7 +2848,7 @@
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="124"
+            line="131"
             column="53"/>
     </issue>
 
@@ -3124,13 +2871,6 @@
         message="Found bitmap drawable `res/drawable/arrow_up.png` in densityless folder">
         <location
             file="src/main/res/drawable/arrow_up.png"/>
-    </issue>
-
-    <issue
-        id="IconLocation"
-        message="Found bitmap drawable `res/drawable/autojs.png` in densityless folder">
-        <location
-            file="src/main/res/drawable/autojs.png"/>
     </issue>
 
     <issue
@@ -3558,22 +3298,11 @@
     <issue
         id="UseTomlInstead"
         message="Use version catalog instead"
-        errorLine1="    testImplementation(&quot;junit:junit:4.12&quot;)"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="57"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
         errorLine1="    implementation(&quot;org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1&quot;)"
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="59"
+            line="61"
             column="20"/>
     </issue>
 
@@ -3584,7 +3313,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="61"
+            line="63"
             column="20"/>
     </issue>
 
@@ -3595,7 +3324,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="62"
+            line="64"
             column="20"/>
     </issue>
 
@@ -3606,7 +3335,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="63"
+            line="65"
             column="20"/>
     </issue>
 
@@ -3617,7 +3346,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="64"
+            line="66"
             column="20"/>
     </issue>
 
@@ -3628,7 +3357,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="65"
+            line="67"
             column="20"/>
     </issue>
 
@@ -3639,7 +3368,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="66"
+            line="68"
             column="20"/>
     </issue>
 
@@ -3650,7 +3379,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="72"
+            line="74"
             column="20"/>
     </issue>
 
@@ -3661,7 +3390,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="74"
+            line="76"
             column="20"/>
     </issue>
 
@@ -3672,7 +3401,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="76"
+            line="78"
             column="20"/>
     </issue>
 
@@ -3683,7 +3412,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="77"
+            line="79"
             column="20"/>
     </issue>
 
@@ -3694,7 +3423,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="79"
+            line="81"
             column="20"/>
     </issue>
 
@@ -3705,7 +3434,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="81"
+            line="83"
             column="20"/>
     </issue>
 
@@ -3716,7 +3445,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="83"
+            line="85"
             column="20"/>
     </issue>
 
@@ -3727,7 +3456,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="85"
+            line="87"
             column="20"/>
     </issue>
 
@@ -3738,7 +3467,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="86"
+            line="88"
             column="20"/>
     </issue>
 
@@ -3749,7 +3478,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="88"
+            line="90"
             column="20"/>
     </issue>
 
@@ -3760,7 +3489,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="89"
+            line="91"
             column="20"/>
     </issue>
 
@@ -3771,29 +3500,29 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="91"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation(&quot;com.squareup.retrofit2:converter-gson:2.3.0&quot;)"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="92"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation(&quot;com.squareup.retrofit2:converter-gson:2.3.0&quot;)"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
             line="93"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;com.squareup.retrofit2:converter-gson:2.3.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="94"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;com.squareup.retrofit2:converter-gson:2.3.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="95"
             column="20"/>
     </issue>
 
@@ -3804,7 +3533,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="94"
+            line="96"
             column="20"/>
     </issue>
 
@@ -3815,7 +3544,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="95"
+            line="97"
             column="20"/>
     </issue>
 
@@ -3826,7 +3555,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="101"
+            line="103"
             column="20"/>
     </issue>
 
@@ -3837,7 +3566,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="103"
+            line="105"
             column="20"/>
     </issue>
 
@@ -3848,7 +3577,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="109"
+            line="111"
             column="20"/>
     </issue>
 
@@ -3859,7 +3588,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="113"
+            line="115"
             column="20"/>
     </issue>
 
@@ -3938,28 +3667,6 @@
             file="src/main/res/layout/activity_project_config.xml"
             line="137"
             column="34"/>
-    </issue>
-
-    <issue
-        id="ContentDescription"
-        message="Missing `contentDescription` attribute on image"
-        errorLine1="        &lt;ImageView"
-        errorLine2="         ~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_splash.xml"
-            line="24"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="ContentDescription"
-        message="Missing `contentDescription` attribute on image"
-        errorLine1="        &lt;ImageView"
-        errorLine2="         ~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_splash.xml"
-            line="33"
-            column="10"/>
     </issue>
 
     <issue
@@ -4387,17 +4094,6 @@
         errorLine2="     ~~~~~~~~~">
         <location
             file="src/main/res/layout/toolbar_menu_item.xml"
-            line="8"
-            column="6"/>
-    </issue>
-
-    <issue
-        id="ContentDescription"
-        message="Missing `contentDescription` attribute on image"
-        errorLine1="    &lt;ImageView"
-        errorLine2="     ~~~~~~~~~">
-        <location
-            file="src/main/res/layout/widget_script_shortcut.xml"
             line="8"
             column="6"/>
     </issue>
@@ -4981,7 +4677,7 @@
         errorLine2="                                    ~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/activity_build.xml"
-            line="249"
+            line="247"
             column="37"/>
     </issue>
 
@@ -5025,19 +4721,8 @@
         errorLine2="                                    ~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/activity_project_config.xml"
-            line="219"
+            line="217"
             column="37"/>
-    </issue>
-
-    <issue
-        id="RtlHardcoded"
-        message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;-4dp&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_marginLeft=&quot;-4dp&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_splash.xml"
-            line="37"
-            column="13"/>
     </issue>
 
     <issue
@@ -6076,23 +5761,12 @@
 
     <issue
         id="RtlHardcoded"
-        message="Consider replacing `android:layout_marginLeft` with `android:layout_marginStart=&quot;8dp&quot;` to better support right-to-left layouts"
-        errorLine1="            android:layout_marginLeft=&quot;8dp&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/shortcut_create_dialog.xml"
-            line="17"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="RtlHardcoded"
         message="Consider replacing `android:layout_marginRight` with `android:layout_marginEnd=&quot;16dp&quot;` to better support right-to-left layouts"
         errorLine1="            android:layout_marginRight=&quot;16dp&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/shortcut_create_dialog.xml"
-            line="18"
+            line="17"
             column="13"/>
     </issue>
 

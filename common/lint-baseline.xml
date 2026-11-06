@@ -35,17 +35,6 @@
     </issue>
 
     <issue
-        id="NewerVersionAvailable"
-        message="A newer version of junit:junit than 4.12 is available: 4.13.2"
-        errorLine1="    testImplementation(&quot;junit:junit:4.12&quot;)"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="37"
-            column="24"/>
-    </issue>
-
-    <issue
         id="DiscouragedApi"
         message="Use of this function is discouraged because resource reflection makes it harder to perform build optimizations and compile-time verification of code. It is much more efficient to retrieve resources by identifier (e.g. `R.foo.bar`) than by name (e.g. `getIdentifier(&quot;bar&quot;, &quot;foo&quot;, null)`)."
         errorLine1="        int resourceId = context.getResources().getIdentifier(&quot;status_bar_height&quot;, &quot;dimen&quot;, &quot;android&quot;);"
@@ -109,17 +98,6 @@
             file="src/main/java/com/stardust/util/IntentUtil.java"
             line="190"
             column="5"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    testImplementation(&quot;junit:junit:4.12&quot;)"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="37"
-            column="24"/>
     </issue>
 
     <issue

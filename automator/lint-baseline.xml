@@ -25,24 +25,13 @@
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.appcompat:appcompat than 1.1.0 is available: 1.6.1"
+        message="A newer version of androidx.appcompat:appcompat than 1.1.0 is available: 1.7.0"
         errorLine1="    api(&quot;androidx.appcompat:appcompat:1.1.0&quot;)"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="38"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewerVersionAvailable"
-        message="A newer version of junit:junit than 4.12 is available: 4.13.2"
-        errorLine1="    testImplementation(&quot;junit:junit:4.12&quot;)"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
             line="37"
-            column="24"/>
+            column="9"/>
     </issue>
 
     <issue
@@ -191,22 +180,11 @@
     <issue
         id="UseTomlInstead"
         message="Use version catalog instead"
-        errorLine1="    testImplementation(&quot;junit:junit:4.12&quot;)"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="37"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
         errorLine1="    api(&quot;androidx.appcompat:appcompat:1.1.0&quot;)"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle.kts"
-            line="38"
+            line="37"
             column="9"/>
     </issue>
 

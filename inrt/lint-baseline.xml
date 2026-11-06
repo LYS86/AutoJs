@@ -57,35 +57,24 @@
     </issue>
 
     <issue
-        id="NewerVersionAvailable"
-        message="A newer version of junit:junit than 4.12 is available: 4.13.2"
-        errorLine1="    testImplementation(&quot;junit:junit:4.12&quot;)"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
+        id="Aligned16KB"
+        message="The native library `arm64-v8a/libjackpal-androidterm5.so` (from `local:libtermexec:1.0`) is not 16 KB aligned">
         <location
-            file="build.gradle.kts"
-            line="99"
-            column="24"/>
+            file="$GRADLE_USER_HOME/caches/8.13/transforms/44a5f6615ba00fccacdbcb17c3734a6d/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
     </issue>
 
     <issue
         id="Aligned16KB"
         message="The native library `arm64-v8a/libjackpal-androidterm5.so` (from `local:libtermexec:1.0`) is not 16 KB aligned">
         <location
-            file="$GRADLE_USER_HOME/caches/8.13/transforms/1954ab14f28aba0ede62bc47daac8de1/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
+            file="$GRADLE_USER_HOME/caches/8.13/transforms/44a5f6615ba00fccacdbcb17c3734a6d/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
     </issue>
 
     <issue
         id="Aligned16KB"
         message="The native library `arm64-v8a/libjackpal-androidterm5.so` (from `local:libtermexec:1.0`) is not 16 KB aligned">
         <location
-            file="$GRADLE_USER_HOME/caches/8.13/transforms/1954ab14f28aba0ede62bc47daac8de1/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
-    </issue>
-
-    <issue
-        id="Aligned16KB"
-        message="The native library `arm64-v8a/libjackpal-androidterm5.so` (from `local:libtermexec:1.0`) is not 16 KB aligned">
-        <location
-            file="$GRADLE_USER_HOME/caches/8.13/transforms/1954ab14f28aba0ede62bc47daac8de1/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
+            file="$GRADLE_USER_HOME/caches/8.13/transforms/44a5f6615ba00fccacdbcb17c3734a6d/transformed/jetified-libtermexec-1.0/jni/arm64-v8a/libjackpal-androidterm5.so"/>
     </issue>
 
     <issue
@@ -97,28 +86,6 @@
             file="src/main/java/com/stardust/auojs/inrt/autojs/GlobalKeyObserver.kt"
             line="32"
             column="9"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise. For launcher activities, this should be set to `true`."
-        errorLine1="        &lt;activity"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="37"
-            column="10"/>
-    </issue>
-
-    <issue
-        id="IntentFilterExportedReceiver"
-        message="As of Android 12, `android:exported` must be set; use `true` to make the activity available to other apps, and `false` otherwise."
-        errorLine1="        &lt;service"
-        errorLine2="         ~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="51"
-            column="10"/>
     </issue>
 
     <issue
@@ -196,17 +163,6 @@
             file="build.gradle.kts"
             line="91"
             column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    testImplementation(&quot;junit:junit:4.12&quot;)"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="99"
-            column="24"/>
     </issue>
 
     <issue
