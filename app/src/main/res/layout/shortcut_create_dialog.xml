@@ -15,9 +15,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_marginRight="16dp"
-            android:background="@drawable/shortcut_create_dialog_icon_bg"
-            android:padding="12dp"
-            android:src="@drawable/ic_add_white_48dp"/>
+            android:src="@drawable/shortcut_icon_placeholder"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

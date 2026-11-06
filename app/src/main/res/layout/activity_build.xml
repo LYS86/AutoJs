@@ -228,9 +228,7 @@
                                     android:layout_gravity="center"
                                     android:layout_marginLeft="16dp"
                                     android:layout_marginRight="16dp"
-                                    android:background="@drawable/shortcut_create_dialog_icon_bg"
-                                    android:padding="12dp"
-                                    android:src="@drawable/ic_add_white_48dp"/>
+                                    android:src="@drawable/shortcut_icon_placeholder"/>
                             </LinearLayout>
 
                         </LinearLayout>
