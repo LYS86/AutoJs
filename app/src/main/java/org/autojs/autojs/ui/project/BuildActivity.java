@@ -21,6 +21,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stardust.autojs.project.ProjectConfig;
 import com.stardust.util.IntentUtil;
+import timber.log.Timber;
 
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
@@ -32,6 +33,7 @@ import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder;
+import org.autojs.autojs.ui.shortcut.ShortcutIcon;
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity;
 
 import java.io.File;
@@ -353,13 +355,12 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
         if (resultCode != RESULT_OK) {
             return;
         }
-        ShortcutIconSelectActivity.getBitmapFromIntent(getApplicationContext(), data)
-                .subscribeOn(Schedulers.io())
+        ShortcutIcon.decodeShortcutIcon(getApplicationContext(), data)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bitmap -> {
                     mIcon.setImageBitmap(bitmap);
                     mIsDefaultIcon = false;
-                }, Throwable::printStackTrace);
+                }, e -> Timber.e(e, "解码快捷方式图标失败"));
 
     }
 

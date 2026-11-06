@@ -25,8 +25,10 @@ import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.model.project.ProjectTemplate;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
 import org.autojs.autojs.ui.BaseActivity;
+import org.autojs.autojs.ui.shortcut.ShortcutIcon;
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity;
 import org.autojs.autojs.ui.widget.SimpleTextWatcher;
+import timber.log.Timber;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -245,14 +247,13 @@ public class ProjectConfigActivity extends BaseActivity {
         if (resultCode != RESULT_OK) {
             return;
         }
-        ShortcutIconSelectActivity.getBitmapFromIntent(getApplicationContext(), data)
-                .subscribeOn(Schedulers.io())
+        ShortcutIcon.decodeShortcutIcon(getApplicationContext(), data)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bitmap -> {
                             mIcon.setImageBitmap(bitmap);
                             mIconBitmap = bitmap;
                         },
-                        Throwable::printStackTrace);
+                        e -> Timber.e(e, "解码快捷方式图标失败"));
     }
 
     @SuppressLint("CheckResult")

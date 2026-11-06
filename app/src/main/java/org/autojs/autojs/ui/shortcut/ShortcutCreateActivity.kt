@@ -14,7 +14,6 @@ import androidx.core.view.isVisible
 import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import org.autojs.autojs.R
 import org.autojs.autojs.databinding.ShortcutCreateDialogBinding
 import org.autojs.autojs.external.shortcut.ShortcutManager
@@ -169,8 +168,7 @@ class ShortcutCreateActivity : AppCompatActivity() {
 
     @SuppressLint("CheckResult")
     private fun loadIcon(data: Intent) {
-        ShortcutIconSelectActivity.getBitmapFromIntent(this, data)
-            .subscribeOn(Schedulers.io())
+        decodeShortcutIcon(data)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ bitmap ->
                 binding.icon.setImageBitmap(bitmap)

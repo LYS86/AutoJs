@@ -1,14 +1,10 @@
 package org.autojs.autojs.ui.shortcut;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.Nullable;
-import androidx.core.graphics.drawable.DrawableKt;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -107,24 +102,6 @@ public class ShortcutIconSelectActivity extends BaseActivity {
             setResult(RESULT_OK, data);
             finish();
         }
-    }
-
-    public static Observable<Bitmap> getBitmapFromIntent(Context context, Intent data) {
-        String packageName = data.getStringExtra(EXTRA_PACKAGE_NAME);
-        if (packageName != null) {
-            return Observable.fromCallable(() -> {
-                Drawable drawable = context.getPackageManager().getApplicationIcon(packageName);
-                return DrawableKt.toBitmap(drawable, drawable.getIntrinsicWidth(),
-                        drawable.getIntrinsicHeight(), null);
-            });
-        }
-        Uri uri = data.getData();
-        if (uri == null) {
-            return Observable.error(new IllegalArgumentException("invalid intent"));
-        }
-        return Observable.fromCallable(() ->
-                BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri))
-        );
     }
 
     private class AppItem {
