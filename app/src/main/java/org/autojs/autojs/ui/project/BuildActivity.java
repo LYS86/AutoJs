@@ -3,10 +3,12 @@ package org.autojs.autojs.ui.project;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.graphics.drawable.DrawableKt;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,7 +30,6 @@ import org.autojs.autojs.databinding.ActivityBuildBinding;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
 import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.theme.dialog.ThemeColorMaterialDialogBuilder;
-import org.autojs.autojs.tool.BitmapTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder;
 import org.autojs.autojs.ui.shortcut.ShortcutIconSelectActivity;
@@ -274,9 +275,11 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                 .setPackageName(packageName)
                 .setVersionCode(versionCode)
                 .setVersionName(versionName)
-                .setIcon(mIsDefaultIcon ? null : (Callable<Bitmap>) () ->
-                        BitmapTool.drawableToBitmap(mIcon.getDrawable())
-                );
+                .setIcon(mIsDefaultIcon ? null : (Callable<Bitmap>) () -> {
+                    Drawable drawable = mIcon.getDrawable();
+                    return DrawableKt.toBitmap(drawable, drawable.getIntrinsicWidth(),
+                            drawable.getIntrinsicHeight(), null);
+                });
     }
 
     private ApkBuilder callApkBuilder(File tmpDir, File outApk, ApkBuilder.AppConfig appConfig) throws Exception {

@@ -19,7 +19,6 @@ import android.widget.ImageView;
 
 import org.autojs.autojs.R;
 import org.autojs.autojs.databinding.ActivityShortcutIconSelectBinding;
-import org.autojs.autojs.tool.BitmapTool;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.workground.WrapContentGridLayoutManger;
 
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.DrawableKt;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -114,7 +114,8 @@ public class ShortcutIconSelectActivity extends BaseActivity {
         if (packageName != null) {
             return Observable.fromCallable(() -> {
                 Drawable drawable = context.getPackageManager().getApplicationIcon(packageName);
-                return BitmapTool.drawableToBitmap(drawable);
+                return DrawableKt.toBitmap(drawable, drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(), null);
             });
         }
         Uri uri = data.getData();
