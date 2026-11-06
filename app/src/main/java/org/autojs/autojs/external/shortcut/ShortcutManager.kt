@@ -13,9 +13,6 @@ object ShortcutManager {
     fun createPinnedShortcut(
         context: Context, name: CharSequence, id: String, icon: IconCompat, scriptPath: String
     ): Boolean {
-        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
-            return false
-        }
         val shortcut = buildShortcut(context, name, id, icon, scriptPath)
         val pinned = ShortcutManagerCompat.getShortcuts(context, ShortcutManagerCompat.FLAG_MATCH_PINNED)
         if (pinned.any { it.id == id }) {

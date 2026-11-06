@@ -34,6 +34,13 @@
     <string name="text_open_by_other_apps">用其他应用打开</string>
     <string name="text_rename">重命名</string>
     <string name="text_send_shortcut">创建快捷方式</string>
+    <string name="text_shortcut_type_pinned">固定快捷方式</string>
+    <string name="text_shortcut_type_dynamic">动态快捷方式</string>
+    <string name="text_no_shortcut_permission">无桌面快捷方式权限</string>
+    <string name="text_shortcut_grant_permission">去授权</string>
+    <string name="text_shortcut_pinned_unsupported">当前桌面不支持固定快捷方式</string>
+    <string name="text_shortcut_dynamic_unsupported">当前系统不支持动态快捷方式</string>
+    <string name="text_permission_page_unavailable">无法打开权限设置页，请到系统设置中手动授权</string>
     <string name="text_already_create">已创建</string>
     <string name="text_delete">删除</string>
     <string name="text_already_delete">已删除</string>

@@ -14,7 +14,6 @@
             android:id="@+id/icon"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginRight="16dp"
             android:background="@drawable/shortcut_create_dialog_icon_bg"
             android:padding="12dp"
@@ -32,6 +31,74 @@
                 android:layout_height="wrap_content"/>
 
         </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/type_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/shortcut_section_margin"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/shortcut_section_margin"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/type_pinned"
+            style="@style/ShortcutTypeOption"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/text_shortcut_type_pinned"/>
+
+        <RadioButton
+            android:id="@+id/type_dynamic"
+            style="@style/ShortcutTypeOption"
+            android:layout_width="0dp"
+            android:layout_marginStart="@dimen/shortcut_option_gap"
+            android:layout_weight="1"
+            android:text="@string/text_shortcut_type_dynamic"/>
+    </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/permission_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/shortcut_section_margin"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/shortcut_section_margin"
+        android:accessibilityLiveRegion="polite"
+        android:background="@drawable/shortcut_warning_bg"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/shortcut_option_height"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/shortcut_hint_padding_horizontal"
+        android:paddingTop="@dimen/shortcut_hint_padding_vertical"
+        android:paddingEnd="4dp"
+        android:paddingBottom="@dimen/shortcut_hint_padding_vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/hint_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/shortcut_warning"
+            android:textSize="@dimen/shortcut_hint_text_size"/>
+
+        <TextView
+            android:id="@+id/hint_action"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/shortcut_option_height"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="@string/text_shortcut_grant_permission"
+            android:textColor="@color/shortcut_warning"
+            android:textSize="@dimen/shortcut_hint_text_size"
+            android:textStyle="bold"/>
+
     </LinearLayout>
 
 </LinearLayout>

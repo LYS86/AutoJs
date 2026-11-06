@@ -18,4 +18,18 @@
     <color name="console_debug">#dfc0c0c0</color>
     <color name="console_verbose">#7F7F80</color>
 
+    <!-- 创建快捷方式对话框 -->
+    <color name="shortcut_option_accent">#FF00796B</color>
+    <color name="shortcut_option_accent_pressed">#FF00695C</color>
+    <color name="shortcut_option_accent_stroke">#FF4DB6AC</color>
+    <color name="shortcut_option_background">#FF33383E</color>
+    <color name="shortcut_option_stroke">#FF6E757D</color>
+    <color name="shortcut_option_pressed">#FF3F454C</color>
+    <color name="shortcut_option_disabled_fill">#FF272B30</color>
+    <color name="shortcut_option_text_normal">#FFC8CED5</color>
+    <color name="shortcut_option_text_checked">#FFFFFFFF</color>
+    <color name="shortcut_option_text_disabled">#FF6E757D</color>
+    <color name="shortcut_warning">#FFFFAB91</color>
+    <color name="shortcut_warning_bg">#FF3A2A1E</color>
+
 </resources>

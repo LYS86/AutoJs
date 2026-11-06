@@ -35,6 +35,13 @@
     <string name="text_open_by_other_apps">Open by other apps</string>
     <string name="text_rename">Rename</string>
     <string name="text_send_shortcut">Create shortcut</string>
+    <string name="text_shortcut_type_pinned">Pinned shortcut</string>
+    <string name="text_shortcut_type_dynamic">Dynamic shortcut</string>
+    <string name="text_no_shortcut_permission">No home screen shortcut permission</string>
+    <string name="text_shortcut_grant_permission">Grant</string>
+    <string name="text_shortcut_pinned_unsupported">This launcher does not support pinned shortcuts</string>
+    <string name="text_shortcut_dynamic_unsupported">This system does not support dynamic shortcuts</string>
+    <string name="text_permission_page_unavailable">Cannot open the permission page, grant it in system settings</string>
     <string name="text_already_create">Created</string>
     <string name="text_delete">Delete</string>
     <string name="text_already_delete">Deleted</string>

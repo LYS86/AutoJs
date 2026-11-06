@@ -11,4 +11,15 @@
     <dimen name="divider_drawer_menu_group">6dp</dimen>
     <dimen name="padding_circular_menu_recording">8dp</dimen>
     <dimen name="padding_circular_menu_normal">5dp</dimen>
+
+    <!-- 创建快捷方式对话框 -->
+    <dimen name="shortcut_section_margin">16dp</dimen>
+    <dimen name="shortcut_option_height">48dp</dimen>
+    <dimen name="shortcut_option_gap">8dp</dimen>
+    <dimen name="shortcut_option_radius">8dp</dimen>
+    <dimen name="shortcut_option_stroke_width">1dp</dimen>
+    <dimen name="shortcut_option_text_size">14sp</dimen>
+    <dimen name="shortcut_hint_text_size">13sp</dimen>
+    <dimen name="shortcut_hint_padding_horizontal">12dp</dimen>
+    <dimen name="shortcut_hint_padding_vertical">8dp</dimen>
 </resources>

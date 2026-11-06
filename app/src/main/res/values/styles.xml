@@ -66,4 +66,18 @@
         <item name="android:textColorPrimary">#212121</item>
     </style>
 
+    <!-- 保留 RadioButton 的可选中语义，视觉全部交给背景与文字 selector -->
+    <style name="ShortcutTypeOption">
+        <item name="android:layout_height">@dimen/shortcut_option_height</item>
+        <item name="android:background">@drawable/shortcut_option_bg</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:textColor">@color/shortcut_option_text_color</item>
+        <item name="android:textSize">@dimen/shortcut_option_text_size</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
 </resources>

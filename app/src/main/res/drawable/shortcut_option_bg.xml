@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 禁用态用填充、无描边，与「白底 + 描边」的未选中态在形态上分开 -->
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/shortcut_option_radius" />
+            <solid android:color="@color/shortcut_option_disabled_fill" />
+        </shape>
+    </item>
+
+    <item android:state_checked="true" android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/shortcut_option_radius" />
+            <solid android:color="@color/shortcut_option_accent_pressed" />
+            <stroke
+                android:width="@dimen/shortcut_option_stroke_width"
+                android:color="@color/shortcut_option_accent_stroke" />
+        </shape>
+    </item>
+
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/shortcut_option_radius" />
+            <solid android:color="@color/shortcut_option_accent" />
+            <stroke
+                android:width="@dimen/shortcut_option_stroke_width"
+                android:color="@color/shortcut_option_accent_stroke" />
+        </shape>
+    </item>
+
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/shortcut_option_radius" />
+            <solid android:color="@color/shortcut_option_pressed" />
+            <stroke
+                android:width="@dimen/shortcut_option_stroke_width"
+                android:color="@color/shortcut_option_stroke" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/shortcut_option_radius" />
+            <solid android:color="@color/shortcut_option_background" />
+            <stroke
+                android:width="@dimen/shortcut_option_stroke_width"
+                android:color="@color/shortcut_option_stroke" />
+        </shape>
+    </item>
+
+</selector>
