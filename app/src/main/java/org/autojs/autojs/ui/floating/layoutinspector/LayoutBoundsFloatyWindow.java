@@ -78,7 +78,7 @@ public class LayoutBoundsFloatyWindow extends FullScreenFloatyWindow {
             ensureOperationPopMenu();
             if (mBubblePopMenu.getContentView().getMeasuredWidth() <= 0)
                 mBubblePopMenu.preMeasure();
-            mBubblePopMenu.showAsDropDownAtLocation(mLayoutBoundsView, info.getBoundsInScreen().height(), info.getBoundsInScreen().centerX() - mBubblePopMenu.getContentView().getMeasuredWidth() / 2, info.getBoundsInScreen().bottom - mLayoutBoundsView.getStatusBarHeight());
+            mBubblePopMenu.showAsDropDownAtLocation(mLayoutBoundsView, info.getBoundsInScreen().height(), info.getBoundsInScreen().centerX() - mBubblePopMenu.getContentView().getMeasuredWidth() / 2, info.getBoundsInScreen().bottom - mLayoutBoundsView.getWindowTopInScreen());
         });
         mLayoutBoundsView.getBoundsPaint().setStrokeWidth(2f);
         mLayoutBoundsView.setRootNode(mRootNode);

@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import org.autojs.autojs.R;
 import com.stardust.view.accessibility.NodeInfo;
-import com.stardust.util.ViewUtil;
 import org.autojs.autojs.ui.widget.LevelBeamView;
 
 import java.util.Collections;
@@ -57,7 +56,7 @@ public class LayoutHierarchyView extends MultiLevelListView {
 
     private Paint mPaint;
     private int[] mBoundsInScreen;
-    private int mStatusBarHeight;
+    private int mWindowTopInScreen;
     private NodeInfo mClickedNodeInfo;
     private View mClickedView;
     private Drawable mOriginalBackground;
@@ -128,7 +127,6 @@ public class LayoutHierarchyView extends MultiLevelListView {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setAntiAlias(true);
         mPaint.setStrokeWidth(3);
-        mStatusBarHeight = ViewUtil.getStatusBarHeight(getContext());
     }
 
     public Paint getBoundsPaint() {
@@ -152,10 +150,10 @@ public class LayoutHierarchyView extends MultiLevelListView {
         if (mBoundsInScreen == null) {
             mBoundsInScreen = new int[4];
             getLocationOnScreen(mBoundsInScreen);
-            mStatusBarHeight = mBoundsInScreen[1];
+            mWindowTopInScreen = mBoundsInScreen[1];
         }
         if (mShowClickedNodeBounds && mClickedNodeInfo != null) {
-            LayoutBoundsView.drawRect(canvas, mClickedNodeInfo.getBoundsInScreen(), mStatusBarHeight, mPaint);
+            LayoutBoundsView.drawRect(canvas, mClickedNodeInfo.getBoundsInScreen(), mWindowTopInScreen, mPaint);
         }
     }
 

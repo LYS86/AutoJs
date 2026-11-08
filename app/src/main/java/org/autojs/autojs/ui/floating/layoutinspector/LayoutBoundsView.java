@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.stardust.view.accessibility.NodeInfo;
-import com.stardust.util.ViewUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +36,7 @@ public class LayoutBoundsView extends View {
     private Rect mTouchedNodeBounds;
 
     private int[] mBoundsInScreen;
-    protected int mStatusBarHeight;
+    protected int mWindowTopInScreen;
 
     public LayoutBoundsView(Context context) {
         super(context);
@@ -78,7 +77,6 @@ public class LayoutBoundsView extends View {
         mFillingPaint.setStyle(Paint.Style.FILL);
         mFillingPaint.setColor(COLOR_SHADOW);
         setWillNotDraw(false);
-        mStatusBarHeight = ViewUtil.getStatusBarHeight(getContext());
     }
 
 
@@ -88,13 +86,13 @@ public class LayoutBoundsView extends View {
         if (mBoundsInScreen == null) {
             mBoundsInScreen = new int[4];
             getLocationOnScreen(mBoundsInScreen);
-            mStatusBarHeight = mBoundsInScreen[1];
+            mWindowTopInScreen = mBoundsInScreen[1];
         }
         if (mTouchedNode != null) {
             canvas.save();
             if (mTouchedNodeBounds == null) {
                 mTouchedNodeBounds = new Rect(mTouchedNode.getBoundsInScreen());
-                mTouchedNodeBounds.offset(0, -mStatusBarHeight);
+                mTouchedNodeBounds.offset(0, -mWindowTopInScreen);
             }
             canvas.clipRect(mTouchedNodeBounds, Region.Op.DIFFERENCE);
         }
@@ -106,7 +104,7 @@ public class LayoutBoundsView extends View {
         draw(canvas, mRootNode);
         if (mTouchedNode != null) {
             mBoundsPaint.setColor(mTouchedNodeBoundsColor);
-            drawRect(canvas, mTouchedNode.getBoundsInScreen(), mStatusBarHeight, mBoundsPaint);
+            drawRect(canvas, mTouchedNode.getBoundsInScreen(), mWindowTopInScreen, mBoundsPaint);
         }
     }
 
@@ -129,7 +127,7 @@ public class LayoutBoundsView extends View {
     private void draw(Canvas canvas, NodeInfo node) {
         if (node == null)
             return;
-        drawRect(canvas, node.getBoundsInScreen(), mStatusBarHeight, mBoundsPaint);
+        drawRect(canvas, node.getBoundsInScreen(), mWindowTopInScreen, mBoundsPaint);
         for (NodeInfo child : node.getChildren()) {
             draw(canvas, child);
         }
@@ -187,7 +185,7 @@ public class LayoutBoundsView extends View {
         invalidate();
     }
 
-    public int getStatusBarHeight() {
-        return mStatusBarHeight;
+    public int getWindowTopInScreen() {
+        return mWindowTopInScreen;
     }
 }
