@@ -4,13 +4,14 @@ import android.annotation.SuppressLint;
 import android.app.AppOpsManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,7 +28,6 @@ import com.bumptech.glide.request.transition.Transition;
 import com.stardust.app.AppOpsKt;
 import com.stardust.app.GlobalAppContext;
 import com.stardust.notification.NotificationListenerService;
-import com.stardust.util.ViewUtil;
 
 import com.stardust.autojs.util.FloatingPermission;
 
@@ -125,13 +125,19 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         mDrawerMenu = binding.drawerMenu;
         setUpViews();
         View root = binding.getRoot();
-        root.setBackground(new InsetDrawable(root.getBackground(),
-                0, ViewUtil.getStatusBarHeight(requireContext()), 0, 0));
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
+            int statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            if (params.topMargin != statusBar) {
+                params.topMargin = statusBar;
+                view.setLayoutParams(params);
+            }
+            return insets;
+        });
         return root;
     }
 
     void setUpViews() {
-        mDrawerMenu.setPadding(0, ViewUtil.getStatusBarHeight(getContext()), 0, 0);
         initMenuItems();
         syncFloatingWindowState();
         setChecked(mConnectionItem, DevPluginService.getInstance().isConnected());
