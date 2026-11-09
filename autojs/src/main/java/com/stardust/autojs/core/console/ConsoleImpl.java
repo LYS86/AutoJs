@@ -101,7 +101,8 @@ public class ConsoleImpl extends AbstractConsole {
         mConsoleView = new WeakReference<>(consoleView);
         setLogListener(consoleView);
         synchronized (this) {
-            this.notify();
+            // 多脚本线程并发等待视图绑定时，单发 notify 只能唤醒一个
+            this.notifyAll();
         }
     }
 
@@ -247,10 +248,13 @@ public class ConsoleImpl extends AbstractConsole {
 
     private void waitForConsoleView() {
         synchronized (this) {
-            try {
-                this.wait();
-            } catch (InterruptedException e) {
-                throw new ScriptInterruptedException();
+            // setConsoleView 的 notify 可能早于本方法进入 wait，必须重查条件防止丢失唤醒
+            while (mConsoleView == null || mConsoleView.get() == null) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    throw new ScriptInterruptedException();
+                }
             }
         }
     }
