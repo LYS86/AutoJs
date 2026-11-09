@@ -20,8 +20,6 @@ import com.stardust.util.ViewUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -70,7 +68,10 @@ public class ConsoleImpl extends AbstractConsole {
     private ConsoleFloaty mConsoleFloaty;
     private WeakReference<LogListener> mLogListener;
     private UiHandler mUiHandler;
-    private BlockingQueue<String> mInput = new ArrayBlockingQueue<>(1);
+    private final Object mInputLock = new Object();
+    private String mPendingInput;
+    // 跨 mInputLock / this 两把锁读写，必须 volatile
+    private volatile boolean mConsoleClosed = false;
     private WeakReference<ConsoleView> mConsoleView;
     private volatile boolean mShown = false;
     private int mX, mY;
@@ -86,6 +87,11 @@ public class ConsoleImpl extends AbstractConsole {
         mFloatyWindow = new ResizableExpandableFloatyWindow(mConsoleFloaty) {
             @Override
             public void onCreate(FloatyService service, WindowManager manager) {
+                // 必须在 super.onCreate 之前复位：super 内 setConsoleView 会唤醒等待线程，
+                // 若线程在复位前读到关闭标志，会把重建的窗口误判为已取消
+                synchronized (mInputLock) {
+                    mConsoleClosed = false;
+                }
                 super.onCreate(service, manager);
                 expand();
                 mFloatyWindow.getWindowBridge().updatePosition(mX, mY);
@@ -93,6 +99,12 @@ public class ConsoleImpl extends AbstractConsole {
                     mShown = true;
                     WINDOW_SHOW_LOCK.notifyAll();
                 }
+            }
+
+            @Override
+            public void close() {
+                super.close();
+                onConsoleClosed();
             }
         };
     }
@@ -232,30 +244,54 @@ public class ConsoleImpl extends AbstractConsole {
 
     @ScriptInterface
     public String rawInput() {
-        if (mConsoleView == null || mConsoleView.get() == null) {
+        // 先取 WeakReference 快照再解引用：等待期间窗口可能被关闭并置空 mConsoleView，
+        // 直接链式判空在判空与 get() 之间仍有被置 null 的窗口
+        WeakReference<ConsoleView> viewRef = mConsoleView;
+        ConsoleView view = viewRef == null ? null : viewRef.get();
+        if (view == null) {
             if (!mShown) {
                 show();
             }
             waitForConsoleView();
+            viewRef = mConsoleView;
+            view = viewRef == null ? null : viewRef.get();
+            if (view == null || mConsoleClosed) {
+                return null;
+            }
         }
-        mConsoleView.get().showEditText();
-        try {
-            return mInput.take();
-        } catch (InterruptedException e) {
-            throw new ScriptInterruptedException();
-        }
+        view.showEditText();
+        return takeInput();
     }
 
     private void waitForConsoleView() {
         synchronized (this) {
             // setConsoleView 的 notify 可能早于本方法进入 wait，必须重查条件防止丢失唤醒
-            while (mConsoleView == null || mConsoleView.get() == null) {
+            while ((mConsoleView == null || mConsoleView.get() == null) && !mConsoleClosed) {
                 try {
                     this.wait();
                 } catch (InterruptedException e) {
                     throw new ScriptInterruptedException();
                 }
             }
+        }
+    }
+
+    private String takeInput() {
+        // 关闭=取消输入
+        synchronized (mInputLock) {
+            while (mPendingInput == null && !mConsoleClosed) {
+                try {
+                    mInputLock.wait();
+                } catch (InterruptedException e) {
+                    throw new ScriptInterruptedException();
+                }
+            }
+            if (mPendingInput != null) {
+                String input = mPendingInput;
+                mPendingInput = null;
+                return input;
+            }
+            return null;
         }
     }
 
@@ -266,7 +302,28 @@ public class ConsoleImpl extends AbstractConsole {
     }
 
     boolean submitInput(@NonNull CharSequence input) {
-        return mInput.offer(input.toString());
+        synchronized (mInputLock) {
+            if (mConsoleClosed || mPendingInput != null) {
+                return false;
+            }
+            mPendingInput = input.toString();
+            mInputLock.notifyAll();
+            return true;
+        }
+    }
+
+    private void onConsoleClosed() {
+        synchronized (mInputLock) {
+            mConsoleClosed = true;
+            mInputLock.notifyAll();
+        }
+        synchronized (WINDOW_SHOW_LOCK) {
+            mShown = false;
+        }
+        mConsoleView = null;
+        synchronized (this) {
+            notifyAll();
+        }
     }
 
     @Override
