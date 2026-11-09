@@ -10,8 +10,8 @@ module.exports = function (runtime, scope) {
 
     console.rawInput = rtConsole.rawInput.bind(rtConsole);
 
-    console.input = function (data, param) {
-        return eval(console.rawInput.call(console, [].slice(arguments)) + "");
+    console.input = function () {
+        return eval(console.rawInput.apply(console, arguments) + '');
     }
 
     console.log = function () {
