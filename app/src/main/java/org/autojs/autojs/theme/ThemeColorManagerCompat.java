@@ -56,8 +56,7 @@ public class ThemeColorManagerCompat {
     public static void init(Context context, ThemeColor defaultThemeColor) {
         sContext = context;
         sSharedPreferences = context.getSharedPreferences("theme_color", Context.MODE_PRIVATE);
-        ThemeColorManager.init(context);
-        ThemeColorManager.setDefaultThemeColor(defaultThemeColor);
+        ThemeColorManager.init(context, defaultThemeColor, true);
         DefaultSharedPreferences.get(context).registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
     }
 }
