@@ -95,8 +95,17 @@ public class ThemeColorManager {
     }
 
     public static void setThemeColor(ThemeColor themeColor) {
+        setThemeColor(themeColor, true);
+    }
+
+    /**
+     * @param save false 时仅应用到运行时视图，不写入偏好设置（供夜间模式这类临时覆盖使用）
+     */
+    public static void setThemeColor(ThemeColor themeColor, boolean save) {
         ThemeColorManager.themeColor = themeColor;
-        saveThemeColorIfNeeded();
+        if (save) {
+            saveThemeColorIfNeeded();
+        }
         int color = themeColor.colorPrimary;
         BackgroundColorManager.setColor(color);
         StatusBarManager.setColor(color);

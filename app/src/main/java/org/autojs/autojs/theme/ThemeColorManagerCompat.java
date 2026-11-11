@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.stardust.app.GlobalAppContext;
 import com.stardust.autojs.core.pref.DefaultSharedPreferences;
 
 import org.autojs.autojs.R;
@@ -16,47 +15,38 @@ import com.stardust.theme.ThemeColorManager;
 /**
  * Created by Stardust on 2017/3/12.
  */
-
 public class ThemeColorManagerCompat {
 
-    private static SharedPreferences sSharedPreferences;
     private static Context sContext;
+
     private static SharedPreferences.OnSharedPreferenceChangeListener sPreferenceChangeListener = (sharedPreferences, key) -> {
         if (key.equals(sContext.getString(R.string.key_night_mode))) {
             setNightModeEnabled(sharedPreferences.getBoolean(key, false));
         }
     };
 
-    public static int getColorPrimary() {
-        int color = ThemeColorManager.getColorPrimary();
-        if (color == 0) {
-            return ContextCompat.getColor(GlobalAppContext.get(), R.color.colorPrimary);
-        } else {
-            return color;
-        }
-    }
-
     public static void setNightModeEnabled(boolean enabled) {
         if (enabled) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            ThemeColor currentTheme = ThemeColor.fromPreferences(DefaultSharedPreferences.get(sContext), null);
-            if (currentTheme != null) {
-                currentTheme.saveIn(sSharedPreferences);
-            }
-            ThemeColorManager.setThemeColor(ContextCompat.getColor(sContext, R.color.theme_color_black));
+            ThemeColorManager.setThemeColor(new ThemeColor(ContextCompat.getColor(sContext, R.color.theme_color_black)), false);
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            ThemeColor previousTheme = ThemeColor.fromPreferences(sSharedPreferences, null);
-            if (previousTheme != null) {
-                ThemeColorManager.setThemeColor(previousTheme.colorPrimary);
-            }
+            ThemeColorManager.setThemeColor(getUserThemeColor(), false);
         }
     }
 
     public static void init(Context context, ThemeColor defaultThemeColor) {
         sContext = context;
-        sSharedPreferences = context.getSharedPreferences("theme_color", Context.MODE_PRIVATE);
         ThemeColorManager.init(context, defaultThemeColor, true);
-        DefaultSharedPreferences.get(context).registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+        SharedPreferences prefs = DefaultSharedPreferences.get(context);
+        if (prefs.getBoolean(context.getString(R.string.key_night_mode), false)) {
+            ThemeColorManager.setThemeColor(new ThemeColor(ContextCompat.getColor(context, R.color.theme_color_black)), false);
+        }
+        prefs.registerOnSharedPreferenceChangeListener(sPreferenceChangeListener);
+    }
+
+    private static ThemeColor getUserThemeColor() {
+        ThemeColor color = ThemeColor.fromPreferences(DefaultSharedPreferences.get(sContext), null);
+        return color != null ? color : ThemeColorManager.getDefaultThemeColor();
     }
 }
